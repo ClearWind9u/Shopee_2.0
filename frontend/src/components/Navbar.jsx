@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
 
 const Navbar = ({ user, setUser }) => {
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
   };
+
+  const avatarSrc = user?.avatar && user.avatar.trim() !== "" ? user.avatar : "/default-avatar.jpg";
 
   return (
     <nav className="navbar navbar-expand-lg" style={{ backgroundColor: "#EE4D2D" }}>
@@ -29,7 +31,18 @@ const Navbar = ({ user, setUser }) => {
 
           {user ? (
             <div className="dropdown">
-              <button className="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <button
+                className="btn btn-light dropdown-toggle d-flex align-items-center"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <img
+                  src={avatarSrc}
+                  alt="Avatar"
+                  className="rounded-circle me-2"
+                  width="35"
+                  height="35"
+                />
                 {user.username}
               </button>
               <ul className="dropdown-menu">
@@ -45,6 +58,5 @@ const Navbar = ({ user, setUser }) => {
     </nav>
   );
 };
-
 
 export default Navbar;
