@@ -15,7 +15,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg" style={{ backgroundColor: "#EE4D2D" }}>
       <div className="container">
         <Link className="navbar-brand fw-bold text-white" to="/">
-          <img src="/logo-edit.png" alt="Logo" width="80" height="auto" />
+          <img src="/logo-edit.png" alt="Logo" width="70" height="auto" />
         </Link>
 
         {/* Thanh tìm kiếm */}

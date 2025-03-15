@@ -7,7 +7,7 @@ const Home = () => {
       <div className="row">
         <div className="col-12">
           <img
-            src="/banner.jpg"
+            src="/banner.png"
             className="img-fluid rounded"
             alt="Shopee Banner"
             style={{ width: "100%" }}
