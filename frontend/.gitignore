@@ -1,0 +1,51 @@
+# =======================
+# 1. Bỏ qua thư mục Node.js & React
+# =======================
+node_modules/
+build/
+dist/
+*.log
+*.lock
+.vscode/
+.idea/
+.DS_Store
+
+# =======================
+# 2. Bỏ qua các file môi trường & config nhạy cảm
+# =======================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# =======================
+# 3. Bỏ qua cache, output, dependency files
+# =======================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# =======================
+# 4. PHP & Backend Files
+# =======================
+vendor/
+composer.lock
+*.sql
+database/*.db
+database/*.sqlite
+
+# =======================
+# 5. Bỏ qua thư mục upload (nếu có)
+# =======================
+public/uploads/
+storage/
+storage/logs/
+storage/framework/
+
+# =======================
+# 6. Bỏ qua file hệ thống của Mac & Windows
+# =======================
+Thumbs.db
+*.swp
