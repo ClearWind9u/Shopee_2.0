@@ -1,23 +1,33 @@
-import React from "react"; 
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
-import ChatWidget from "./components/ChatWidget";  // Thêm ChatWidget
+import ChatWidget from "./components/ChatWidget";
+import { getCurrentUser } from "./services/authService";
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = getCurrentUser();
+    if (storedUser) {
+      setUser(storedUser);
+    }
+  }, []);
+
   return (
     <Router>
-      <Navbar />
+      <Navbar user={user} setUser={setUser} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/register" element={<Register setUser={setUser} />} /> {/* Truyền setUser vào */}
       </Routes>
       <Footer />
-      <ChatWidget /> {/* Hiển thị chat trên toàn trang */}
+      <ChatWidget />
     </Router>
   );
 }
