@@ -1,49 +1,43 @@
-export const register = async (username, email, password, role) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (localStorage.getItem(email)) {
-        reject(new Error("Email đã được đăng ký."));
-      } else {
-        const newUser = { username, email, password, role };
-        localStorage.setItem(email, JSON.stringify(newUser));
-        resolve(newUser); // Trả về user sau khi đăng ký thành công
-      }
-    }, 500); // Giả lập độ trễ mạng
-  });
-};
+import axios from "axios";
 
-const fakeUsers = [
-  { username: "Admin", email: "admin@example.com", password: "123456", role: "manager" },
-  { username: "Buyer", email: "buyer@example.com", password: "123456", role: "buyer" },
-  { username: "Seller", email: "seller@example.com", password: "123456", role: "seller" },
-];
+const API_URL = "http://localhost:5000/api/users";
 
+// Đăng nhập
 export const login = async (email, password, role) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      let user = fakeUsers.find((u) => u.email === email && u.password === password && u.role === role);
-      
-      if (!user) {
-        const storedUser = JSON.parse(localStorage.getItem(email));
-        if (storedUser && storedUser.password === password && storedUser.role === role) {
-          user = storedUser;
-        }
-      }
+  try {
+    const response = await axios.post(`${API_URL}/login`, { email, password, role });
 
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user)); // Lưu user vào localStorage
-        resolve(user);
-      } else {
-        reject(new Error("Sai thông tin đăng nhập!"));
-      }
-    }, 1000); // Giả lập thời gian phản hồi từ server
-  });
+    if (response.status !== 200) throw new Error(response.data.error || "Đăng nhập thất bại");
+
+    const { token, user } = response.data;
+
+    // 🔹 Lưu token và user vào localStorage
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Đăng nhập thất bại");
+  }
 };
 
+// Đăng ký
+export const register = async (username, email, password, role) => {
+  try {
+    const response = await axios.post(`${API_URL}/register`, { username, email, password, role });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Đăng ký thất bại");
+  }
+};
+
+// Đăng xuất
 export const logout = () => {
   localStorage.removeItem("user");
 };
 
 export const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem("user")) || null;
+  const storedData = JSON.parse(localStorage.getItem("user"));
+  return storedData?.user || null;  // Trả về storedData.user thay vì toàn bộ object
 };
+

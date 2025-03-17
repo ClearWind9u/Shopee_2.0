@@ -25,9 +25,9 @@ const Register = ({ setUser }) => {
     }
     try {
       const newUser = await register(form.username, form.email, form.password, form.role);
-      localStorage.setItem("user", JSON.stringify(newUser)); // Lưu user vào localStorage
-      setUser(newUser); // Cập nhật state user
-      navigate("/"); // Điều hướng về trang chủ sau khi đăng ký thành công
+      localStorage.setItem("user", JSON.stringify(newUser));
+      setUser(newUser);
+      navigate("/"); 
     } catch (err) {
       setError(err.message);
     }
@@ -42,7 +42,7 @@ const Register = ({ setUser }) => {
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label className="form-label">Tên đăng nhập</label>
-              <input type="text" name="username" className="form-control" placeholder="Nhập tên đăng nhập"value={form.username} onChange={handleChange} required />
+              <input type="text" name="username" className="form-control" placeholder="Nhập tên đăng nhập" value={form.username} onChange={handleChange} required />
             </div>
             <div className="mb-3">
               <label className="form-label">Email</label>

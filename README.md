@@ -37,15 +37,13 @@ npm start    # Chạy server backend
 - 🏠 Giao diện người dùng hiện đại theo phong cách Shopee
 
 ## 🧑‍💻 Tài khoản thử nghiệm
-Dưới đây là một số tài khoản mẫu để bạn thử nghiệm tính năng đăng nhập:
+Dưới đây là tài khoản mẫu để bạn thử nghiệm tính năng đăng nhập:
 
-| Vai trò   | Email                 | Mật khẩu    |
-|-----------|----------------------|------------|
-| Người mua | buyer@example.com    | 12345678   |
-| Người bán | seller@example.com   | 12345678   |
-| Quản lý   | manager@example.com  | 12345678   |
+| Vai trò   | Email          | Mật khẩu |
+|-----------|---------------|----------|
+| Người mua | test@gmail.com | 123      |
 
-Bạn có thể sử dụng những tài khoản này để đăng nhập và kiểm tra hệ thống. 🚀
+Bạn có thể sử dụng tài khoản này để đăng nhập và kiểm tra hệ thống. 🚀
 
 ## 📌 Thông tin liên hệ
 - **Developer**: _(Tên của bạn)_

@@ -18,6 +18,7 @@ function App() {
 
   useEffect(() => {
     const storedUser = getCurrentUser();
+    console.log("User from localStorage in App.js:", storedUser);
     if (storedUser) {
       setUser(storedUser);
     }

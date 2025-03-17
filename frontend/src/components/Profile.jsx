@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const Profile = ({ user }) => {
+const Profile = ({ user, setUser }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [avatar, setAvatar] = useState("/default-avatar.jpg");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    console.log("User received in Profile:", user);
     if (user) {
       setUsername(user.username);
       setEmail(user.email);
-      setAvatar(user.avatar && user.avatar.trim() !== "" ? user.avatar : "/default-avatar.jpg");
+      setAvatar(user.avatar ? user.avatar : "/default-avatar.jpg");
     }
   }, [user]);
 
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatar(reader.result);
@@ -24,9 +30,38 @@ const Profile = ({ user }) => {
     }
   };
 
+  const handleUpdateProfile = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("username", username);
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+
+      const token = localStorage.getItem("token");
+      const response = await axios.put(`http://localhost:5000/api/users/profile`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setUser(response.data.user);
+      alert("Cập nhật thành công!");
+    } catch (err) {
+      setError(err.response?.data?.error || "Lỗi cập nhật");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container mt-4">
       <h2>Hồ sơ cá nhân</h2>
+      {error && <p className="alert alert-danger">{error}</p>}
       <div className="card p-3">
         <div className="text-center">
           <img
@@ -58,7 +93,9 @@ const Profile = ({ user }) => {
             disabled
           />
         </div>
-        <button className="btn btn-primary mt-3">Cập nhật</button>
+        <button className="btn btn-primary mt-3" onClick={handleUpdateProfile} disabled={loading}>
+          {loading ? "Đang cập nhật..." : "Cập nhật"}
+        </button>
       </div>
     </div>
   );

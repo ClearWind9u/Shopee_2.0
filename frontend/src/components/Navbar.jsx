@@ -5,9 +5,11 @@ import { FaSearch, FaShoppingCart } from "react-icons/fa";
 const Navbar = ({ user, setUser }) => {
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
+    window.location.reload();
   };
-
+  
   const avatarSrc = user?.avatar && user.avatar.trim() !== "" ? user.avatar : "/default-avatar.jpg";
 
   return (

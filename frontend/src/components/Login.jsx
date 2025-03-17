@@ -16,7 +16,7 @@ const Login = ({ setUser }) => {
     try {
       const userData = await login(form.email, form.password, form.role);
       localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);  // Cập nhật trạng thái user
+      setUser(userData);
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -60,6 +60,5 @@ const Login = ({ setUser }) => {
     </div>
   );
 };
-
 
 export default Login;
