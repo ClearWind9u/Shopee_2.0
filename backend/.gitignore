@@ -9,8 +9,6 @@ dist/
 .vscode/
 .idea/
 .DS_Store
-config/config.php 
-config/dotenv.php
 
 # =======================
 # 2. Bỏ qua các file môi trường & config nhạy cảm
