@@ -1,10 +1,10 @@
 # Shopee 2.0
 
-Shopee 2.0 là một hệ thống quản lý cửa hàng trực tuyến mô phỏng giao diện và chức năng của Shopee, được phát triển bằng **React.js** cho frontend và **Node.js + MySQL** cho backend.
+Shopee 2.0 là một hệ thống quản lý cửa hàng trực tuyến mô phỏng giao diện và chức năng của Shopee, được phát triển bằng **React.js** cho frontend và **PHP + MySQL** cho backend.
 
 ## 🚀 Công nghệ sử dụng
 - **Frontend**: React.js, React Router, Tailwind CSS, Mazer UI
-- **Backend**: Node.js, Express.js, MySQL
+- **Backend**: PHP, MySQL
 - **Thư viện hỗ trợ**: Axios, React Icons
 
 ## 📂 Cấu trúc thư mục
@@ -27,8 +27,7 @@ npm run dev  # Chạy server frontend
 ### 2️⃣ Chạy backend
 ```bash
 cd backend  # Di chuyển vào thư mục backend
-npm install  # Cài đặt dependencies
-npm start    # Chạy server backend
+php -S localhost:8000 #chạy trên terminal
 ```
 
 ## 🔥 Các tính năng chính
@@ -40,8 +39,8 @@ npm start    # Chạy server backend
 Dưới đây là tài khoản mẫu để bạn thử nghiệm tính năng đăng nhập:
 
 | Vai trò   | Email          | Mật khẩu |
-|-----------|---------------|----------|
-| Người mua | test@gmail.com | 123      |
+|-----------|----------------|----------|
+|   buyer   | test@gmail.com |   123    |
 
 Bạn có thể sử dụng tài khoản này để đăng nhập và kiểm tra hệ thống. 🚀
 
