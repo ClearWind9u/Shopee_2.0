@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
-const Home = ({ user }) => {
+const Home = () => {
+  const { user, token } = useContext(UserContext);
   return (
     <div className="container mt-4">
       {/* Banner Shopee */}

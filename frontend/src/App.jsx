@@ -1,45 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Home from "./components/Home";
-import Profile from "./components/Profile";
+import React, { useContext } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import ChatWidget from "./components/ChatWidget";
+import Footer from "./components/Footer";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import Navbar from "./components/Navbar";
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import Profile from "./components/Profile";
+import RefundPolicy from "./components/RefundPolicy";
+import Register from "./components/Register";
 import Regulations from "./components/Regulations";
 import ShippingPolicy from "./components/ShippingPolicy";
-import RefundPolicy from "./components/RefundPolicy";
-import { getCurrentUser } from "./services/authService";
+import { UserContext, UserProvider } from "./context/UserContext";
 
-function App() {
-  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const storedUser = getCurrentUser();
-    console.log("User from localStorage in App.js:", storedUser);
-    if (storedUser) {
-      setUser(storedUser);
-    }
-  }, []);
+function AppContent() {
+  const { user } = useContext(UserContext);
 
   return (
     <Router>
-      <Navbar user={user} setUser={setUser} />
+      {user && <Navbar />}
       <Routes>
-        <Route path="/" element={<Home user={user} />} />
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/register" element={<Register setUser={setUser} />} />
-        <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
+        <Route path="/" element={user ? <Home /> : <Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/regulations" element={<Regulations />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/return-refund" element={<RefundPolicy />} />
       </Routes>
-      <Footer />
+      {user && <Footer />}
       <ChatWidget />
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
   );
 }
 

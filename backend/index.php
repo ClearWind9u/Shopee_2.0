@@ -19,9 +19,9 @@ if ($method === "OPTIONS") {
     exit();
 }
 
-// Kiểm tra route có bắt đầu bằng "/api/"
-if (strpos($request_uri, '/api/') === 0) {
-    $route = str_replace('/api', '', $request_uri); // Loại bỏ tiền tố "/api"
+// Kiểm tra route có bắt đầu bằng "/user/"
+if (strpos($request_uri, '/user/') === 0) {
+    $route = str_replace('/user', '', $request_uri); // Loại bỏ tiền tố "/api"
     handleUserRoutes($route, $method); // Gọi hàm xử lý từ userRoutes.php
 } else {
     http_response_code(404);

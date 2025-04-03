@@ -30,7 +30,7 @@ try {
     // Thiết lập chế độ báo lỗi cho PDO
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    echo "✅ Kết nối thành công!";
+    // echo "✅ Kết nối thành công!";
 } catch (PDOException $e) {
     die("❌ Kết nối thất bại: " . $e->getMessage());
 }

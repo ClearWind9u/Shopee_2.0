@@ -49,25 +49,31 @@ class UserController
 
             // Kiểm tra email và mật khẩu
             if (!$user || !password_verify($password, $user['password'])) {
-                return json_encode([  // Trả về kết quả JSON trực tiếp
+                http_response_code(401); // 401 Unauthorized
+                echo json_encode([
                     "error" => "Sai email hoặc mật khẩu",
                     "roleClient" => $role,
                     "roleDB" => $user ? $user['role'] : "Không tồn tại"
                 ]);
+                exit();
             }
 
+            // Kiểm tra vai trò
             if ($user['role'] !== $role) {
-                return json_encode([  // Trả về kết quả JSON trực tiếp
+                http_response_code(403); // 403 Forbidden
+                echo json_encode([
                     "error" => "Sai vai trò",
                     "roleClient" => $role,
                     "roleDB" => $user['role']
                 ]);
+                exit();
             }
 
             // Tạo token JWT
             $token = $this->generateToken($user['id'], $user['role']);
 
-            return json_encode([  // Trả về kết quả JSON trực tiếp
+            http_response_code(200); // 200 OK (Đăng nhập thành công)
+            echo json_encode([
                 "message" => "Đăng nhập thành công",
                 "token" => $token,
                 "user" => [
@@ -78,10 +84,14 @@ class UserController
                     "avatar" => $user['avatar']
                 ]
             ]);
+            exit();
         } catch (Exception $e) {
-            return json_encode(["error" => "Lỗi server"]);
+            http_response_code(500); // 500 Internal Server Error
+            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
+            exit();
         }
     }
+
 
     // Lấy hồ sơ người dùng
     public function getProfile($req)

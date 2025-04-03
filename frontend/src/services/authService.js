@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = "http://localhost:8000/user";
 
 // Đăng nhập
-export const login = async (email, password, role) => {
+export const loginService = async (email, password, role) => {
   try {
     const response = await axios.post(`${API_URL}/login`, { email, password, role });
 
@@ -17,7 +17,7 @@ export const login = async (email, password, role) => {
 
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.error || "Đăng nhập thất bại");
+    throw new Error(error.response?.data?.error || "Đăng nhập thất bại!");
   }
 };
 
@@ -29,15 +29,5 @@ export const register = async (username, email, password, role) => {
   } catch (error) {
     throw new Error(error.response?.data?.message || "Đăng ký thất bại");
   }
-};
-
-// Đăng xuất
-export const logout = () => {
-  localStorage.removeItem("user");
-};
-
-export const getCurrentUser = () => {
-  const storedData = JSON.parse(localStorage.getItem("user"));
-  return storedData?.user || null;  // Trả về storedData.user thay vì toàn bộ object
 };
 

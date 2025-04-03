@@ -10,8 +10,7 @@ const Profile = ({ user, setUser }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log("User received in Profile:", user);
-    if (user) {
+    if (user) { 
       setUsername(user.username);
       setEmail(user.email);
       setAvatar(user.avatar ? user.avatar : "/default-avatar.jpg");
