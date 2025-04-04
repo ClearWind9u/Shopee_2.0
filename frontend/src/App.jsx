@@ -11,6 +11,7 @@ import RefundPolicy from "./components/RefundPolicy";
 import Register from "./components/Register";
 import Regulations from "./components/Regulations";
 import ShippingPolicy from "./components/ShippingPolicy";
+import Post from "./components/Post";
 import { UserContext, UserProvider } from "./context/UserContext";
 
 
