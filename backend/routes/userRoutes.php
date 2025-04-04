@@ -26,9 +26,14 @@ function handleUserRoutes($route, $method) {
     }        
 
     elseif ($method == 'POST' && $route == '/update-profile') {
+        $headers = getallheaders();
+        $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
+        
         $data = json_decode(file_get_contents("php://input"), true);
+        $data["token"] = $token;
+    
         echo json_encode($controller->updateProfile($data));
-    }
+    }    
 
     else {
         http_response_code(404);

@@ -117,34 +117,75 @@ class UserController
             exit();
         } catch (Exception $e) {
             http_response_code(500);
-            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
-            exit();
+            return json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
         }
     }
 
     // Cập nhật hồ sơ người dùng
     public function updateProfile($req)
     {
-        try {
-            $token = $req['token'];
-            $decoded = $this->verifyToken($token);
+        header("Content-Type: application/json");
 
-            if (!$decoded) {
-                return json_encode(["error" => "Token không hợp lệ"]);
+        try {
+            // Lấy token từ Header Authorization
+            $headers = getallheaders();
+            $authHeader = $headers['Authorization'] ?? "";
+            $token = str_replace("Bearer ", "", $authHeader); // Loại bỏ tiền tố "Bearer "
+
+            if (!$token) {
+                http_response_code(401);
+                echo json_encode(["error" => "Thiếu token xác thực"]);
+                exit();
             }
 
+            // Xác thực token
+            $decoded = $this->verifyToken($token);
+            if (!$decoded) {
+                http_response_code(401);
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
+            }
+
+            // Lấy thông tin người dùng từ token
             $userId = $decoded['userId'];
-            $username = $req['username'];
-            $avatarPath = isset($req['avatar']) ? '/uploads/' . $req['avatar'] : null;
+            $user = $this->findUserById($userId);
+            if (!$user) {
+                http_response_code(404);
+                echo json_encode(["error" => "Người dùng không tồn tại"]);
+                exit();
+            }
 
-            $updatedUser = $this->updateUserProfile($userId, $username, $avatarPath);
+            // Lấy dữ liệu từ request body (JSON)
+            $jsonData = json_decode(file_get_contents("php://input"), true);
+            $username = trim($jsonData['username'] ?? "");
+            $avatarUrl = $jsonData['avatar'] ?? null;
 
-            return json_encode([
+            // Kiểm tra dữ liệu hợp lệ
+            if (empty($username)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Tên đăng nhập không được để trống"]);
+                exit();
+            }
+            if (strlen($username) > 50) {
+                http_response_code(400);
+                echo json_encode(["error" => "Tên đăng nhập quá dài"]);
+                exit();
+            }
+
+            // Cập nhật người dùng
+            $updatedUser = $this->updateUserProfile($userId, $username, $avatarUrl);
+
+            // Trả về phản hồi thành công
+            http_response_code(200);
+            echo json_encode([
                 "message" => "Cập nhật thành công",
                 "user" => $updatedUser
             ]);
+            exit();
         } catch (Exception $e) {
-            return json_encode(["error" => "Lỗi cập nhật hồ sơ"]);
+            http_response_code(500);
+            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
+            exit();
         }
     }
 

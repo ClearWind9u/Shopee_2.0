@@ -9,12 +9,25 @@ const UserProvider = ({ children }) => {
     // Quan trọng: Khôi phục user từ localStorage khi tải lại trang
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+
+        try {
+            // Nếu là null, "undefined", hoặc không phải JSON -> bỏ qua
+            if (storedUser && storedUser !== "undefined") {
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+            } else {
+                setUser(null);
+            }
+        } catch (error) {
+            console.error("Lỗi khi parse user:", error);
+            setUser(null);
         }
+
         const storedToken = localStorage.getItem("token");
-        if (storedToken) {
-            setToken(storedToken);
+        if (storedToken && storedToken !== "undefined") {
+            setToken(storedToken.replace(/^"|"$/g, ''));
+        } else {
+            setToken(null);
         }
     }, []);
 
