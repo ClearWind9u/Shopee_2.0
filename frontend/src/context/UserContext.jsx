@@ -26,7 +26,7 @@ const UserProvider = ({ children }) => {
 
         const storedToken = localStorage.getItem("token");
         if (storedToken && storedToken !== "undefined") {
-            setToken(storedToken.replace(/^"|"$/g, '')); // bỏ dấu nháy nếu bị double-quoted
+            setToken(storedToken.replace(/^"|"$/g, ''));
         } else {
             setToken(null);
         }
