@@ -4,7 +4,6 @@ import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { UserContext } from "../context/UserContext";
 
 const Navbar = () => {
-  
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const handleLogout = () => {

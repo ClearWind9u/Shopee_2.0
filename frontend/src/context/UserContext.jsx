@@ -6,7 +6,7 @@ const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
 
-    // ⭐ Quan trọng: Khôi phục user từ localStorage khi tải lại trang
+    // Quan trọng: Khôi phục user từ localStorage khi tải lại trang
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../context/UserContext";
 import axios from "axios";
 
-const Profile = ({ user, setUser }) => {
+const Profile = () => {
+  const { user, setUser, token } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [avatar, setAvatar] = useState("/default-avatar.jpg");
@@ -9,13 +11,27 @@ const Profile = ({ user, setUser }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Lấy thông tin user khi component mount
   useEffect(() => {
-    if (user) { 
-      setUsername(user.username);
-      setEmail(user.email);
-      setAvatar(user.avatar ? user.avatar : "/default-avatar.jpg");
+    if (user?.id) {
+      fetchUserProfile(user.id);
     }
-  }, [user]);
+  }, [user?.id]);
+
+  const fetchUserProfile = async () => {
+    try {
+        const response = await axios.get("http://localhost:8000/user/profile", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const userData = response.data;
+        setUsername(userData.username);
+        setEmail(userData.email);
+        setAvatar(userData.avatar || "/default-avatar.jpg");
+    } catch (err) {
+        setError("Không thể lấy thông tin hồ sơ");
+    }
+};
 
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
@@ -30,18 +46,24 @@ const Profile = ({ user, setUser }) => {
   };
 
   const handleUpdateProfile = async () => {
+    if (!user?.id) {
+      setError("Không tìm thấy ID người dùng");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
       const formData = new FormData();
+      formData.append("userId", user.id); // Sử dụng user.id
       formData.append("username", username);
       if (avatarFile) {
         formData.append("avatar", avatarFile);
       }
 
       const token = localStorage.getItem("token");
-      const response = await axios.put(`http://localhost:5000/api/users/profile`, formData, {
+      const response = await axios.get(`http://localhost:8000/user/update-profile`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

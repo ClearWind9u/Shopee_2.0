@@ -15,14 +15,21 @@ function handleUserRoutes($route, $method) {
     } 
     
     elseif ($method == 'GET' && $route == '/profile') {
-        session_start();
-        if (isset($_SESSION['userId'])) {
-            echo json_encode($controller->getProfile($_SESSION['userId']));
-        } else {
-            echo json_encode(["error" => "Chưa đăng nhập"]);
-        }
-    } 
+        $headers = getallheaders(); // Lấy toàn bộ header
+        $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
     
+        if (!$token) {
+            echo json_encode(["error" => "Thiếu token"]);
+            exit;
+        }
+        echo json_encode($controller->getProfile(["token" => $token]));
+    }        
+
+    elseif ($method == 'POST' && $route == '/update-profile') {
+        $data = json_decode(file_get_contents("php://input"), true);
+        echo json_encode($controller->updateProfile($data));
+    }
+
     else {
         http_response_code(404);
         echo json_encode(["error" => "Route không tồn tại"]);

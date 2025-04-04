@@ -92,28 +92,33 @@ class UserController
         }
     }
 
-
     // Lấy hồ sơ người dùng
     public function getProfile($req)
     {
         try {
             $token = $req['token'];
             $decoded = $this->verifyToken($token);
-
-            if (!$decoded) {
-                return json_encode(["error" => "Token không hợp lệ"]);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401); // Unauthorized
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
             }
 
             $user = $this->findUserById($decoded['userId']);
             if (!$user) {
-                return json_encode(["error" => "Người dùng không tồn tại"]);
+                http_response_code(404);
+                echo json_encode(["error" => "Người dùng không tồn tại"]);
+                exit();
             }
 
-            // Ẩn mật khẩu khi trả về
             unset($user['password']);
-            return json_encode($user);
+            http_response_code(200);
+            echo json_encode($user);
+            exit();
         } catch (Exception $e) {
-            return json_encode(["error" => "Lỗi server"]);
+            http_response_code(500);
+            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
+            exit();
         }
     }
 
@@ -146,52 +151,54 @@ class UserController
     // Tạo JWT
     private function generateToken($userId, $role)
     {
-        $jwtSecret = getenv('JWT_SECRET') ?: 'default_secret_key';
-
-        $header = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
-        $payload = base64_encode(json_encode([
+        // Thông tin người dùng cần lưu vào token
+        $payload = json_encode([
             "userId" => $userId,
             "role" => $role,
-            "iat" => time(),
-            "exp" => time() + 3600  // Token hết hạn sau 1 giờ
-        ]));
+            "iat" => time(), // Thời gian tạo
+            "exp" => time() + 3600  // Hết hạn sau 1 giờ
+        ]);
 
-        $signature = hash_hmac('sha256', "$header.$payload", $jwtSecret, true);
-        $signature = base64_encode($signature);
+        // Mã hóa thông tin người dùng thành Base64
+        $token = base64_encode($payload);
 
-        return "$header.$payload.$signature";
+        return $token; // Trả về token đã mã hóa
     }
 
     // Kiểm tra tính hợp lệ của JWT
     public function verifyToken($token)
     {
-        $parts = explode('.', $token);
-        if (count($parts) !== 3) {
-            return false; // Không có đủ ba phần
+        // Giải mã token
+        $decodedPayload = base64_decode($token);
+
+        // Chuyển đổi dữ liệu JSON từ chuỗi giải mã
+        $payloadDecoded = json_decode($decodedPayload, true);
+
+        // Kiểm tra nếu giải mã không thành công
+        if ($payloadDecoded === null) {
+            return false; // Không thể giải mã token
         }
 
-        list($header, $payload, $signature) = $parts;
-
-        // Giải mã header và payload
-        $headerDecoded = json_decode(base64_decode($header), true);
-        $payloadDecoded = json_decode(base64_decode($payload), true);
-
-        // Kiểm tra hết hạn
-        if ($payloadDecoded['exp'] < time()) {
+        // Kiểm tra hết hạn (exp)
+        if (isset($payloadDecoded['exp']) && $payloadDecoded['exp'] < time()) {
             return false; // Token đã hết hạn
         }
 
-        // Kiểm tra chữ ký
-        $validSignature = hash_hmac('sha256', "$header.$payload", getenv('JWT_SECRET'), true);
-        $validSignature = base64_encode($validSignature);
-
-        // Nếu chữ ký hợp lệ, trả về payload decoded
-        if ($signature === $validSignature) {
-            return $payloadDecoded; // Trả về decoded payload
-        }
-
-        return false; // Nếu không hợp lệ
+        return $payloadDecoded; // Trả về dữ liệu trong token
     }
+
+    // Hàm giải mã Base64Url
+    private function base64UrlDecode($base64Url)
+    {
+        // Thay đổi các ký tự Base64 chuẩn thành Base64Url
+        $base64 = str_replace(['-', '_'], ['+', '/'], $base64Url);
+
+        // Đảm bảo chiều dài của base64 đủ để decode
+        $base64 .= str_repeat('=', 4 - (strlen($base64) % 4));
+
+        return base64_decode($base64);
+    }
+
 
     // Tìm người dùng theo email
     private function findUserByEmail($email)
