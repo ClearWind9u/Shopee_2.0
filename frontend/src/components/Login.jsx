@@ -46,7 +46,7 @@ const Login = () => {
       <div className="row w-75 shadow-lg rounded-3 overflow-hidden" style={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}>
         <div className="col-md-6 p-5 d-flex flex-column justify-content-center align-items-center">
           <img src="/logo.png" alt="Logo" className="img-fluid mb-4" style={{ maxWidth: "70%" }} />
-          <h5 className="text-center text-muted">Đăng nhập để tiếp tục sử dụng hệ thống của chúng tôi.</h5>
+          <h5 className="text-center text-muted">Đăng nhập để tiếp tục sử dụng   hệ thống chúng tôi.</h5>
         </div>
         <div className="col-md-6 p-4">
           <h2 className="text-center text-danger mb-4" style={{

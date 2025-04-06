@@ -60,8 +60,9 @@ const Profile = () => {
     if (file) {
       formData.append("avatar", file); // Thêm ảnh vào formData
     }
-    console.log("formData", formData); // Kiểm tra nội dung của formData
-    console.log("file", file); // Kiểm tra file đã chọn
+    else {
+      formData.append("avatar", avatar); // Nếu không có file mới, giữ nguyên ảnh cũ
+    }
 
     try {
       await axios.post(`${API_BASE_URL}/user/update-profile`, formData, {
@@ -92,6 +93,11 @@ const Profile = () => {
     }
   };
 
+  const handleRemoveAvatar = () => {
+    setFile(null);
+    setAvatar("/default-avatar.jpg");
+  };  
+
   return (
     <div className="container mt-5 mb-5">
       <h2 className="mb-4 text-center">Hồ sơ cá nhân</h2>
@@ -113,8 +119,14 @@ const Profile = () => {
                 <input
                   type="file"
                   className="form-control mt-3"
-                  onChange={handleFileChange} // Gọi handleFileChange khi chọn file
+                  onChange={handleFileChange}
                 />
+                <button
+                  className="btn btn-outline-danger btn-sm mt-2"
+                  onClick={handleRemoveAvatar}
+                >
+                  Xoá ảnh đại diện
+                </button>
               </>
             )}
           </div>

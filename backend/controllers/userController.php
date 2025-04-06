@@ -172,7 +172,10 @@ class UserController
 
             // Kiểm tra nếu có ảnh tải lên
             $avatarPath = null;
-            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+            if (isset($_POST['avatar']) && strpos($_POST['avatar'], '/uploads/avatars') === 0) {
+                $avatarPath = $_POST['avatar'];
+            }
+            else if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
                 // Kiểm tra file có phải là ảnh hay không
                 $fileTmpPath = $_FILES['avatar']['tmp_name'];
                 $fileName = $_FILES['avatar']['name'];

@@ -12,6 +12,7 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [file, setFile] = useState(null); // State để lưu trữ ảnh chọn từ file input
 
   const getRoleName = (role) => {
     switch (role) {
@@ -36,7 +37,7 @@ const Profile = () => {
   const fetchUserProfile = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/user/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const userData = response.data;
@@ -53,16 +54,21 @@ const Profile = () => {
     setLoading(true);
     setError("");
 
+    const formData = new FormData();
+    formData.append("userId", user.id);
+    formData.append("username", username);
+    if (file) {
+      formData.append("avatar", file); // Thêm ảnh vào formData
+    }
+    else {
+      formData.append("avatar", avatar); // Nếu không có file mới, giữ nguyên ảnh cũ
+    }
+
     try {
-      const updatedUser = {
-        userId: user.id,
-        username,
-        avatar,
-      };
-      await axios.post(`${API_BASE_URL}/user/update-profile`, updatedUser, {
+      await axios.post(`${API_BASE_URL}/user/update-profile`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data", // Quan trọng để gửi file
         },
       });
 
@@ -79,6 +85,19 @@ const Profile = () => {
     setEditMode(!editMode);
   };
 
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setAvatar(URL.createObjectURL(selectedFile)); // Hiển thị ảnh đã chọn ngay trên giao diện
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setFile(null);
+    setAvatar("/default-avatar.jpg");
+  };  
+
   return (
     <div className="container mt-5 mb-5">
       <h2 className="mb-4 text-center">Hồ sơ cá nhân</h2>
@@ -89,20 +108,26 @@ const Profile = () => {
           {/* Avatar */}
           <div className="col-md-4 text-center">
             <img
-              src={avatar || "/default-avatar.jpg"}
+              src={avatar && avatar.startsWith("/uploads") ? API_BASE_URL + avatar : avatar || "/default-avatar.jpg"}
               alt="Avatar"
               className="rounded-circle border border-2 shadow"
               width="180"
               height="180"
             />
             {editMode && (
-              <input
-                type="text"
-                className="form-control mt-3"
-                placeholder="Nhập URL avatar"
-                value={avatar}
-                onChange={(e) => setAvatar(e.target.value)}
-              />
+              <>
+                <input
+                  type="file"
+                  className="form-control mt-3"
+                  onChange={handleFileChange}
+                />
+                <button
+                  className="btn btn-outline-danger btn-sm mt-2"
+                  onClick={handleRemoveAvatar}
+                >
+                  Xoá ảnh đại diện
+                </button>
+              </>
             )}
           </div>
 
