@@ -1,8 +1,6 @@
 services:
   - type: web
     name: shopee2-backend
-    env: php
+    env: docker
     plan: free
-    buildCommand: ""
-    startCommand: ""
     rootDir: backend
