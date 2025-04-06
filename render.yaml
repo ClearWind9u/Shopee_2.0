@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: shopee2-backend
-    env: docker
-    plan: free
-    rootDir: backend
