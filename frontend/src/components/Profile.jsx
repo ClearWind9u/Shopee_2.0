@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 const Profile = () => {
   const { user, setUser, token } = useContext(UserContext);
@@ -34,7 +35,7 @@ const Profile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/user/profile", {
+      const response = await axios.get(`${API_BASE_URL}/user/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -58,7 +59,7 @@ const Profile = () => {
         username,
         avatar,
       };
-      await axios.post("http://localhost:8000/user/update-profile", updatedUser, {
+      await axios.post(`${API_BASE_URL}/user/update-profile`, updatedUser, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -79,84 +80,75 @@ const Profile = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Hồ sơ cá nhân</h2>
+    <div className="container mt-5 mb-5">
+      <h2 className="mb-4 text-center">Hồ sơ cá nhân</h2>
       {error && <p className="alert alert-danger">{error}</p>}
 
-      <div className="card p-3 mb-4">
-        <div className="text-center">
-          <img
-            src={avatar || "/default-avatar.jpg"}
-            alt="Avatar"
-            className="rounded-circle border border-secondary"
-            width="150"
-            height="150"
-          />
-        </div>
-
-        {editMode && (
-          <div className="mt-3">
-            <label className="form-label">URL Avatar:</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Nhập URL avatar"
-              value={avatar}
-              onChange={(e) => setAvatar(e.target.value)}
+      <div className="card shadow-lg p-4 rounded-4">
+        <div className="row g-4 align-items-center">
+          {/* Avatar */}
+          <div className="col-md-4 text-center">
+            <img
+              src={avatar || "/default-avatar.jpg"}
+              alt="Avatar"
+              className="rounded-circle border border-2 shadow"
+              width="180"
+              height="180"
             />
+            {editMode && (
+              <input
+                type="text"
+                className="form-control mt-3"
+                placeholder="Nhập URL avatar"
+                value={avatar}
+                onChange={(e) => setAvatar(e.target.value)}
+              />
+            )}
           </div>
-        )}
 
-        <div className="mt-3">
-          <label className="form-label">Tên đăng nhập:</label>
-          <input
-            type="text"
-            className="form-control"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={!editMode}
-          />
-        </div>
+          {/* Thông tin */}
+          <div className="col-md-8">
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Tên đăng nhập:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={!editMode}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Email:</label>
+              <input type="email" className="form-control" value={email} disabled />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Vai trò:</label>
+              <input type="text" className="form-control" value={role} disabled />
+            </div>
 
-        <div className="mt-3">
-          <label className="form-label">Email:</label>
-          <input
-            type="email"
-            className="form-control"
-            value={email}
-            disabled
-          />
-        </div>
-
-        <div className="mt-3">
-          <label className="form-label">Vai trò:</label>
-          <input
-            type="text"
-            className="form-control"
-            value={role}
-            disabled
-          />
-        </div>
-
-        <div className="mt-3 text-center">
-          {editMode ? (
-            <>
-              <button
-                className="btn btn-success"
-                onClick={handleUpdateProfile}
-                disabled={loading}
-              >
-                {loading ? "Đang cập nhật..." : "Lưu"}
-              </button>
-              <button className="btn btn-secondary ms-2" onClick={toggleEditMode}>
-                Hủy
-              </button>
-            </>
-          ) : (
-            <button className="btn btn-primary" onClick={toggleEditMode}>
-              Sửa
-            </button>
-          )}
+            {/* Nút thao tác */}
+            <div className="text-end">
+              {editMode ? (
+                <>
+                  <button
+                    className="btn btn-success me-2"
+                    onClick={handleUpdateProfile}
+                    disabled={loading}
+                  >
+                    {loading ? "Đang cập nhật..." : "Lưu thay đổi"}
+                  </button>
+                  <button className="btn btn-secondary" onClick={toggleEditMode}>
+                    Hủy
+                  </button>
+                </>
+              ) : (
+                <button className="btn btn-primary" onClick={toggleEditMode}>
+                  Chỉnh sửa hồ sơ
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
