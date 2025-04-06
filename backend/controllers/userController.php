@@ -155,10 +155,8 @@ class UserController
                 exit();
             }
 
-            // Lấy dữ liệu từ request body (JSON)
-            $jsonData = json_decode(file_get_contents("php://input"), true);
-            $username = trim($jsonData['username'] ?? "");
-            $avatarUrl = $jsonData['avatar'] ?? null;
+            // Lấy dữ liệu từ request body (POST dữ liệu)
+            $username = trim($_POST['username'] ?? "");
 
             // Kiểm tra dữ liệu hợp lệ
             if (empty($username)) {
@@ -172,15 +170,57 @@ class UserController
                 exit();
             }
 
-            // Cập nhật người dùng
-            $updatedUser = $this->updateUserProfile($userId, $username, $avatarUrl);
+            // Kiểm tra nếu có ảnh tải lên
+            $avatarPath = null;
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                // Kiểm tra file có phải là ảnh hay không
+                $fileTmpPath = $_FILES['avatar']['tmp_name'];
+                $fileName = $_FILES['avatar']['name'];
+                $fileSize = $_FILES['avatar']['size'];
+                $fileType = mime_content_type($fileTmpPath);
+
+                // Kiểm tra loại file (chỉ cho phép ảnh)
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!in_array($fileType, $allowedTypes)) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "File không phải là ảnh hợp lệ"]);
+                    exit();
+                }
+
+                // Kiểm tra kích thước file
+                if ($fileSize > 5 * 1024 * 1024) { // 5MB max size
+                    http_response_code(400);
+                    echo json_encode(["error" => "Ảnh quá lớn, tối đa 5MB"]);
+                    exit();
+                }
+
+                // Tạo tên file duy nhất để tránh trùng lặp
+                // $newFileName = uniqid("avatar_", true) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
+                $newFileName = preg_replace("/[^a-zA-Z0-9\.\-_]/", "_", $fileName);
+
+                // Đường dẫn lưu file trên server
+                $uploadDir = __DIR__ . '/../uploads/avatars/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true); // Tạo thư mục nếu chưa có
+                }
+
+                // Di chuyển file vào thư mục lưu trữ
+                $destinationPath = $uploadDir . $newFileName;
+                if (move_uploaded_file($fileTmpPath, $destinationPath)) {
+                    $avatarPath = "/uploads/avatars/" . $newFileName;
+                } else {
+                    http_response_code(500);
+                    echo json_encode(["error" => "Lỗi khi tải lên ảnh"]);
+                    exit();
+                }
+            }
+
+            // Cập nhật thông tin người dùng
+            $updatedUser = $this->updateUserProfile($userId, $username, $avatarPath);
 
             // Trả về phản hồi thành công
             http_response_code(200);
-            echo json_encode([
-                "message" => "Cập nhật thành công",
-                "user" => $updatedUser
-            ]);
+            echo json_encode(["message" => "Cập nhật thành công", "user" => $updatedUser]);
             exit();
         } catch (Exception $e) {
             http_response_code(500);

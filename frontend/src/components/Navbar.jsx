@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaNewspaper, FaBox, FaQuestionCircle, FaHome } from "react-icons/fa";
 import { UserContext } from "../context/UserContext";
+import API_BASE_URL from "../config";
 
 const Navbar = () => {
   const { user, logout } = useContext(UserContext);
@@ -12,7 +13,7 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const avatarSrc = user?.avatar && user.avatar.trim() !== "" ? user.avatar : "/default-avatar.jpg";
+  const avatarSrc = user?.avatar ? API_BASE_URL + user.avatar : "/default-avatar.jpg";
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light shadow-sm" style={{ backgroundColor: "#EE4D2D" }}>
@@ -28,8 +29,8 @@ const Navbar = () => {
           <Link className="nav-link text-white fw-semibold d-flex align-items-center gap-2" to="/posts">
             <FaNewspaper size={20} /> Bài viết
           </Link>
-          <Link className="nav-link text-white fw-semibold d-flex align-items-center gap-2" to="/products">
-            <FaBox size={20} /> Sản phẩm
+          <Link className="nav-link text-white fw-semibold d-flex align-items-center gap-2" to="/order-history">
+            <FaBox size={20} /> Lịch sử đặt hàng
           </Link>
           <Link className="nav-link text-white fw-semibold d-flex align-items-center gap-2" to="/qa">
             <FaQuestionCircle size={20} /> Hỏi đáp
