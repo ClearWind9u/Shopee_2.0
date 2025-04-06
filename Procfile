@@ -1,1 +1,1 @@
-web: php -S 0.0.0.0:5000 -t backend/
+web: php -S 0.0.0.0:$PORT -t backend/
