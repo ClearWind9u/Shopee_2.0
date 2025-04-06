@@ -20,4 +20,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /htdocs/  # Đường dẫn thư mục chứa PHP trên host
-          local-dir: ./backend  # Chỉ deploy thư mục backend
+          local-dir: ./backend/  # Chỉ deploy thư mục backend
