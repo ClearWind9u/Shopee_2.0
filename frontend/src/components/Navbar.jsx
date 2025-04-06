@@ -24,8 +24,8 @@ const Navbar = () => {
 
         <div className="navbar-nav mx-auto d-flex gap-4">
           <Link className="nav-link text-white fw-semibold d-flex align-items-center gap-2" to="/">
-              <FaHome size={20} /> Trang chủ
-            </Link>
+            <FaHome size={20} /> Trang chủ
+          </Link>
           <Link className="nav-link text-white fw-semibold d-flex align-items-center gap-2" to="/posts">
             <FaNewspaper size={20} /> Bài viết
           </Link>
@@ -64,7 +64,19 @@ const Navbar = () => {
               <span className="text-dark">{user.role}</span>
             </button>
             <ul className="dropdown-menu" aria-labelledby="userMenu">
-              <li><Link className="dropdown-item" to="/profile">Hồ sơ</Link></li>
+              <li><Link
+                className="dropdown-item"
+                to={
+                  user.role === "buyer"
+                    ? "/buyer/profile"
+                    : user.role === "manager"
+                      ? "/manager/profile"
+                      : "/"
+                }
+              >
+                Hồ sơ
+              </Link>
+              </li>
               <li><button className="dropdown-item" onClick={handleLogout}>Đăng xuất</button></li>
             </ul>
           </div>

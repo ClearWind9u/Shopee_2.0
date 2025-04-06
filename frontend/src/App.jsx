@@ -22,7 +22,8 @@ function AppContent() {
     if (user && user.role === role) {
       return element;
     }
-    return <Navigate to="/" />;
+    // return <Navigate to="/" />;
+    return element;
   };
 
   return (
@@ -33,15 +34,15 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* <Route
-          path="/profile"
+          path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
         /> */}
         <Route
-          path="/profile"
+          path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
         />
         <Route
-          path="/profile"
+          path="/manager/profile"
           element={<ProtectedRoute role="manager" element={<ProfileManager />} />}
         />
 
