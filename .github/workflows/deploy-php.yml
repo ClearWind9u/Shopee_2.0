@@ -1,4 +1,4 @@
-name: 🚀 Deploy PHP to InfinityFree via FTP
+name: Deploy PHP to InfinityFree
 
 on:
   push:
