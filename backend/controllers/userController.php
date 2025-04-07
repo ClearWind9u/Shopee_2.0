@@ -11,6 +11,8 @@ class UserController
             $email = $req['email'];
             $password = $req['password'];
             $role = $req['role'];
+            $birthdate = $req['birthdate']; // Ngày tháng năm sinh
+            $address = $req['address']; // Địa chỉ
 
             // Kiểm tra email đã tồn tại chưa
             $existingUser = $this->findUserByEmail($email);
@@ -22,18 +24,20 @@ class UserController
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
             // Tạo người dùng mới
-            $userId = $this->createUser($username, $email, $hashedPassword, $role);
+            $userId = $this->createUser($username, $email, $hashedPassword, $role, $birthdate, $address);
 
             // Tạo token JWT
             $token = $this->generateToken($userId, $role);
 
-            return json_encode([
+            echo json_encode([
                 "message" => "Đăng ký thành công",
                 "user" => ["id" => $userId, "username" => $username, "email" => $email, "role" => $role],
                 "token" => $token
             ]);
+            exit();
         } catch (Exception $e) {
-            return json_encode(["error" => "Lỗi server"]);
+            echo json_encode(["error" => "Lỗi server"]);
+            exit();
         }
     }
 
@@ -174,8 +178,7 @@ class UserController
             $avatarPath = null;
             if (isset($_POST['avatar']) && strpos($_POST['avatar'], '/uploads/avatars') === 0) {
                 $avatarPath = $_POST['avatar'];
-            }
-            else if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+            } else if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
                 // Kiểm tra file có phải là ảnh hay không
                 $fileTmpPath = $_FILES['avatar']['tmp_name'];
                 $fileName = $_FILES['avatar']['name'];
@@ -303,11 +306,12 @@ class UserController
     }
 
     // Tạo người dùng mới
-    private function createUser($username, $email, $password, $role)
+    private function createUser($username, $email, $password, $role, $birthdate, $address)
     {
         global $pdo;
-        $stmt = $pdo->prepare("INSERT INTO users (username, email, password, role, created_at) VALUES (?, ?, ?, ?, NOW())");
-        $stmt->execute([$username, $email, $password, $role]);
+        $stmt = $pdo->prepare("INSERT INTO users (username, email, password, role, birthdate, address, details, created_at) 
+                           VALUES (?, ?, ?, ?, ?, ?, NULL, NOW())");
+        $stmt->execute([$username, $email, $password, $role, $birthdate, $address]);
         return $pdo->lastInsertId();
     }
 

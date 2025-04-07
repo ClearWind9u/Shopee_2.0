@@ -1,32 +1,32 @@
 <?php
-// function loadEnv($filePath) {
-//     if (!file_exists($filePath)) {
-//         die("Tệp .env không tồn tại!");
-//     }
+function loadEnv($filePath) {
+    if (!file_exists($filePath)) {
+        die("Tệp .env không tồn tại!");
+    }
 
-//     $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-//     foreach ($lines as $line) {
-//         if (strpos(trim($line), '#') === 0) continue; // Bỏ qua dòng comment
-//         list($key, $value) = explode('=', $line, 2);
-//         $_ENV[trim($key)] = trim($value);
-//     }
-// }
+    $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue; // Bỏ qua dòng comment
+        list($key, $value) = explode('=', $line, 2);
+        $_ENV[trim($key)] = trim($value);
+    }
+}
 
-// // Đọc từ đường dẫn tùy chỉnh
-// loadEnv(__DIR__ . '/../.env');
+// Đọc từ đường dẫn tùy chỉnh
+loadEnv(__DIR__ . '/../.env');
 
-// // Sử dụng biến môi trường
-// $host = $_ENV['DB_HOST'];
-// $port = $_ENV['DB_PORT'];
-// $username = $_ENV['DB_USER'];
-// $password = $_ENV['DB_PASS'];
-// $database = $_ENV['DB_NAME'];
+// Sử dụng biến môi trường
+$host = $_ENV['DB_HOST'];
+$port = $_ENV['DB_PORT'];
+$username = $_ENV['DB_USER'];
+$password = $_ENV['DB_PASS'];
+$database = $_ENV['DB_NAME'];
 
-$host = getenv('DB_HOST');
-$port = getenv('DB_PORT');
-$username = getenv('DB_USER');
-$password = getenv('DB_PASS');
-$database = getenv('DB_NAME');
+// $host = getenv('DB_HOST');
+// $port = getenv('DB_PORT');
+// $username = getenv('DB_USER');
+// $password = getenv('DB_PASS');
+// $database = getenv('DB_NAME');
 
 try {
     // Kết nối MySQL với PDO
