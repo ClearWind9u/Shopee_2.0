@@ -1,9 +1,5 @@
 <?php
-if (file_exists(realpath('/var/www/html/controllers/UserController.php'))) {
-    require_once '/var/www/html/controllers/UserController.php';
-} else {
-    echo "File không tồn tại!";
-}
+require_once __DIR__ . '/../controllers/userController.php';
 
 function handleUserRoutes($route, $method)
 {
