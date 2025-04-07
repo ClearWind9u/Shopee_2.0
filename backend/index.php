@@ -8,7 +8,7 @@ header("Content-Type: application/json");
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/middlewares/authMiddleware.php';
 require_once __DIR__ . '/routes/userRoutes.php';
-
+require_once __DIR__ . '/controllers/UserController.php';
 // Xử lý yêu cầu HTTP
 $method = $_SERVER['REQUEST_METHOD'];
 $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
