@@ -151,7 +151,7 @@ const Register = () => {
                 </select>
               </div>
               <div className="col-md-6 mb-4">
-                <label className="form-label text-muted">Ngày tháng năm sinh</label>
+                <label className="form-label text-muted">Ngày tháng năm sinh/thành lập</label>
                 <input
                   type="date"
                   name="birthdate"

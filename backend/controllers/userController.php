@@ -1,8 +1,19 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
-
+require_once __DIR__ . '/../middlewares/authMiddleware.php';
+require_once __DIR__ . '/../models/User.php';
 class UserController
 {
+    private $userModel;
+    private $authMiddleware;
+
+    public function __construct($pdo)
+    {
+        // Khởi tạo đối tượng UserModel và AuthMiddleware
+        $this->userModel = new User($pdo); // Truyền kết nối PDO vào
+        $this->authMiddleware = new AuthMiddleware();
+    }
+
     // Đăng ký
     public function register($req)
     {
@@ -11,11 +22,11 @@ class UserController
             $email = $req['email'];
             $password = $req['password'];
             $role = $req['role'];
-            $birthdate = $req['birthdate']; // Ngày tháng năm sinh
-            $address = $req['address']; // Địa chỉ
+            $birthdate = $req['birthdate'];
+            $address = $req['address'];
 
             // Kiểm tra email đã tồn tại chưa
-            $existingUser = $this->findUserByEmail($email);
+            $existingUser = $this->userModel->findUserByEmail($email);
             if ($existingUser) {
                 return json_encode(["error" => "Email đã được sử dụng"]);
             }
@@ -24,10 +35,10 @@ class UserController
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
             // Tạo người dùng mới
-            $userId = $this->createUser($username, $email, $hashedPassword, $role, $birthdate, $address);
+            $userId = $this->userModel->createUser($username, $email, $hashedPassword, $role, $birthdate, $address);
 
             // Tạo token JWT
-            $token = $this->generateToken($userId, $role);
+            $token = $this->authMiddleware->generateToken($userId, $role);
 
             echo json_encode([
                 "message" => "Đăng ký thành công",
@@ -49,7 +60,7 @@ class UserController
             $password = $req['password'];
             $role = $req['role'];
 
-            $user = $this->findUserByEmail($email);
+            $user = $this->userModel->findUserByEmail($email);
 
             // Kiểm tra email và mật khẩu
             if (!$user || !password_verify($password, $user['password'])) {
@@ -74,7 +85,7 @@ class UserController
             }
 
             // Tạo token JWT
-            $token = $this->generateToken($user['id'], $user['role']);
+            $token = $this->authMiddleware->generateToken($user['id'], $user['role']);
 
             http_response_code(200); // 200 OK (Đăng nhập thành công)
             echo json_encode([
@@ -101,14 +112,14 @@ class UserController
     {
         try {
             $token = $req['token'];
-            $decoded = $this->verifyToken($token);
+            $decoded = $this->authMiddleware->verifyToken($token);
             if (!$decoded || !isset($decoded['userId'])) {
                 http_response_code(401); // Unauthorized
                 echo json_encode(["error" => "Token không hợp lệ"]);
                 exit();
             }
 
-            $user = $this->findUserById($decoded['userId']);
+            $user = $this->userModel->findUserById($decoded['userId']);
             if (!$user) {
                 http_response_code(404);
                 echo json_encode(["error" => "Người dùng không tồn tại"]);
@@ -131,10 +142,9 @@ class UserController
         header("Content-Type: application/json");
 
         try {
-            // Lấy token từ Header Authorization
             $headers = getallheaders();
             $authHeader = $headers['Authorization'] ?? "";
-            $token = str_replace("Bearer ", "", $authHeader); // Loại bỏ tiền tố "Bearer "
+            $token = str_replace("Bearer ", "", $authHeader);
 
             if (!$token) {
                 http_response_code(401);
@@ -142,27 +152,28 @@ class UserController
                 exit();
             }
 
-            // Xác thực token
-            $decoded = $this->verifyToken($token);
+            $decoded = $this->authMiddleware->verifyToken($token);
             if (!$decoded) {
                 http_response_code(401);
                 echo json_encode(["error" => "Token không hợp lệ"]);
                 exit();
             }
 
-            // Lấy thông tin người dùng từ token
             $userId = $decoded['userId'];
-            $user = $this->findUserById($userId);
+            $user = $this->userModel->findUserById($userId);
             if (!$user) {
                 http_response_code(404);
                 echo json_encode(["error" => "Người dùng không tồn tại"]);
                 exit();
             }
 
-            // Lấy dữ liệu từ request body (POST dữ liệu)
+            // Lấy dữ liệu từ request
             $username = trim($_POST['username'] ?? "");
+            $address = trim($_POST['address'] ?? "");
+            $birthdate = trim($_POST['birthdate'] ?? "");
+            $details = trim($_POST['details'] ?? "");
 
-            // Kiểm tra dữ liệu hợp lệ
+            // Kiểm tra dữ liệu username
             if (empty($username)) {
                 http_response_code(400);
                 echo json_encode(["error" => "Tên đăng nhập không được để trống"]);
@@ -173,19 +184,28 @@ class UserController
                 echo json_encode(["error" => "Tên đăng nhập quá dài"]);
                 exit();
             }
+            if (empty($birthdate)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Ngày sinh không được để trống"]);
+                exit();
+            }
+            // Kiểm tra định dạng ngày sinh nếu có
+            if (!empty($birthdate) && !preg_match("/^\d{4}-\d{2}-\d{2}$/", $birthdate)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Ngày sinh không đúng định dạng (yyyy-mm-dd)"]);
+                exit();
+            }
 
-            // Kiểm tra nếu có ảnh tải lên
+            // Xử lý ảnh đại diện nếu có
             $avatarPath = null;
             if (isset($_POST['avatar']) && strpos($_POST['avatar'], '/uploads/avatars') === 0) {
                 $avatarPath = $_POST['avatar'];
             } else if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-                // Kiểm tra file có phải là ảnh hay không
                 $fileTmpPath = $_FILES['avatar']['tmp_name'];
                 $fileName = $_FILES['avatar']['name'];
                 $fileSize = $_FILES['avatar']['size'];
                 $fileType = mime_content_type($fileTmpPath);
 
-                // Kiểm tra loại file (chỉ cho phép ảnh)
                 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
                 if (!in_array($fileType, $allowedTypes)) {
                     http_response_code(400);
@@ -193,24 +213,18 @@ class UserController
                     exit();
                 }
 
-                // Kiểm tra kích thước file
-                if ($fileSize > 5 * 1024 * 1024) { // 5MB max size
+                if ($fileSize > 5 * 1024 * 1024) {
                     http_response_code(400);
                     echo json_encode(["error" => "Ảnh quá lớn, tối đa 5MB"]);
                     exit();
                 }
 
-                // Tạo tên file duy nhất để tránh trùng lặp
-                // $newFileName = uniqid("avatar_", true) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
                 $newFileName = preg_replace("/[^a-zA-Z0-9\.\-_]/", "_", $fileName);
-
-                // Đường dẫn lưu file trên server
                 $uploadDir = __DIR__ . '/../uploads/avatars/';
                 if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true); // Tạo thư mục nếu chưa có
+                    mkdir($uploadDir, 0777, true);
                 }
 
-                // Di chuyển file vào thư mục lưu trữ
                 $destinationPath = $uploadDir . $newFileName;
                 if (move_uploaded_file($fileTmpPath, $destinationPath)) {
                     $avatarPath = "/uploads/avatars/" . $newFileName;
@@ -221,10 +235,9 @@ class UserController
                 }
             }
 
-            // Cập nhật thông tin người dùng
-            $updatedUser = $this->updateUserProfile($userId, $username, $avatarPath);
+            // Gọi hàm cập nhật thông tin người dùng (phải chỉnh sửa hàm này để nhận thêm tham số)
+            $updatedUser = $this->userModel->updateUserProfile($userId, $username, $avatarPath, $address, $birthdate, $details);
 
-            // Trả về phản hồi thành công
             http_response_code(200);
             echo json_encode(["message" => "Cập nhật thành công", "user" => $updatedUser]);
             exit();
@@ -233,95 +246,6 @@ class UserController
             echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
             exit();
         }
-    }
-
-    // Tạo JWT
-    private function generateToken($userId, $role)
-    {
-        // Thông tin người dùng cần lưu vào token
-        $payload = json_encode([
-            "userId" => $userId,
-            "role" => $role,
-            "iat" => time(), // Thời gian tạo
-            "exp" => time() + 3600  // Hết hạn sau 1 giờ
-        ]);
-
-        // Mã hóa thông tin người dùng thành Base64
-        $token = base64_encode($payload);
-
-        return $token; // Trả về token đã mã hóa
-    }
-
-    // Kiểm tra tính hợp lệ của JWT
-    public function verifyToken($token)
-    {
-        // Giải mã token
-        $decodedPayload = base64_decode($token);
-
-        // Chuyển đổi dữ liệu JSON từ chuỗi giải mã
-        $payloadDecoded = json_decode($decodedPayload, true);
-
-        // Kiểm tra nếu giải mã không thành công
-        if ($payloadDecoded === null) {
-            return false; // Không thể giải mã token
-        }
-
-        // Kiểm tra hết hạn (exp)
-        if (isset($payloadDecoded['exp']) && $payloadDecoded['exp'] < time()) {
-            return false; // Token đã hết hạn
-        }
-
-        return $payloadDecoded; // Trả về dữ liệu trong token
-    }
-
-    // Hàm giải mã Base64Url
-    private function base64UrlDecode($base64Url)
-    {
-        // Thay đổi các ký tự Base64 chuẩn thành Base64Url
-        $base64 = str_replace(['-', '_'], ['+', '/'], $base64Url);
-
-        // Đảm bảo chiều dài của base64 đủ để decode
-        $base64 .= str_repeat('=', 4 - (strlen($base64) % 4));
-
-        return base64_decode($base64);
-    }
-
-
-    // Tìm người dùng theo email
-    private function findUserByEmail($email)
-    {
-        global $pdo;
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Tìm người dùng theo ID
-    private function findUserById($userId)
-    {
-        global $pdo;
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$userId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Tạo người dùng mới
-    private function createUser($username, $email, $password, $role, $birthdate, $address)
-    {
-        global $pdo;
-        $stmt = $pdo->prepare("INSERT INTO users (username, email, password, role, birthdate, address, details, created_at) 
-                           VALUES (?, ?, ?, ?, ?, ?, NULL, NOW())");
-        $stmt->execute([$username, $email, $password, $role, $birthdate, $address]);
-        return $pdo->lastInsertId();
-    }
-
-    // Cập nhật hồ sơ người dùng
-    private function updateUserProfile($userId, $username, $avatarPath)
-    {
-        global $pdo;
-        $stmt = $pdo->prepare("UPDATE users SET username = ?, avatar = ? WHERE id = ?");
-        $stmt->execute([$username, $avatarPath, $userId]);
-        return $this->findUserById($userId);
     }
 }
 ?>

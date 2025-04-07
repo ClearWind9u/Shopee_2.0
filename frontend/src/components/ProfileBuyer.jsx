@@ -9,6 +9,9 @@ const Profile = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [avatar, setAvatar] = useState("/default-avatar.jpg");
+  const [address, setAddress] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [details, setDetails] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,9 +44,14 @@ const Profile = () => {
       });
 
       const userData = response.data;
+      console.log("userData", userData);
       setUsername(userData.username);
       setEmail(userData.email);
       setAvatar(userData.avatar || "/default-avatar.jpg");
+      setRole(getRoleName(userData.role));
+      setAddress(userData.address || "");
+      setBirthdate(userData.birthdate || "");
+      setDetails(userData.details || "");
       setRole(getRoleName(userData.role));
     } catch (err) {
       setError("Không thể lấy thông tin hồ sơ");
@@ -57,6 +65,9 @@ const Profile = () => {
     const formData = new FormData();
     formData.append("userId", user.id);
     formData.append("username", username);
+    formData.append("address", address);
+    formData.append("birthdate", birthdate);
+    formData.append("details", details);
     if (file) {
       formData.append("avatar", file); // Thêm ảnh vào formData
     }
@@ -96,7 +107,7 @@ const Profile = () => {
   const handleRemoveAvatar = () => {
     setFile(null);
     setAvatar("/default-avatar.jpg");
-  };  
+  };
 
   return (
     <div className="container mt-5 mb-5">
@@ -150,6 +161,38 @@ const Profile = () => {
             <div className="mb-3">
               <label className="form-label fw-semibold">Vai trò:</label>
               <input type="text" className="form-control" value={role} disabled />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Địa chỉ:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                disabled={!editMode}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Ngày sinh:</label>
+              <input
+                type="date"
+                className="form-control"
+                value={birthdate}
+                onChange={(e) => setBirthdate(e.target.value)}
+                disabled={!editMode}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Mô tả thêm:</label>
+              <textarea
+                className="form-control"
+                rows={3}
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                disabled={!editMode}
+              />
             </div>
 
             {/* Nút thao tác */}
