@@ -4,70 +4,51 @@ body {
     font-family: "Itim", cursive;
 }
 
-/* Nút chat cố định */
 .chat-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #EE4D2D;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-  }
-  
-  /* Cửa sổ chat */
-  .chat-window {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 300px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-  }
-  
-  /* Header */
-  .chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #EE4D2D;
-    color: white;
-    padding: 10px;
-    font-weight: bold;
-  }
-  
-  /* Body */
-  .chat-body {
-    padding: 10px;
-    height: 200px;
-    overflow-y: auto;
-  }
-  
-  /* Footer */
-  .chat-footer {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-  }
-  
-  .chat-footer input {
-    flex: 1;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .chat-footer button {
-    background: #EE4D2D;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 5px;
-    cursor: pointer;
-  }
-  
+  position: fixed;
+  bottom: 20px; /* Điều chỉnh khoảng cách từ đáy */
+  right: 20px; /* Điều chỉnh khoảng cách từ phải */
+  background-color: #EE4D2D;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: 1040; /* Đảm bảo nút luôn ở trên cùng */
+}
+
+.chat-window {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 1000px;
+  height: 70%;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1040; /* Đảm bảo cửa sổ chat luôn ở trên cùng */
+}
+
+/* Hiệu ứng khi mở cửa sổ chat */
+.chat-window-enter {
+  opacity: 0;
+  transform: translateY(20px); /* Di chuyển lên từ phía dưới */
+}
+
+.chat-window-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease; /* Hiệu ứng mượt */
+}
+
+.chat-window-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chat-window-exit-active {
+  opacity: 0;
+  transform: translateY(20px); /* Di chuyển xuống khi đóng */
+  transition: opacity 300ms ease, transform 300ms ease; /* Hiệu ứng mượt */
+}
+

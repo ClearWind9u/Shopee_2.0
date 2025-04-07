@@ -7,10 +7,8 @@ class UserController
     private $userModel;
     private $authMiddleware;
 
-    public function __construct($pdo)
-    {
-        // Khởi tạo đối tượng UserModel và AuthMiddleware
-        $this->userModel = new User($pdo); // Truyền kết nối PDO vào
+    public function __construct($pdo) {
+        $this->userModel = new User($pdo);
         $this->authMiddleware = new AuthMiddleware();
     }
 

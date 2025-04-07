@@ -52,7 +52,7 @@ function AppContent() {
         <Route path="/return-refund" element={<RefundPolicy />} />
       </Routes>
       {user && <Footer />}
-      <ChatWidget />
+      {user && <ChatWidget />}
     </Router>
   );
 }
