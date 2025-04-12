@@ -27,7 +27,7 @@ npm run dev  # Chạy server frontend
 ### 2️⃣ Chạy backend
 ```bash
 cd backend  # Di chuyển vào thư mục backend
-php -S localhost:8000 #chạy trên terminal
+php -S localhost:8000 # Chạy trên terminal
 ```
 
 ## 🔥 Các tính năng chính

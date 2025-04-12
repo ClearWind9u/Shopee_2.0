@@ -44,8 +44,6 @@ function AppContent() {
           path="/manager/profile"
           element={<ProtectedRoute role="manager" element={<ProfileBuyer />} />}
         />
-
-        {/* Các trang chung cho tất cả các role */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/regulations" element={<Regulations />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />

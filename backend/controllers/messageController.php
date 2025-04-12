@@ -1,106 +1,189 @@
 <?php
-require_once __DIR__ . '/../models/Message.php';
+require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../middlewares/authMiddleware.php';
+require_once __DIR__ . '/../models/Message.php';
 
-class MessageController {
+class MessageController
+{
     private $messageModel;
     private $authMiddleware;
 
-    public function __construct($pdo) {
+    public function __construct($pdo)
+    {
         $this->messageModel = new Message($pdo);
         $this->authMiddleware = new AuthMiddleware();
     }
 
-    // Gửi tin nhắn
-    public function sendMessage($req) {
+    // Send a message to another user (optionally related to a product)
+    public function sendMessage($req)
+    {
         try {
             $token = $req['token'];
             $decoded = $this->authMiddleware->verifyToken($token);
             if (!$decoded || !isset($decoded['userId'])) {
-                http_response_code(401); // Unauthorized
-                echo json_encode(["error" => "Token không hợp lệ"]);
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
                 exit();
             }
 
-            $message = $req['message']; // Lấy nội dung tin nhắn từ body request
+            $senderId = $decoded['userId'];
+            $receiverId = $req['receiverId'] ?? null;
+            $message = $req['message'] ?? null;
+            $productId = $req['productId'] ?? null;
+
+            if (empty($receiverId)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Receiver ID is required"]);
+                exit();
+            }
 
             if (empty($message)) {
                 http_response_code(400);
-                echo json_encode(["error" => "Tin nhắn không được để trống"]);
+                echo json_encode(["error" => "Message cannot be empty"]);
                 exit();
             }
 
-            // Gửi tin nhắn
-            $messageId = $this->messageModel->sendMessage($decoded['userId'], $message);
+            $messageId = $this->messageModel->sendMessage($senderId, $receiverId, $message, $productId);
 
-            http_response_code(200);
-            echo json_encode(["message" => "Tin nhắn đã được gửi", "messageId" => $messageId]);
-            exit();
+            http_response_code(201);
+            echo json_encode([
+                "message" => "Message sent successfully",
+                "messageId" => $messageId
+            ]);
         } catch (Exception $e) {
-            http_response_code(500); // Lỗi server
-            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
-            exit();
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
         }
     }
 
-    // Lấy tất cả tin nhắn của người dùng
-    public function getMessages($req) {
+    // Get conversation between two users (optionally filtered by product)
+    public function getConversation($req)
+    {
         try {
             $token = $req['token'];
             $decoded = $this->authMiddleware->verifyToken($token);
             if (!$decoded || !isset($decoded['userId'])) {
-                http_response_code(401); // Unauthorized
-                echo json_encode(["error" => "Token không hợp lệ"]);
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
                 exit();
             }
 
-            // Lấy tất cả tin nhắn của người dùng
-            $messages = $this->messageModel->getMessagesByUserId($decoded['userId']);
+            $userId = $decoded['userId'];
+            $otherUserId = $req['otherUserId'] ?? null;
+            $productId = $req['productId'] ?? null;
+
+            if (empty($otherUserId)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Other user ID is required"]);
+                exit();
+            }
+
+            $messages = $this->messageModel->getConversation($userId, $otherUserId, $productId);
 
             http_response_code(200);
             echo json_encode(["messages" => $messages]);
-            exit();
         } catch (Exception $e) {
-            http_response_code(500); // Lỗi server
-            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
-            exit();
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
         }
     }
 
-    // Đánh dấu tin nhắn là đã đọc
-    public function markAsRead($req) {
+    // Get all conversations for the current user
+    public function getConversations($req)
+    {
         try {
             $token = $req['token'];
             $decoded = $this->authMiddleware->verifyToken($token);
             if (!$decoded || !isset($decoded['userId'])) {
-                http_response_code(401); // Unauthorized
-                echo json_encode(["error" => "Token không hợp lệ"]);
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
                 exit();
             }
 
-            $messageId = $req['messageId']; // Lấy ID tin nhắn từ request
+            $conversations = $this->messageModel->getUserConversations($decoded['userId']);
 
-            if (empty($messageId)) {
-                http_response_code(400);
-                echo json_encode(["error" => "ID tin nhắn không hợp lệ"]);
-                exit();
-            }
-
-            // Đánh dấu tin nhắn là đã đọc
-            $result = $this->messageModel->markAsRead($messageId);
-
-            if ($result > 0) {
+            // Xử lý trường hợp không có hội thoại
+            if (empty($conversations)) {
                 http_response_code(200);
-                echo json_encode(["message" => "Tin nhắn đã được đánh dấu là đã đọc"]);
+                echo json_encode([
+                    "message" => "No conversations found",
+                    "conversations" => []
+                ]);
+                return;
+            }
+
+            http_response_code(200);
+            echo json_encode(["conversations" => $conversations]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+        }
+    }
+
+    // Mark messages as read
+    public function markAsRead($req)
+    {
+        try {
+            $token = $req['token'];
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
+                exit();
+            }
+
+            $messageIds = $req['messageIds'] ?? [];
+            if (!is_array($messageIds)) {
+                $messageIds = [$messageIds];
+            }
+
+            $count = $this->messageModel->markAsRead($messageIds, $decoded['userId']);
+
+            http_response_code(200);
+            echo json_encode([
+                "message" => "Messages marked as read",
+                "count" => $count
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+        }
+    }
+
+    // Delete a conversation (soft delete)
+    public function deleteConversation($req)
+    {
+        try {
+            $token = $req['token'];
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
+                exit();
+            }
+
+            $userId = $decoded['userId'];
+            $otherUserId = $req['otherUserId'] ?? null;
+            $productId = $req['productId'] ?? null;
+
+            if (empty($otherUserId)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Other user ID is required"]);
+                exit();
+            }
+
+            $success = $this->messageModel->deleteConversation($userId, $otherUserId, $productId);
+
+            if ($success) {
+                http_response_code(200);
+                echo json_encode(["message" => "Conversation deleted"]);
             } else {
                 http_response_code(404);
-                echo json_encode(["error" => "Không tìm thấy tin nhắn"]);
+                echo json_encode(["error" => "Conversation not found or already deleted"]);
             }
-            exit();
         } catch (Exception $e) {
-            http_response_code(500); // Lỗi server
-            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
-            exit();
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
         }
     }
 }
