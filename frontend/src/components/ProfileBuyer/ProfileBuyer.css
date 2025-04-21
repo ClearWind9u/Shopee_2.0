@@ -1,0 +1,27 @@
+/* src/pages/Profile.css */
+
+.card {
+    border: none;
+    border-radius: 1.5rem;
+  }
+  
+  img.rounded-circle {
+    object-fit: cover;
+    max-width: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    .card {
+      padding: 1rem;
+    }
+  
+    .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  
+    .text-end {
+      text-align: center !important;
+    }
+  }
+  

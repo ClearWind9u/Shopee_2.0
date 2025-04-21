@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { FaComments, FaTimes } from "react-icons/fa";
 import { CSSTransition } from "react-transition-group";
-import { UserContext } from "../context/UserContext";
+import { UserContext } from "../../context/UserContext";
 import axios from "axios";
-import API_BASE_URL from "../config";
+import API_BASE_URL from "../../config";
+import "./ChatWidget.css";
 
 const ChatWidget = () => {
   const { user, token } = useContext(UserContext);
@@ -17,6 +18,7 @@ const ChatWidget = () => {
 
   // Use user.id from UserContext
   const currentUserId = user?.id;
+  const nodeRef = useRef(null);
 
   // Fetch conversations when widget opens
   useEffect(() => {
@@ -25,7 +27,7 @@ const ChatWidget = () => {
     }
   }, [isOpen, currentUserId, token]);
 
-  // Fetch messages when a contact is selected
+  // Fetch messages and mark as read when a contact is selected
   useEffect(() => {
     if (activeContact && currentUserId && token) {
       fetchMessages(activeContact.id);
@@ -39,20 +41,16 @@ const ChatWidget = () => {
       const response = await axios.get(`${API_BASE_URL}/message/conversations`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // Handle response safely
+
+      // Handle response according to PHP API
       const conversations = Array.isArray(response.data.conversations)
         ? response.data.conversations
         : [];
       const fetchedContacts = conversations.map((conv) => ({
-        id:
-          conv.sender_id === currentUserId
-            ? conv.receiver_id
-            : conv.sender_id,
-        name:
-          conv.sender_id === currentUserId
-            ? conv.receiver_name
-            : conv.sender_name,
-        avatar: "/default-avatar.jpg", // Update if you have avatar URLs
+        id: conv.sender_id === currentUserId ? conv.receiver_id : conv.sender_id,
+        name: conv.sender_id === currentUserId ? conv.receiver_name : conv.sender_name,
+        avatar: "/default-avatar.jpg", // Update if avatars are available
+        unread_count: conv.unread_count || 0, // From API response
       }));
       setContacts(fetchedContacts);
     } catch (err) {
@@ -75,19 +73,55 @@ const ChatWidget = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // Handle response safely
+
+      // Handle response according to PHP API
       const fetchedMessages = Array.isArray(response.data.messages)
         ? response.data.messages.map((msg) => ({
+            id: msg.id, // Include message ID for markAsRead
             user: msg.sender_id === currentUserId ? "user" : "other",
             text: msg.message,
+            status: msg.status,
           }))
         : [];
       setMessages(fetchedMessages);
+
+      // Mark unread messages as read
+      const unreadMessageIds = fetchedMessages
+        .filter((msg) => msg.status === "unread" && msg.user === "other")
+        .map((msg) => msg.id);
+      if (unreadMessageIds.length > 0) {
+        await markMessagesAsRead(unreadMessageIds);
+      }
     } catch (err) {
       console.error("Error fetching messages:", err.response || err);
       setError(err.response?.data?.error || "Không thể tải tin nhắn.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const markMessagesAsRead = async (messageIds) => {
+    try {
+      await axios.post(
+        `${API_BASE_URL}/message/markAsRead`,
+        { messageIds },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // Update local messages to reflect read status
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          messageIds.includes(msg.id) ? { ...msg, status: "read" } : msg
+        )
+      );
+      // Refresh conversations to update unread count
+      fetchConversations();
+    } catch (err) {
+      console.error("Error marking messages as read:", err.response || err);
+      setError(
+        err.response?.data?.error || "Không thể đánh dấu tin nhắn đã đọc."
+      );
     }
   };
 
@@ -99,16 +133,22 @@ const ChatWidget = () => {
         {
           receiverId: activeContact.id,
           message: inputMessage,
-          productId: null, // Since you have no product_id
+          productId: null, // As per your API, productId is optional
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       // Add sent message to UI
       setMessages((prevMessages) => [
         ...prevMessages,
-        { user: "user", text: inputMessage },
+        {
+          id: response.data.messageId, // From API response
+          user: "user",
+          text: inputMessage,
+          status: "unread",
+        },
       ]);
       setInputMessage("");
       // Refresh conversations to update latest message
@@ -140,10 +180,11 @@ const ChatWidget = () => {
         timeout={300}
         classNames="chat-window"
         unmountOnExit
+        nodeRef={nodeRef}
       >
-        <div className="chat-window d-flex">
+        <div ref={nodeRef} className="chat-window d-flex">
           {/* Sidebar */}
-          <div className="chat-sidebar bg-light p-3 w-25">
+          <div className="chat-sidebar bg-light p-3">
             <div className="sidebar-header mb-3 font-weight-bold">Danh bạ</div>
             {loading && <p className="text-muted">Đang tải...</p>}
             {error && <p className="text-danger">{error}</p>}
@@ -163,14 +204,21 @@ const ChatWidget = () => {
                     className="contact-avatar rounded-circle"
                     style={{ width: "40px", height: "40px" }}
                   />
-                  <span className="m-2">{contact.name}</span>
+                  <div className="d-flex flex-column m-2">
+                    <span>{contact.name}</span>
+                    {contact.unread_count > 0 && (
+                      <span className="badge bg-danger text-white">
+                        {contact.unread_count}
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Chat Content */}
-          <div className="chat-content d-flex flex-column p-3 w-75">
+          <div className="chat-content d-flex flex-column p-3">
             <div className="chat-header d-flex justify-content-between align-items-center mb-3">
               {activeContact ? (
                 <>

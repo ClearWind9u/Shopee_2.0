@@ -1,0 +1,208 @@
+.navbar {
+    background-color: #EE4D2D;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+}
+
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    width: 70px;
+    height: auto;
+}
+
+.navbar-toggler {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.navbar-nav {
+    display: flex;
+    gap: 20px;
+    padding: 0 30px;
+    align-items: center;
+}
+
+.nav-link {
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #ffd700;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
+}
+
+.navbar-cart {
+    color: white;
+    text-decoration: none;
+    font-size: 1.25rem;
+}
+
+.navbar-user {
+    position: relative;
+}
+
+.navbar-user-btn {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 50px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.navbar-role {
+    color: #333;
+    text-transform: capitalize;
+}
+
+.dropdown-menu {
+    margin-top: 10px;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    color: #333;
+}
+
+.dropdown-item.text-danger {
+    color: #dc3545;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-wrap: wrap;
+        margin: 0 auto;
+        padding: 10px 15px;
+    }
+
+    .navbar-toggler {
+        display: block;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        flex-direction: column;
+        gap: 0;
+        margin: 10px;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .nav-link {
+        padding: 12px 15px;
+        font-size: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-link:last-child {
+        border-bottom: none;
+    }
+
+    .nav-link:hover {
+        background-color: #ff8c5a;
+        color: white;
+    }
+
+    .navbar-actions {
+        gap: 10px;
+    }
+
+    .navbar-cart {
+        font-size: 1.1rem;
+    }
+
+    .navbar-user-btn {
+        padding: 6px 10px;
+    }
+
+    .navbar-avatar {
+        width: 30px;
+        height: 30px;
+    }
+
+    .navbar-role {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-logo {
+        width: 50px;
+    }
+
+    .navbar-actions {
+        gap: 8px;
+    }
+
+    .navbar-cart {
+        font-size: 1rem;
+    }
+
+    .navbar-user-btn {
+        padding: 5px 8px;
+    }
+
+    .navbar-avatar {
+        width: 25px;
+        height: 25px;
+        margin-right: 5px;
+    }
+
+    .navbar-role {
+        font-size: 0.85rem;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+    }
+}

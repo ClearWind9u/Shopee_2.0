@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
-import { UserContext } from "../context/UserContext";
 import axios from "axios";
-import API_BASE_URL from "../config";
+import React, { useContext, useEffect, useState } from "react";
+import API_BASE_URL from "../../config";
+import { UserContext } from "../../context/UserContext";
+import "./ProfileBuyer.css";
 
 const Profile = () => {
-  const { user, setUser, token } = useContext(UserContext);
+  const { user, token } = useContext(UserContext);
   const [role, setRole] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [file, setFile] = useState(null); // State để lưu trữ ảnh chọn từ file input
+  const [file, setFile] = useState(null);
 
   const getRoleName = (role) => {
     switch (role) {
@@ -30,7 +31,6 @@ const Profile = () => {
     }
   };
 
-  // Lấy thông tin user khi component mount
   useEffect(() => {
     if (user?.id) {
       fetchUserProfile(user.id);
@@ -44,7 +44,6 @@ const Profile = () => {
       });
 
       const userData = response.data;
-      console.log("userData", userData);
       setUsername(userData.username);
       setEmail(userData.email);
       setAvatar(userData.avatar || "/default-avatar.jpg");
@@ -52,7 +51,6 @@ const Profile = () => {
       setAddress(userData.address || "");
       setBirthdate(userData.birthdate || "");
       setDetails(userData.details || "");
-      setRole(getRoleName(userData.role));
     } catch (err) {
       setError("Không thể lấy thông tin hồ sơ");
     }
@@ -69,17 +67,16 @@ const Profile = () => {
     formData.append("birthdate", birthdate);
     formData.append("details", details);
     if (file) {
-      formData.append("avatar", file); // Thêm ảnh vào formData
-    }
-    else {
-      formData.append("avatar", avatar); // Nếu không có file mới, giữ nguyên ảnh cũ
+      formData.append("avatar", file);
+    } else {
+      formData.append("avatar", avatar);
     }
 
     try {
       await axios.post(`${API_BASE_URL}/user/update-profile`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data", // Quan trọng để gửi file
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -100,7 +97,7 @@ const Profile = () => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setAvatar(URL.createObjectURL(selectedFile)); // Hiển thị ảnh đã chọn ngay trên giao diện
+      setAvatar(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -111,15 +108,18 @@ const Profile = () => {
 
   return (
     <div className="container mt-5 mb-5">
-      <h2 className="mb-4 text-center">Hồ sơ cửa hàng</h2>
+      <h2 className="mb-4 text-center">Hồ sơ cá nhân</h2>
       {error && <p className="alert alert-danger">{error}</p>}
 
       <div className="card shadow-lg p-4 rounded-4">
         <div className="row g-4 align-items-center">
-          {/* Avatar */}
           <div className="col-md-4 text-center">
             <img
-              src={avatar && avatar.startsWith("/uploads") ? API_BASE_URL + avatar : avatar || "/default-avatar.jpg"}
+              src={
+                avatar && avatar.startsWith("/uploads")
+                  ? API_BASE_URL + avatar
+                  : avatar || "/default-avatar.jpg"
+              }
               alt="Avatar"
               className="rounded-circle border border-2 shadow"
               width="180"
@@ -142,10 +142,9 @@ const Profile = () => {
             )}
           </div>
 
-          {/* Thông tin */}
-          <div className="col-md-8">
+          <div className="col-md-8 text-center text-md-start">
             <div className="mb-3">
-              <label className="form-label fw-semibold">Tên cửa hàng:</label>
+              <label className="form-label fw-semibold">Tên đăng nhập:</label>
               <input
                 type="text"
                 className="form-control"
@@ -156,11 +155,21 @@ const Profile = () => {
             </div>
             <div className="mb-3">
               <label className="form-label fw-semibold">Email:</label>
-              <input type="email" className="form-control" value={email} disabled />
+              <input
+                type="email"
+                className="form-control"
+                value={email}
+                disabled
+              />
             </div>
             <div className="mb-3">
               <label className="form-label fw-semibold">Vai trò:</label>
-              <input type="text" className="form-control" value={role} disabled />
+              <input
+                type="text"
+                className="form-control"
+                value={role}
+                disabled
+              />
             </div>
             <div className="mb-3">
               <label className="form-label fw-semibold">Địa chỉ:</label>
@@ -172,9 +181,8 @@ const Profile = () => {
                 disabled={!editMode}
               />
             </div>
-
             <div className="mb-3">
-              <label className="form-label fw-semibold">Ngày thành lập:</label>
+              <label className="form-label fw-semibold">Ngày sinh:</label>
               <input
                 type="date"
                 className="form-control"
@@ -183,7 +191,6 @@ const Profile = () => {
                 disabled={!editMode}
               />
             </div>
-
             <div className="mb-3">
               <label className="form-label fw-semibold">Mô tả thêm:</label>
               <textarea
@@ -194,9 +201,7 @@ const Profile = () => {
                 disabled={!editMode}
               />
             </div>
-
-            {/* Nút thao tác */}
-            <div className="text-end">
+            <div className="text-end text-md-end text-center">
               {editMode ? (
                 <>
                   <button
@@ -206,7 +211,10 @@ const Profile = () => {
                   >
                     {loading ? "Đang cập nhật..." : "Lưu thay đổi"}
                   </button>
-                  <button className="btn btn-secondary" onClick={toggleEditMode}>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={toggleEditMode}
+                  >
                     Hủy
                   </button>
                 </>
