@@ -12,6 +12,7 @@ import RefundPolicy from "./components/RefundPolicy/RefundPolicy";
 import Register from "./components/Register/Register";
 import Regulations from "./components/Regulations/Regulations";
 import ShippingPolicy from "./components/ShippingPolicy/ShippingPolicy";
+import Menu from "./components/Menu/Menu";
 import { UserContext, UserProvider } from "./context/UserContext";
 
 function AppContent() {
@@ -39,6 +40,10 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
+        />
+        <Route
+          path="/buyer/menu"
+          element={<ProtectedRoute role="buyer" element={<Menu />} />}
         />
         <Route
           path="/manager/profile"
