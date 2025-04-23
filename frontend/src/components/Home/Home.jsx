@@ -1,9 +1,11 @@
 import React, { useState, useContext } from "react";
-import { UserContext } from "../context/UserContext";
+import { UserContext } from "../../context/UserContext";
+import "./Home.css";
 
 const Home = () => {
   const { user } = useContext(UserContext);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+
   const handleMouseEnter = (index) => {
     setHoveredIndex(index);
   };
@@ -19,35 +21,32 @@ const Home = () => {
   ];
 
   return (
-    <div className="container mt-4">
+    <div className="home-container">
       {/* Banner Shopee */}
-      <div className="row">
-        <div className="col-12">
-          <img
-            src="/banner.png"
-            className="img-fluid rounded shadow-sm"
-            alt="Shopee Banner"
-            style={{ width: "100%" }}
-          />
-        </div>
+      <div className="home-banner">
+        <img
+          src="/banner.png"
+          className="home-banner-img"
+          alt="Shopee Banner"
+        />
       </div>
 
       {/* Giới thiệu hệ thống */}
-      <section className="text-center my-5">
-        <h2 className="fw-bold text-uppercase" style={{ color: "#EE4D2D" }}>
+      <section className="home-intro">
+        <h2 className="home-title">
           Chào mừng đến với Shopee 2.0
         </h2>
-        <p className="text-muted fs-5">
+        <p className="home-subtitle">
           Nền tảng thương mại điện tử hiện đại – nhanh chóng, tiện lợi, và tối ưu hoá cho mọi vai trò người dùng.
         </p>
       </section>
 
       {/* Ưu điểm */}
-      <div className="row g-4 mb-4">
+      <div className="home-cards">
         {cardsData.map((card, index) => (
-          <div key={index} className="col-md-4">
+          <div key={index} className="home-card-wrapper">
             <div
-              className="card border-0 shadow-sm h-100 rounded-4"
+              className="home-card"
               style={{
                 transform: hoveredIndex === index ? "scale(1.05)" : "scale(1)",
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -57,16 +56,15 @@ const Home = () => {
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
             >
-              <div className="card-body text-center py-4">
-                <div className="fs-1 mb-3">{card.icon}</div>
-                <h5 className="fw-semibold text-white">{card.title}</h5>
-                <p className="text-white">{card.description}</p>
+              <div className="home-card-content">
+                <div className="home-card-icon">{card.icon}</div>
+                <h5 className="home-card-title">{card.title}</h5>
+                <p className="home-card-description">{card.description}</p>
               </div>
             </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 };

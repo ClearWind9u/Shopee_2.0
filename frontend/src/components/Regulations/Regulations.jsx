@@ -1,18 +1,17 @@
 import React from "react";
+import "./Regulations.css";
 
 const Regulations = () => {
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4 text-primary">Quy Chế Hoạt Động</h2>
+    <div className="regulations-container">
+      <h2 className="regulations-title">Quy Chế Hoạt Động</h2>
       <p>
-        Chào mừng bạn đến với Shopee 2.0! Chúng tôi cam kết cung cấp nền tảng mua sắm trực tuyến an toàn,
-        minh bạch và tiện lợi cho tất cả người dùng. Dưới đây là các quy định về hoạt động trên nền tảng của chúng tôi.
+        Chào mừng bạn đến với Shopee 2.0! Chúng tôi cam kết cung cấp nền tảng mua sắm trực tuyến an toàn, minh bạch và tiện lợi cho tất cả người dùng. Dưới đây là các quy định về hoạt động trên nền tảng của chúng tôi.
       </p>
 
       <h4>1. Nguyên tắc chung</h4>
       <p>
-        Shopee 2.0 là nền tảng trung gian kết nối người mua và người bán. Tất cả các bên tham gia
-        phải tuân thủ các quy định của pháp luật và điều khoản dịch vụ của chúng tôi.
+        Shopee 2.0 là nền tảng trung gian kết nối người mua và người bán. Tất cả các bên tham gia phải tuân thủ các quy định của pháp luật và điều khoản dịch vụ của chúng tôi.
       </p>
 
       <h4>2. Quy định về người bán</h4>
@@ -39,7 +38,7 @@ const Regulations = () => {
         Bất kỳ hành vi vi phạm quy định sẽ bị xử lý theo chính sách của Shopee 2.0, bao gồm cảnh báo, đình chỉ hoặc khóa tài khoản vĩnh viễn.
       </p>
 
-      <p className="text-center mt-4 font-weight-bold">
+      <p className="regulations-footer">
         Nếu có bất kỳ câu hỏi hoặc khiếu nại nào, vui lòng liên hệ với bộ phận hỗ trợ khách hàng của chúng tôi.
       </p>
     </div>

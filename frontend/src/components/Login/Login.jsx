@@ -1,14 +1,15 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
-import { UserContext } from "../context/UserContext";
-import { loginService } from "../services/authService";
+import Swal from "sweetalert2";
+import { UserContext } from "../../context/UserContext";
+import { loginService } from "../../services/authService";
+import "./Login.css";
 
 const Login = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
-    role: ""
+    role: "",
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Login = () => {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -32,7 +33,7 @@ const Login = () => {
         icon: "success",
         title: "Đăng nhập thành công!",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
 
       navigate("/");
@@ -42,22 +43,16 @@ const Login = () => {
   };
 
   return (
-    <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100" style={{ backgroundImage: "url('/background-1.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}>
-      <div className="row w-75 shadow-lg rounded-3 overflow-hidden" style={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}>
-        <div className="col-md-6 p-5 d-flex flex-column justify-content-center align-items-center">
-          <img src="/logo.png" alt="Logo" className="img-fluid mb-4" style={{ maxWidth: "70%" }} />
-          <h5 className="text-center text-muted">Đăng nhập để tiếp tục sử dụng   hệ thống chúng tôi.</h5>
+    <div className="login-container">
+      <div className="login-box shadow-lg rounded-3 overflow-hidden">
+        <div className="login-image-section">
+          <img src="/logo.png" alt="Logo" className="img-fluid mb-4" />
+          <h5 className="text-center text-muted">
+            Đăng nhập để tiếp tục sử dụng hệ thống chúng tôi.
+          </h5>
         </div>
-        <div className="col-md-6 p-4">
-          <h2 className="text-center text-danger mb-4" style={{
-            fontSize: "2.5rem",
-            fontWeight: "bold",
-            textShadow: "2px 2px 5px rgba(0, 0, 0, 0.3)",
-            borderBottom: "4px solid #dc3545",
-            paddingBottom: "10px"
-          }}>
-            Đăng nhập
-          </h2>
+        <div className="login-form-section p-4">
+          <h2 className="login-title">Đăng nhập</h2>
           {error && <p className="alert alert-danger">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
@@ -99,10 +94,18 @@ const Login = () => {
                 <option value="manager">Quản lý</option>
               </select>
             </div>
-            <button type="submit" className="btn btn-danger w-100 rounded-pill py-2 shadow-sm">Đăng nhập</button>
+            <button
+              type="submit"
+              className="btn btn-danger w-100 rounded-pill py-2 shadow-sm"
+            >
+              Đăng nhập
+            </button>
           </form>
           <p className="text-center mt-4 text-muted">
-            Chưa có tài khoản? <Link to="/register" className="text-danger">Đăng ký ngay</Link>
+            Chưa có tài khoản?{" "}
+            <Link to="/register" className="text-danger">
+              Đăng ký ngay
+            </Link>
           </p>
         </div>
       </div>

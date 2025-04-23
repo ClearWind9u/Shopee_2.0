@@ -1,18 +1,17 @@
 import React, { useContext } from "react";
-import { Route, BrowserRouter as Router, Routes, Navigate } from "react-router-dom";
-import ChatWidget from "./components/ChatWidget";
-import Footer from "./components/Footer";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import Navbar from "./components/Navbar";
-import PrivacyPolicy from "./components/PrivacyPolicy";
-import ProfileSeller from "./components/ProfileSeller";
-import ProfileBuyer from "./components/ProfileBuyer";
-import Register from "./components/Register";
-import RefundPolicy from "./components/RefundPolicy";
-import Regulations from "./components/Regulations";
-import ShippingPolicy from "./components/ShippingPolicy";
-import Menu from "./components/Menu"
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import ChatWidget from "./components/ChatWidget/ChatWidget";
+import Footer from "./components/Footer/Footer";
+import Home from "./components/Home/Home";
+import Login from "./components/Login/Login";
+import Navbar from "./components/Navbar/Navbar";
+import PrivacyPolicy from "./components/PrivacyPolicy/PrivacyPolicy";
+import ProfileBuyer from "./components/ProfileBuyer/ProfileBuyer";
+import ProfileSeller from "./components/ProfileSeller/ProfileSeller";
+import RefundPolicy from "./components/RefundPolicy/RefundPolicy";
+import Register from "./components/Register/Register";
+import Regulations from "./components/Regulations/Regulations";
+import ShippingPolicy from "./components/ShippingPolicy/ShippingPolicy";
 import { UserContext, UserProvider } from "./context/UserContext";
 
 function AppContent() {
@@ -40,10 +39,6 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
-        />
-         <Route
-          path="/buyer/menu"
-          element={<ProtectedRoute role="buyer" element={<Menu />} />}
         />
         <Route
           path="/manager/profile"

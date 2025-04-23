@@ -109,14 +109,16 @@ class MessageController
                     "message" => "No conversations found",
                     "conversations" => []
                 ]);
-                return;
+                exit();
             }
 
             http_response_code(200);
             echo json_encode(["conversations" => $conversations]);
+            exit();
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
         }
     }
 

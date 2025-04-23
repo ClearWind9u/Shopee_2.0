@@ -1,8 +1,9 @@
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { register } from "../services/authService";
-import { UserContext } from "../context/UserContext";
+import { register } from "../../services/authService";
+import { UserContext } from "../../context/UserContext";
 import Swal from "sweetalert2";
+import "./Register.css";
 
 const Register = () => {
   const { user, setUser } = useContext(UserContext);
@@ -53,31 +54,10 @@ const Register = () => {
   };
 
   return (
-    <div
-      className="container-fluid d-flex justify-content-center align-items-center min-vh-100"
-      style={{
-        backgroundImage: "url('/background-1.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center"
-      }}
-    >
-      <div
-        className="row w-75 shadow-lg rounded-3 overflow-hidden"
-        style={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}
-      >
-        <div className="col-md-6 p-4">
-          <h2
-            className="text-center text-success mb-4"
-            style={{
-              fontSize: "2.5rem",
-              fontWeight: "bold",
-              textShadow: "2px 2px 5px rgba(0, 0, 0, 0.3)",
-              borderBottom: "4px solid #28a745",
-              paddingBottom: "10px"
-            }}
-          >
-            Đăng ký
-          </h2>
+    <div className="register-container">
+      <div className="register-box shadow-lg rounded-3 overflow-hidden">
+        <div className="register-form-section p-4">
+          <h2 className="register-title">Đăng ký</h2>
           {error && <p className="alert alert-danger">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div className="row">
@@ -191,16 +171,8 @@ const Register = () => {
           </p>
         </div>
 
-        <div className="col-md-6 d-flex justify-content-center align-items-center p-4">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="img-fluid"
-            style={{
-              maxWidth: "70%", // Điều chỉnh kích thước ảnh
-              objectFit: "contain"
-            }}
-          />
+        <div className="register-image-section">
+          <img src="/logo.png" alt="Logo" className="img-fluid" />
         </div>
       </div>
     </div>
