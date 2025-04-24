@@ -40,7 +40,7 @@ const Navbar = () => {
             <Link className="nav-link" to="/">
               <FaStore size={20} /> Trang chủ
             </Link>
-            <Link className="nav-link" to="/products">
+            <Link className="nav-link" to="/buyer/menu">
               <FaShoppingBag size={20} /> Sản phẩm
             </Link>
             <Link className="nav-link" to="/posts">
