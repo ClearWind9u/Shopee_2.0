@@ -5,9 +5,11 @@
     border-radius: 1.5rem;
   }
   
-  img.rounded-circle {
+  img.rounded-img {
     object-fit: cover;
     max-width: 100%;
+    width: 240px;
+    height: 240px;
   }
   
   @media (max-width: 768px) {

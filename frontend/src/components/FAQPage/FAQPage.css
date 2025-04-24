@@ -1,6 +1,6 @@
 .header{
     color: white;
-    background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('public/banner.png');
+    background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('public/background-2.jpg');
     background-position: top-center;
     background-repeat: no-repeat;
     background-size: cover;

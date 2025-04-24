@@ -68,7 +68,7 @@ const categories = [
   }
   return (
     <div>
-    <nav className="navbar">
+    {/* <nav className="navbar">
       <div className="logo">
         <img src="shopee-logo.png" alt="Shopee Logo" />
       </div>
@@ -82,7 +82,7 @@ const categories = [
         <a href="#">nguyenbavietquang</a>
         <a href="#" className="cart">🛒<span>11</span></a>
       </div>
-    </nav>
+    </nav> */}
 
     <div className="container text-center categories">
       <div className="row row-name">Danh Mục</div>

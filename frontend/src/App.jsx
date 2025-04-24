@@ -38,6 +38,8 @@ function AppContent() {
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/qa" element={<FAQPage />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/menu/detail" element={<Detail />} />
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
@@ -45,14 +47,6 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
-        />
-        <Route
-          path="/buyer/menu"
-          element={<ProtectedRoute role="buyer" element={<Menu />} />}
-        />
-         <Route
-          path="/buyer/menu/detail"
-          element={<ProtectedRoute role="buyer" element={<Detail />} />}
         />
         <Route
           path="/manager/profile"

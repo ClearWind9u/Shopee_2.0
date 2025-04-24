@@ -3,7 +3,6 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import API_BASE_URL from "../../config";
 import { UserContext } from "../../context/UserContext";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './Detail.css';
 const productType = [
   { id: 0, img: '/image/thoitrangnam.webp', label: 'Thời Trang Nam' },
@@ -18,9 +17,9 @@ const Detail = () => {
    const [currentImg, setCurrentImg] = useState(productType[0])
   return (
     <div>
-      <div className="navbar">
+      {/* <div className="navbar">
         <div className="logo">
-          <img src="shopee-logo.png" alt="Shopee Logo" />
+          <img className="img-hover" src="shopee-logo.png" alt="Shopee Logo" />
         </div>
         <div className="search-bar">
           <input type="text" placeholder="NGUYỄN BÁ VIỆT QUANG  ASDASDASD123" />
@@ -32,7 +31,7 @@ const Detail = () => {
           <a href="#">nguyenbavietquang</a>
           <a href="#" className="cart">🛒<span>11</span></a>
         </div>
-      </div>
+      </div> */}
 
       <div className="container breadcrumb">
         <nav style={{ "--bs-breadcrumb-divider": "'>'" }} aria-label="breadcrumb">
