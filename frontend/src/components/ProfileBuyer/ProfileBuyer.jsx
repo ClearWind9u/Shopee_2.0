@@ -121,9 +121,8 @@ const Profile = () => {
                   : avatar || "/default-avatar.jpg"
               }
               alt="Avatar"
-              className="rounded-circle border border-2 shadow"
-              width="180"
-              height="180"
+              className="rounded-img border border-2 shadow"
+              
             />
             {editMode && (
               <>

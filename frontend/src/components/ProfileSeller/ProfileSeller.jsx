@@ -23,10 +23,14 @@ const ProfileSeller = () => {
 
   const getRoleName = (role) => {
     switch (role) {
-      case "buyer": return "Người mua";
-      case "seller": return "Người bán";
-      case "manager": return "Quản lý";
-      default: return "Không xác định";
+      case "buyer":
+        return "Người mua";
+      case "seller":
+        return "Người bán";
+      case "manager":
+        return "Quản lý";
+      default:
+        return "Không xác định";
     }
   };
 
@@ -99,96 +103,124 @@ const ProfileSeller = () => {
   };
 
   return (
-    <div className="profile-container">
-      <h2 className="profile-title">Hồ sơ cửa hàng</h2>
-      {error && <p className="error-message">{error}</p>}
+    <div className="container mt-5 mb-5">
+      <h2 className="mb-4 text-center">Hồ sơ cửa hàng</h2>
+      {error && <p className="alert alert-danger">{error}</p>}
 
-      <div className="profile-card">
-        <div className="profile-left">
-          <img
-            src={
-              profile.avatar?.startsWith("/uploads")
-                ? API_BASE_URL + profile.avatar
-                : profile.avatar || defaultAvatar
-            }
-            alt="Avatar"
-            className="profile-avatar"
-          />
-          {editMode && (
-            <>
-              <input type="file" className="form-control mt-3" onChange={handleFileChange} />
-              <button className="btn btn-danger btn-sm mt-2" onClick={handleRemoveAvatar}>
-                Xoá ảnh đại diện
-              </button>
-            </>
-          )}
-        </div>
-
-        <div className="profile-right">
-          <div className="form-group">
-            <label>Tên cửa hàng:</label>
-            <input
-              type="text"
-              className="form-control"
-              value={profile.username}
-              onChange={(e) => handleChange("username", e.target.value)}
-              disabled={!editMode}
+      <div className="card shadow-lg p-4 rounded-4">
+        <div className="row g-4 align-items-center">
+          <div className="col-md-4 text-center">
+            <img
+              src={
+                profile.avatar?.startsWith("/uploads")
+                  ? API_BASE_URL + profile.avatar
+                  : profile.avatar || defaultAvatar
+              }
+              alt="Avatar"
+              className="rounded-img border border-2 shadow"
             />
-          </div>
-          <div className="form-group">
-            <label>Email:</label>
-            <input type="email" className="form-control" value={profile.email} disabled />
-          </div>
-          <div className="form-group">
-            <label>Vai trò:</label>
-            <input type="text" className="form-control" value={profile.role} disabled />
-          </div>
-          <div className="form-group">
-            <label>Địa chỉ:</label>
-            <input
-              type="text"
-              className="form-control"
-              value={profile.address}
-              onChange={(e) => handleChange("address", e.target.value)}
-              disabled={!editMode}
-            />
-          </div>
-          <div className="form-group">
-            <label>Ngày thành lập:</label>
-            <input
-              type="date"
-              className="form-control"
-              value={profile.birthdate}
-              onChange={(e) => handleChange("birthdate", e.target.value)}
-              disabled={!editMode}
-            />
-          </div>
-          <div className="form-group">
-            <label>Mô tả thêm:</label>
-            <textarea
-              className="form-control"
-              rows={3}
-              value={profile.details}
-              onChange={(e) => handleChange("details", e.target.value)}
-              disabled={!editMode}
-            />
-          </div>
-
-          <div className="button-group">
-            {editMode ? (
+            {editMode && (
               <>
-                <button className="btn btn-success me-2" onClick={handleSave} disabled={loading}>
-                  {loading ? "Đang cập nhật..." : "Lưu thay đổi"}
-                </button>
-                <button className="btn btn-secondary" onClick={() => setEditMode(false)}>
-                  Hủy
+                <input
+                  type="file"
+                  className="form-control mt-3"
+                  onChange={handleFileChange}
+                />
+                <button
+                  className="btn btn-outline-danger btn-sm mt-2"
+                  onClick={handleRemoveAvatar}
+                >
+                  Xoá ảnh đại diện
                 </button>
               </>
-            ) : (
-              <button className="btn btn-primary" onClick={() => setEditMode(true)}>
-                Chỉnh sửa hồ sơ
-              </button>
             )}
+          </div>
+
+          <div className="col-md-8 text-center text-md-start">
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Tên cửa hàng:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={profile.username}
+                onChange={(e) => handleChange("username", e.target.value)}
+                disabled={!editMode}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Email:</label>
+              <input
+                type="email"
+                className="form-control"
+                value={profile.email}
+                disabled
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Vai trò:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={profile.role}
+                disabled
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Địa chỉ:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={profile.address}
+                onChange={(e) => handleChange("address", e.target.value)}
+                disabled={!editMode}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Ngày thành lập:</label>
+              <input
+                type="date"
+                className="form-control"
+                value={profile.birthdate}
+                onChange={(e) => handleChange("birthdate", e.target.value)}
+                disabled={!editMode}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Mô tả thêm:</label>
+              <textarea
+                className="form-control"
+                rows={3}
+                value={profile.details}
+                onChange={(e) => handleChange("details", e.target.value)}
+                disabled={!editMode}
+              />
+            </div>
+            <div className="text-end text-md-end text-center">
+              {editMode ? (
+                <>
+                  <button
+                    className="btn btn-success me-2"
+                    onClick={handleSave}
+                    disabled={loading}
+                  >
+                    {loading ? "Đang cập nhật..." : "Lưu thay đổi"}
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => setEditMode(false)}
+                  >
+                    Hủy
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setEditMode(true)}
+                >
+                  Chỉnh sửa hồ sơ
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -13,6 +13,8 @@ import Register from "./components/Register/Register";
 import Regulations from "./components/Regulations/Regulations";
 import ShippingPolicy from "./components/ShippingPolicy/ShippingPolicy";
 import Menu from "./components/Menu/Menu";
+import About from "./components/About/About";
+import FAQPage from "./components/FAQPage/FAQPage";
 import Detail from "./components/Detail/Detail";
 import { UserContext, UserProvider } from "./context/UserContext";
 
@@ -34,6 +36,10 @@ function AppContent() {
         <Route path="/" element={user ? <Home /> : <Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/qa" element={<FAQPage />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/menu/detail" element={<Detail />} />
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
@@ -41,14 +47,6 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
-        />
-        <Route
-          path="/buyer/menu"
-          element={<ProtectedRoute role="buyer" element={<Menu />} />}
-        />
-         <Route
-          path="/buyer/menu/detail"
-          element={<ProtectedRoute role="buyer" element={<Detail />} />}
         />
         <Route
           path="/manager/profile"
