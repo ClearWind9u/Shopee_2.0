@@ -51,7 +51,7 @@ const Detail = () => {
       <div className="big-picture">
         <img src={currentImg.img} alt={currentImg.label} />
       </div>
-      <div className="smail-pictures">
+      {/* <div className="smail-pictures">
         {listType.map((type) => (
           <div className="thumb" key={type.id}>
             <img onClick={() => {
@@ -59,7 +59,7 @@ const Detail = () => {
             }} src={type.img} alt={type.label} />
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
 
     <div className="right-section">
@@ -73,7 +73,7 @@ const Detail = () => {
           Nhận từ 23 Th04 - 25 Th04<br />
           Miễn phí vận chuyển
         </div>
-        {currentImg.listFields.map((listField) => (
+        {/* {currentImg.listFields.map((listField) => (
            <div className="section" key={listField.id}>
            <strong>{listField.label}:</strong>
            <div className="colors" key={listField.id}>
@@ -82,7 +82,7 @@ const Detail = () => {
              ))}
            </div>
          </div>
-        ))}
+        ))} */}
         
         <div className="section">
           <strong>Số Lượng:</strong>

@@ -34,7 +34,7 @@ class UserController
 
             // Tạo người dùng mới
             $userId = $this->userModel->createUser($username, $email, $hashedPassword, $role, $birthdate, $address);
-
+            
             // Tạo token JWT
             $token = $this->authMiddleware->generateToken($userId, $role);
 

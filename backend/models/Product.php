@@ -6,6 +6,9 @@ class Product {
     public $id;
     public $name;
     public $description;
+    public $typeWithImageLink; // Là một mảng gồm các pair là các kiểu dáng của 1 loại sản phẩm và hình minh họa
+    public $category;
+    public $shippingTime;
     public $price;
     public $stock;
     public $created_at;
@@ -23,17 +26,17 @@ class Product {
     }
 
     // Tạo sản phẩm mới
-    public function createProduct($name, $description, $price, $stock) {
-        $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (name, description, price, stock, created_at, updated_at)
-                                      VALUES (?, ?, ?, ?, NOW(), NOW())");
-        $stmt->execute([$name, $description, $price, $stock]);
+    public function createProduct($name, $description, $typeWithImageLink, $category , $shippingTime, $price, $stock) {
+        $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (seller_id, name, description,typeWithImage, categories,shippingTime, price, stock, created_at, updated_at)
+                                      VALUES (3,?, ?, ?, ?, ?, ?, ? , NOW(), NOW())");
+        $stmt->execute([$name, $description, $typeWithImageLink, $category, $shippingTime, $price, $stock]);
         return $this->conn->lastInsertId();
     }
 
     // Cập nhật sản phẩm
-    public function updateProduct($productId, $name, $description, $price, $stock) {
-        $stmt = $this->conn->prepare("UPDATE " . $this->table_name . " SET name = ?, description = ?, price = ?, stock = ?, updated_at = NOW() WHERE id = ?");
-        $stmt->execute([$name, $description, $price, $stock, $productId]);
+    public function updateProduct($productId, $name, $description, $typeWithImageLink, $category, $shippingTime, $price, $stock) {
+        $stmt = $this->conn->prepare("UPDATE " . $this->table_name . " SET name = ?, description = ?, typeWithImage = ?, categories = ? ,shippingTime = ?, price = ?, stock = ?, updated_at = NOW() WHERE id = ?");
+        $stmt->execute([$name, $description, $typeWithImageLink, $category ,$shippingTime, $price, $stock, $productId]);
         return $this->findProductById($productId);
     }
 
