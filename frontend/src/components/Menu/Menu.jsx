@@ -1,0 +1,170 @@
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import API_BASE_URL from "../../config";
+import { UserContext } from "../../context/UserContext";
+import "./Menu.css";
+const categories = [
+  { id: 0, img: '/image/thoitrangnam.webp', label: 'Thời Trang Nam' },
+  { id: 1, img: '/image/dienthoaivaphukien.webp', label: 'Điện Thoại & Phụ Kiện' },
+  { id: 2, img: '/image/thietbidientu.webp', label: 'Thiết bị điện tử' },
+  { id: 3, img: '/image/maytinhlaptop.webp', label: 'Máy Tính & Laptop' },
+  { id: 4, img: '/image/mayanhvaquayphim.webp', label: 'Máy Ảnh & Máy Quay Phim' },
+  { id: 5, img: '/image/dongho.webp', label: 'Đồng Hồ' },
+  { id: 6, img: '/image/giaydepnam.webp', label: 'Giày Dép Nam' },
+  { id: 7, img: '/image/thietbigiadung.webp', label: 'Thiết Bị Gia Dụng' },
+  { id: 8, img: '/image/thethaodulich.webp', label: 'Thể Thao & Du Lịch' },
+  { id: 9, img: '/image/thoitrangnu.webp', label: 'Thời Trang Nữ' },
+  { id: 10, img: '/image/mevabe.webp', label: 'Mẹ & Bé' },
+  { id: 11, img: '/image/nhacuavadoisong.webp', label: 'Nhà Cửa & Đời Sống' },
+  { id: 12, img: '/image/sacdep.webp', label: 'Sắc Đẹp' },
+  { id: 13, img: '/image/suckhoe.webp', label: 'Sức Khỏe' },
+  { id: 14, img: '/image/giaydepnu.webp', label: 'Giày Dép Nữ' },
+  { id: 15, img: '/image/tuivinu.webp', label: 'Túi Ví Nữ' },
+  { id: 16, img: '/image/phukienvatrangsuc.webp', label: 'Phụ Kiện & Trang Sức' },
+  { id: 17, img: '/image/dochoi.webp', label: 'Đồ Chơi' }
+];
+
+const products = Array(3).fill([
+  {
+    img: '/image/aotuyenanh.webp',
+    name: 'Áo bóng đá retro Anh 1998 In Beckham-7',
+    price: '₫339.000',
+    sold: 'Đã bán 29'
+  },
+  {
+    img: '/image/aotuyenanh.webp',
+    name: 'Áo thun T-shirt cổ V form Âu Unisex',
+    price: '₫115.000',
+    sold: 'Đã bán 210,6k'
+  },
+  {
+    img: '/image/aotuyenanh.webp',
+    name: 'Áo thun bóng chày tay ngắn EERSHENSHI',
+    price: '₫149.688',
+    sold: 'Đã bán 2,1k'
+  },
+  {
+    img: '/image/aotuyenanh.webp',
+    name: 'Thẻ cầu thủ Ngoại Hạng Anh 2012/13',
+    price: '₫395.000',
+    sold: 'Đã bán 20'
+  },
+  {
+    img: '/image/aotuyenanh.webp',
+    name: 'Áo bóng đá Retro A.C đỏ 1998',
+    price: '₫270.000',
+    sold: 'Đã bán 37'
+  }
+]).flat();
+
+const parsePrice = (priceStr) => parseInt(priceStr.replace(/[^\d]/g, ""));
+const parseSold = (soldStr) => {
+  const match = soldStr.match(/(\d+([,.]\d+)?)(k)?/i);
+  if (!match) return 0;
+  const num = parseFloat(match[1].replace(',', '.'));
+  return match[3] ? num * 1000 : num;
+};
+
+const Menu = () => {
+  const { user, token } = useContext(UserContext);
+  const [currentCate, setCurrentCate] = useState(categories[0]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortType, setSortType] = useState("");
+
+  const handleChangeCategories = (cateId) => {
+    setCurrentCate(categories[cateId]);
+  };
+
+  const filteredProducts = products
+    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      const aPrice = parsePrice(a.price);
+      const bPrice = parsePrice(b.price);
+      const aSold = parseSold(a.sold);
+      const bSold = parseSold(b.sold);
+
+      switch (sortType) {
+        case "price-asc":
+          return aPrice - bPrice;
+        case "price-desc":
+          return bPrice - aPrice;
+        case "sold-desc":
+          return bSold - aSold;
+        case "sold-asc":
+          return aSold - bSold;
+        case "name-asc":
+          return a.name.localeCompare(b.name);
+        case "name-desc":
+          return b.name.localeCompare(a.name);
+        default:
+          return 0;
+      }
+    });
+
+  return (
+    <div className="menu-container">
+
+      <div className="container text-center categories">
+        <div className="row row-name">Danh Mục</div>
+        <div className="row row-cate">
+          {categories.map((cate, index) => (
+            <div onClick={() => handleChangeCategories(index)} className="col" key={index}>
+              <img src={cate.img} alt={cate.label} />
+              <div>{cate.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="container my-3 filter-bar">
+        <div className="row justify-content-between align-items-center">
+          <div className="col-md-6 mb-2">
+            <input
+              type="text"
+              placeholder="Tìm kiếm sản phẩm..."
+              className="form-control"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="col-md-4 mb-2">
+            <select
+              className="form-select"
+              value={sortType}
+              onChange={(e) => setSortType(e.target.value)}
+            >
+              <option value="">Sắp xếp theo...</option>
+              <option value="price-asc">Giá tăng dần</option>
+              <option value="price-desc">Giá giảm dần</option>
+              <option value="name-asc">Tên A → Z</option>
+              <option value="name-desc">Tên Z → A</option>
+              <option value="sold-desc">Bán chạy nhất</option>
+              <option value="sold-asc">Ít bán nhất</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="container text-center list-product-title">
+        Danh sách các sản phẩm theo chủ đề {currentCate.label}
+      </div>
+
+      <div className="product-grid container text-center">
+        {[0, 1, 2].map((rowIdx) => (
+          <div className="row" key={rowIdx}>
+            {filteredProducts.slice(rowIdx * 5, rowIdx * 5 + 5).map((product, i) => (
+              <div className="col product-card" key={i}>
+                <img src={product.img} alt={`SP${i + 1}`} />
+                <div className="product-name">{product.name}</div>
+                <div className="product-price">{product.price}</div>
+                <div className="product-sold">{product.sold}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Menu;

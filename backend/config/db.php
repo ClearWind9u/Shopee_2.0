@@ -22,6 +22,12 @@ $username = $_ENV['DB_USER'];
 $password = $_ENV['DB_PASS'];
 $database = $_ENV['DB_NAME'];
 
+// $host = getenv('DB_HOST');
+// $port = getenv('DB_PORT');
+// $username = getenv('DB_USER');
+// $password = getenv('DB_PASS');
+// $database = getenv('DB_NAME');
+
 try {
     // Kết nối MySQL với PDO
     $dsn = "mysql:host=$host;dbname=$database;port=$port;charset=utf8";

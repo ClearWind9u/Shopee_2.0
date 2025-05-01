@@ -22,9 +22,9 @@ export const loginService = async (email, password, role) => {
 };
 
 // Đăng ký
-export const register = async (username, email, password, role) => {
+export const register = async (username, email, password, role, address, birthdate) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, { username, email, password, role });
+    const response = await axios.post(`${API_URL}/register`, { username, email, password, role, address, birthdate });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Đăng ký thất bại");
