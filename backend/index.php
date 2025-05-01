@@ -8,6 +8,7 @@ header("Content-Type: application/json");
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/middlewares/authMiddleware.php';
 require_once __DIR__ . '/routes/userRoutes.php';
+require_once __DIR__ . '/routes/postRoutes.php';
 
 // Xử lý yêu cầu HTTP
 $method = $_SERVER['REQUEST_METHOD'];
@@ -23,6 +24,9 @@ if ($method === "OPTIONS") {
 if (strpos($request_uri, '/user/') === 0) {
     $route = str_replace('/user', '', $request_uri); // Loại bỏ tiền tố "/api"
     handleUserRoutes($route, $method); // Gọi hàm xử lý từ userRoutes.php
+} else if (strpos($request_uri, '/post/') === 0) {
+    $route = str_replace('/post', '', $request_uri);
+    handlePostRoutes($route, $method);
 } else {
     http_response_code(404);
     echo json_encode(["error" => "Route không hợp lệ", "uri" => $request_uri]);

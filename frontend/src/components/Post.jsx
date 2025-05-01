@@ -1,7 +1,26 @@
-import React from 'react';
-import './Post.scss'
+import React, { useEffect, useState } from 'react';
 
 const Post = () => {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('http://localhost:8000/post/')
+            .then(response => response.json())
+            .then(data => {
+                setPosts(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching posts:', error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="container mt-4">
             <div className="title">
@@ -18,69 +37,49 @@ const Post = () => {
             </div>
 
             <div className="row">
-                {/* Card Bài Viết 1 */}
-                <div className="col-md-4 mb-4">
-                    <a href="post.html?id=1" style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <div className="card">
-                            <img src="/shopee/public/images/trasenvang.png" className="card-img-top" alt="Image" />
-                            {/* Nhãn "Thịnh Hành" */}
-                            <span className="badge-top-left">Thịnh Hành</span>
-                            <div className="card-body">
-                                <div className="d-flex justify-content-between">
-                                    <div className="author d-flex justify-content-between">
-                                        <img
-                                            src="/shopee/public/images/trasenvang.png"
-                                            className="rounded-circle me-2"
-                                            alt="Author"
-                                        />
-                                        <p className="card-text">Eren Yeager</p>
+                {posts.map(post => (
+                    <div className="col-md-4 mb-4" key={post.id}>
+                        <a href={`post.html?id=${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <div className="card">
+                                <img
+                                    src={post.image || "/frontend/public/trasenvang.jpg"}
+                                    className="card-img-top"
+                                    alt="Image"
+                                />
+                                {/* Nhãn "Thịnh Hành" */}
+                                <span className="badge-top-left">Thịnh Hành</span>
+                                <div className="card-body">
+                                    <div className="d-flex justify-content-between">
+                                        <div className="author d-flex justify-content-between">
+                                            <img
+                                                src="/shopee/public/images/trasenvang.png"
+                                                className="rounded-circle me-2"
+                                                alt="Author"
+                                            />
+                                            {/* Sử dụng author_name từ API */}
+                                            <p className="card-text">{post.author_name || 'Unknown'}</p>
+                                        </div>
+                                        <div className="date">
+                                            <p className="card-text text-muted">
+                                                {new Date(post.created_at).toLocaleDateString()}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="date">
-                                        <p className="card-text text-muted">01/01/2022</p>
+                                    <div>
+                                        <h5 className="card-title">{post.title}</h5>
+                                    </div>
+                                    <div>
+                                        <p className="card-text d-flex justify-content-center">
+                                            {post.content.length > 100
+                                                ? post.content.substring(0, 100) + "..."
+                                                : post.content}
+                                        </p>
                                     </div>
                                 </div>
-                                <div>
-                                    <h5 className="card-title">Trà sen vàng thơm ngon</h5>
-                                </div>
-                                <div>
-                                    <p className="card-text d-flex justify-content-center">
-                                        Mô tả ngắn về bài viết 1. Đây là một ví dụ về bài viết tin tức...
-                                    </p>
-                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
-
-                {/* Card Bài Viết 2 */}
-                <div className="col-md-4 mb-4">
-                    <a href="post.html?id=2" style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <div className="card">
-                            <img src="/shopee/public/images/trasenvang.png" className="card-img-top" alt="Image" />
-                            <div className="card-body">
-                                <h5 className="card-title">Tiêu đề bài viết 2</h5>
-                                <p className="card-text">
-                                    Mô tả ngắn về bài viết 2. Đây là một ví dụ về bài viết tin tức...
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                {/* Card Bài Viết 3 */}
-                <div className="col-md-4 mb-4">
-                    <a href="post.html?id=3" style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <div className="card">
-                            <img src="/shopee/public/images/trasenvang.png" className="card-img-top" alt="Image" />
-                            <div className="card-body">
-                                <h5 className="card-title">Tiêu đề bài viết 3</h5>
-                                <p className="card-text">
-                                    Mô tả ngắn về bài viết 3. Đây là một ví dụ về bài viết tin tức...
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
+                ))}
             </div>
 
             {/* Navigation Buttons */}

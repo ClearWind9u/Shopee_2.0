@@ -30,6 +30,7 @@ function AppContent() {
         <Route path="/regulations" element={<Regulations />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/return-refund" element={<RefundPolicy />} />
+        <Route path="/posts" element={<Post />} />
       </Routes>
       {user && <Footer />}
       <ChatWidget />
