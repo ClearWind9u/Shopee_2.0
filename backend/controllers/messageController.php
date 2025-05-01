@@ -14,7 +14,7 @@ class MessageController
         $this->authMiddleware = new AuthMiddleware();
     }
 
-    // Send a message to another user (optionally related to a product)
+    // Gửi tin nhắn cho người dùng khác
     public function sendMessage($req)
     {
         try {
@@ -50,13 +50,15 @@ class MessageController
                 "message" => "Message sent successfully",
                 "messageId" => $messageId
             ]);
+            exit();
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
         }
     }
 
-    // Get conversation between two users (optionally filtered by product)
+    // Xem cuộc hội thoại giữa hai người dùng
     public function getConversation($req)
     {
         try {
@@ -82,13 +84,15 @@ class MessageController
 
             http_response_code(200);
             echo json_encode(["messages" => $messages]);
+            exit();
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
         }
     }
 
-    // Get all conversations for the current user
+    // Xem tất cả hội thoại của người dùng
     public function getConversations($req)
     {
         try {
@@ -122,7 +126,7 @@ class MessageController
         }
     }
 
-    // Mark messages as read
+    // Đánh dấu tin nhắn đã đọc
     public function markAsRead($req)
     {
         try {
@@ -134,25 +138,35 @@ class MessageController
                 exit();
             }
 
-            $messageIds = $req['messageIds'] ?? [];
-            if (!is_array($messageIds)) {
-                $messageIds = [$messageIds];
+            $userId = $decoded['userId'];
+            $otherUserId = $req['otherUserId'] ?? null;
+            $messageIds = $req['messageIds'] ?? null;
+
+            if (!$otherUserId && !$messageIds) {
+                http_response_code(400);
+                echo json_encode(["error" => "Yêu cầu otherUserId hoặc messageIds"]);
+                exit();
             }
 
-            $count = $this->messageModel->markAsRead($messageIds, $decoded['userId']);
+            $updated = $this->messageModel->markAsRead($userId, $otherUserId, $messageIds);
 
-            http_response_code(200);
-            echo json_encode([
-                "message" => "Messages marked as read",
-                "count" => $count
-            ]);
+            if ($updated > 0) {
+                http_response_code(200);
+                echo json_encode(["message" => "Tin nhắn đã được đánh dấu là đã đọc", "updated" => $updated]);
+                exit();
+            } else {
+                http_response_code(200); // Vẫn trả 200 vì yêu cầu hợp lệ, nhưng không có tin nhắn để cập nhật
+                echo json_encode(["message" => "Không có tin nhắn nào được cập nhật"]);
+                exit();
+            }
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
         }
     }
 
-    // Delete a conversation (soft delete)
+    // Xóa hội thoại (xóa mềm)
     public function deleteConversation($req)
     {
         try {

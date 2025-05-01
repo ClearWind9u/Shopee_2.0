@@ -38,7 +38,7 @@ function handleMessageRoutes($route, $method) {
         echo json_encode($controller->getConversation($data));
     }
     // Đánh dấu tin nhắn đã đọc
-    elseif ($method == 'PATCH' && $route == '/mark-read') {
+    elseif ($method == 'POST' && $route == '/mark-read') {
         echo json_encode($controller->markAsRead($data));
     }
     // Xóa hội thoại

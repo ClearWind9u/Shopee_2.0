@@ -16,9 +16,13 @@ const ChatWidget = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Use user.id from UserContext
+  // Use user.id and user.avatar from UserContext
   const currentUserId = user?.id;
+  const currentUserAvatar = user?.avatar ? `${API_BASE_URL}${user.avatar}` : "/default-avatar.jpg";
   const nodeRef = useRef(null);
+
+  // Debug: Log UserContext
+  console.log("UserContext:", { user, token });
 
   // Fetch conversations when widget opens
   useEffect(() => {
@@ -42,15 +46,18 @@ const ChatWidget = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Handle response according to PHP API
-      const conversations = Array.isArray(response.data.conversations)
-        ? response.data.conversations
-        : [];
+      console.log("Fetch conversations response:", response.data);
+
+      const conversations = Array.isArray(response.data.conversations) ? response.data.conversations : [];
       const fetchedContacts = conversations.map((conv) => ({
         id: conv.sender_id === currentUserId ? conv.receiver_id : conv.sender_id,
         name: conv.sender_id === currentUserId ? conv.receiver_name : conv.sender_name,
-        avatar: "/default-avatar.jpg", // Update if avatars are available
-        unread_count: conv.unread_count || 0, // From API response
+        avatar: conv.sender_id === currentUserId && conv.receiver_avatar
+          ? `${API_BASE_URL}${conv.receiver_avatar}`
+          : conv.sender_avatar
+          ? `${API_BASE_URL}${conv.sender_avatar}`
+          : "/default-avatar.jpg",
+        unread_count: conv.unread_count || 0,
       }));
       setContacts(fetchedContacts);
     } catch (err) {
@@ -68,29 +75,31 @@ const ChatWidget = () => {
     setError(null);
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/message/conversation?otherUserId=${otherUserId}`,
+        `${API_BASE_URL}/message/conversation/${otherUserId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // Handle response according to PHP API
+      console.log("Fetch messages response:", response.data);
+
       const fetchedMessages = Array.isArray(response.data.messages)
         ? response.data.messages.map((msg) => ({
-            id: msg.id, // Include message ID for markAsRead
+            id: msg.id,
             user: msg.sender_id === currentUserId ? "user" : "other",
             text: msg.message,
             status: msg.status,
+            avatar: msg.sender_id === currentUserId
+              ? currentUserAvatar
+              : activeContact?.avatar || "/default-avatar.jpg",
           }))
         : [];
       setMessages(fetchedMessages);
-
-      // Mark unread messages as read
-      const unreadMessageIds = fetchedMessages
-        .filter((msg) => msg.status === "unread" && msg.user === "other")
-        .map((msg) => msg.id);
-      if (unreadMessageIds.length > 0) {
-        await markMessagesAsRead(unreadMessageIds);
+      const hasUnreadMessages = fetchedMessages.some(
+        (msg) => msg.status === "unread" && msg.user === "other"
+      );
+      if (hasUnreadMessages) {
+        await markMessagesAsRead(otherUserId);
       }
     } catch (err) {
       console.error("Error fetching messages:", err.response || err);
@@ -100,22 +109,25 @@ const ChatWidget = () => {
     }
   };
 
-  const markMessagesAsRead = async (messageIds) => {
+  const markMessagesAsRead = async (otherUserId) => {
     try {
-      await axios.post(
-        `${API_BASE_URL}/message/markAsRead`,
-        { messageIds },
+      const response = await axios.post(
+        `${API_BASE_URL}/message/mark-read`,
+        { otherUserId },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // Update local messages to reflect read status
+
+      console.log("Mark as read response:", response.data);
+
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
-          messageIds.includes(msg.id) ? { ...msg, status: "read" } : msg
+          msg.user === "other" && msg.status === "unread"
+            ? { ...msg, status: "read" }
+            : msg
         )
       );
-      // Refresh conversations to update unread count
       fetchConversations();
     } catch (err) {
       console.error("Error marking messages as read:", err.response || err);
@@ -133,25 +145,35 @@ const ChatWidget = () => {
         {
           receiverId: activeContact.id,
           message: inputMessage,
-          productId: null, // As per your API, productId is optional
+          productId: null,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // Add sent message to UI
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: response.data.messageId, // From API response
-          user: "user",
-          text: inputMessage,
-          status: "unread",
-        },
-      ]);
+      console.log("Send message response:", response.data);
+
+      const messageId = response.data.messageId;
+      if (!messageId) {
+        throw new Error("Invalid response: Message ID not found");
+      }
+
+      setMessages((prevMessages) => {
+        const newMessages = [
+          ...prevMessages,
+          {
+            id: messageId,
+            user: "user",
+            text: inputMessage,
+            status: "unread",
+            avatar: currentUserAvatar,
+          },
+        ];
+        console.log("Updated messages:", newMessages);
+        return newMessages;
+      });
       setInputMessage("");
-      // Refresh conversations to update latest message
       fetchConversations();
     } catch (err) {
       console.error("Error sending message:", err.response || err);
@@ -167,14 +189,14 @@ const ChatWidget = () => {
 
   return (
     <div>
-      {/* Nút chat */}
+      {/* Chat Button */}
       {!isOpen && (
         <button className="chat-button" onClick={() => setIsOpen(true)}>
           <FaComments size={28} />
         </button>
       )}
 
-      {/* Pop-up chat window với hiệu ứng */}
+      {/* Chat Window with Transition */}
       <CSSTransition
         in={isOpen}
         timeout={300}
@@ -247,13 +269,35 @@ const ChatWidget = () => {
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`message mb-3 p-2 rounded ${
-                    message.user === "user"
-                      ? "bg-danger text-white align-self-end"
-                      : "bg-light text-dark align-self-start"
+                  className={`message-container d-flex mb-3 ${
+                    message.user === "user" ? "justify-content-end" : "justify-content-start"
                   }`}
                 >
-                  <p>{message.text}</p>
+                  {message.user === "other" && (
+                    <img
+                      src={message.avatar || "/default-avatar.jpg"}
+                      alt="Sender"
+                      className="message-avatar rounded-circle"
+                      style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                    />
+                  )}
+                  <div
+                    className={`message p-2 rounded ${
+                      message.user === "user"
+                        ? "bg-danger text-white"
+                        : "bg-light text-dark"
+                    }`}
+                  >
+                    <p className="mb-0">{message.text}</p>
+                  </div>
+                  {message.user === "user" && (
+                    <img
+                      src={message.avatar || "/default-avatar.jpg"}
+                      alt="User"
+                      className="message-avatar rounded-circle"
+                      style={{ width: "30px", height: "30px", marginLeft: "8px" }}
+                    />
+                  )}
                 </div>
               ))}
             </div>

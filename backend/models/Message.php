@@ -98,15 +98,25 @@ class Message {
     }
 
     // Mark messages as read
-    public function markAsRead($messageIds, $userId) {
-        if (empty($messageIds)) return 0;
-        
-        $placeholders = implode(',', array_fill(0, count($messageIds), '?'));
+    public function markAsRead($userId, $otherUserId = null, $messageIds = null) {
+        if (!$otherUserId && !$messageIds) {
+            return 0; // Không có otherUserId hoặc messageIds, không cập nhật
+        }
+
         $query = "UPDATE " . $this->table_name . " 
-                 SET status = 'read' 
-                 WHERE id IN ($placeholders) AND receiver_id = ?";
-        
-        $params = array_merge($messageIds, [$userId]);
+                  SET status = 'read' 
+                  WHERE receiver_id = ? AND status = 'unread'";
+        $params = [$userId];
+
+        if ($otherUserId) {
+            $query .= " AND sender_id = ?";
+            $params[] = $otherUserId;
+        } elseif ($messageIds) {
+            $placeholders = implode(',', array_fill(0, count($messageIds), '?'));
+            $query .= " AND id IN ($placeholders)";
+            $params = array_merge($params, $messageIds);
+        }
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);
         

@@ -1,0 +1,149 @@
+.order-history-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.order-history-header {
+    color: #EE4D2D;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 1.75rem;
+}
+
+.order-history-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.order-history-table thead {
+    background-color: #f3f4f6;
+    color: #333;
+}
+
+.order-history-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.order-history-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.order-history-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.order-history-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.order-history-table td:last-child {
+    border-bottom: none;
+}
+
+.order-history-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.order-history-badge.pending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.order-history-badge.shipped {
+    background-color: #bfdbfe;
+    color: #2563eb;
+}
+
+.order-history-badge.delivered {
+    background-color: #d1fae5;
+    color: #047857;
+}
+
+.order-history-error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+.order-history-empty {
+    color: #6b7280;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .order-history-container {
+        padding: 15px 10px;
+        margin: 0 10px;
+    }
+
+    .order-history-header {
+        font-size: 1.5rem;
+    }
+
+    .order-history-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .order-history-table th,
+    .order-history-table td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    .order-history-badge {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .order-history-container {
+        padding: 10px 8px;
+        margin: 0 8px;
+    }
+
+    .order-history-header {
+        font-size: 1.25rem;
+    }
+
+    .order-history-table th,
+    .order-history-table td {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+
+    .order-history-badge {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    .order-history-error,
+    .order-history-empty {
+        font-size: 0.85rem;
+    }
+}

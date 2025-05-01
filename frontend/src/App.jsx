@@ -16,6 +16,7 @@ import Menu from "./components/Menu/Menu";
 import About from "./components/About/About";
 import FAQPage from "./components/FAQPage/FAQPage";
 import Detail from "./components/Detail/Detail";
+import OrderHistory from "./components/OrderHistory/OrderHistory";
 import { UserContext, UserProvider } from "./context/UserContext";
 
 function AppContent() {
@@ -43,6 +44,10 @@ function AppContent() {
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
+        />
+        <Route
+          path="/order-history"
+          element={<ProtectedRoute role="buyer" element={<OrderHistory />} />}
         />
         <Route
           path="/buyer/profile"
