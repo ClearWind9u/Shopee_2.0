@@ -30,11 +30,6 @@ cd backend  # Di chuyển vào thư mục backend
 php -S localhost:8000 # Chạy trên terminal
 ```
 
-## 🔥 Các tính năng chính
-- 🛒 Trang chủ với danh sách sản phẩm
-- 🔑 Đăng nhập & Đăng ký tài khoản
-- 🏠 Giao diện người dùng hiện đại theo phong cách Shopee
-
 ## 🧑‍💻 Tài khoản thử nghiệm
 Dưới đây là tài khoản mẫu để bạn thử nghiệm tính năng đăng nhập:
 
@@ -44,10 +39,4 @@ Dưới đây là tài khoản mẫu để bạn thử nghiệm tính năng đă
 |   seller  | student@gmail.com |   1234   |
 |   manager | student3@gmail.com|   123    |
 
-Bạn có thể sử dụng tài khoản này để đăng nhập và kiểm tra hệ thống. 🚀
-
-## 📌 Thông tin liên hệ
-- **Developer**: 
-- **Email**:
-
-Chúc bạn code vui vẻ! 🚀
+Bạn có thể sử dụng tài khoản này để đăng nhập và kiểm tra hệ thống. Chúc bạn một ngày vui vẻ! 🚀
