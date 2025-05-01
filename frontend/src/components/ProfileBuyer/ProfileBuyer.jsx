@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import API_BASE_URL from "../../config";
 import { UserContext } from "../../context/UserContext";
+import Notification from "../Notification/Notification";
 import "./ProfileBuyer.css";
 
 const Profile = () => {
@@ -15,9 +16,10 @@ const Profile = () => {
   const [details, setDetails] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [file, setFile] = useState(null);
-
+  
   const getRoleName = (role) => {
     switch (role) {
       case "buyer":
@@ -42,6 +44,7 @@ const Profile = () => {
       const response = await axios.get(`${API_BASE_URL}/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Fetch profile response:", response.data);
 
       const userData = response.data;
       setUsername(userData.username);
@@ -52,13 +55,14 @@ const Profile = () => {
       setBirthdate(userData.birthdate || "");
       setDetails(userData.details || "");
     } catch (err) {
+      console.error("Fetch profile error:", err.response || err);
       setError("Không thể lấy thông tin hồ sơ");
     }
   };
 
   const handleUpdateProfile = async () => {
+    console.log("handleUpdateProfile called");
     setLoading(true);
-    setError("");
 
     const formData = new FormData();
     formData.append("userId", user.id);
@@ -71,19 +75,27 @@ const Profile = () => {
     } else {
       formData.append("avatar", avatar);
     }
+    console.log("FormData:", {
+      userId: user.id,
+      username,
+      address,
+      birthdate,
+      details,
+      file,
+    });
 
     try {
-      await axios.post(`${API_BASE_URL}/user/update-profile`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/user/update-profile`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-
-      alert("Cập nhật thành công!");
+      setSuccess("Cập nhật hồ sơ thành công!");
       toggleEditMode();
     } catch (err) {
-      setError(err.response?.data?.error || "Lỗi cập nhật");
+      console.error("API error:", err.response || err);
+      setError(err.response?.data?.error || "Lỗi cập nhật hồ sơ");
     } finally {
       setLoading(false);
     }
@@ -106,11 +118,14 @@ const Profile = () => {
     setAvatar("/default-avatar.jpg");
   };
 
+  const handleCloseNotification = () => {
+    setError("");
+    setSuccess("");
+  };
+
   return (
     <div className="container mt-5 mb-5">
       <h2 className="mb-4 text-center">Hồ sơ cá nhân</h2>
-      {error && <p className="alert alert-danger">{error}</p>}
-
       <div className="card shadow-lg p-4 rounded-4">
         <div className="row g-4 align-items-center">
           <div className="col-md-4 text-center">
@@ -122,7 +137,6 @@ const Profile = () => {
               }
               alt="Avatar"
               className="rounded-img border border-2 shadow"
-              
             />
             {editMode && (
               <>
@@ -226,6 +240,16 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <Notification
+        message={success}
+        type="success"
+        onClose={handleCloseNotification}
+      />
+      <Notification
+        message={error}
+        type="error"
+        onClose={handleCloseNotification}
+      />
     </div>
   );
 };

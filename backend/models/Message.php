@@ -123,18 +123,30 @@ class Message {
         return $stmt->rowCount();
     }
 
-    // Delete conversation for a user (soft delete)
+    // Delete conversation for a user
     public function deleteConversation($userId, $otherUserId, $productId = null) {
-        $query = "UPDATE " . $this->table_name . " 
-                 SET 
-                     is_deleted_sender = CASE WHEN sender_id = ? THEN 1 ELSE is_deleted_sender END,
-                     is_deleted_receiver = CASE WHEN receiver_id = ? THEN 1 ELSE is_deleted_receiver END
-                 WHERE ((sender_id = ? AND receiver_id = ?)
-                 OR (sender_id = ? AND receiver_id = ?))
-                 AND (product_id = ? OR ? IS NULL)";
-        
+        $query = "DELETE FROM " . $this->table_name . " 
+                WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))";
+        $params = [$userId, $otherUserId, $otherUserId, $userId];
+
+        if ($productId) {
+            $query .= " AND product_id = ?";
+            $params[] = $productId;
+        }
+
         $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$userId, $userId, $userId, $otherUserId, $otherUserId, $userId, $productId, $productId]);
+        $stmt->execute($params);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Delete a specific message
+    public function deleteMessage($messageId, $senderId) {
+        $query = "DELETE FROM " . $this->table_name . " 
+                WHERE id = ? 
+                AND sender_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$messageId, $senderId]);
+        return $stmt->rowCount() > 0;
     }
 }
 ?>
