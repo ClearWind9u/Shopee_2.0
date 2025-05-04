@@ -15,6 +15,8 @@ import ShippingPolicy from "./components/ShippingPolicy/ShippingPolicy";
 import Menu from "./components/Menu/Menu";
 import About from "./components/About/About";
 import FAQPage from "./components/FAQPage/FAQPage";
+import CreateQuestion from "./components/FAQPage/createQuestion";
+import AnswerQuestion from "./components/FAQPage/answerQuestion";
 import Detail from "./components/Detail/Detail";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
 import { UserContext, UserProvider } from "./context/UserContext";
@@ -39,6 +41,8 @@ function AppContent() {
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/qa" element={<FAQPage />} />
+        <Route path="/qa/create-question" element={<CreateQuestion />} />
+        <Route path="/qa/answer-question" element={<AnswerQuestion />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/menu/detail" element={<Detail />} />
         <Route
