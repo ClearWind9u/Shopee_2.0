@@ -101,6 +101,7 @@ const AdminMenu = () => {
                         </button>
                     </div>
                 </div>
+                <hr />
                 <div className="product">
                     <div className="productImage column col1">
                         <img src="/image/aotuyenanh.webp" alt="" />
@@ -134,6 +135,7 @@ const AdminMenu = () => {
                         </button>
                     </div>
                 </div>
+                <hr />
                 <div className="product">
                     <div className="productImage column col1">
                         <img src="/image/aotuyenanh.webp" alt="" />
@@ -167,6 +169,7 @@ const AdminMenu = () => {
                         </button>
                     </div>
                 </div>
+                <hr />
             </div>
             {
                 <div className={` form-edit-product  container ${showEditForm ? "form-enter" : "form-exit"

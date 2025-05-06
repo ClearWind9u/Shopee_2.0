@@ -58,13 +58,14 @@
     padding: 10px;
     background-color: gainsboro;
     margin: 20px auto;
+    border-radius: 12px;
   }
   .product{
     display: flex;
     width: 100%;
-    border-style: solid;
+    /* border-style: solid;
     border-color:aliceblue;
-    border-radius: 12px;
+    border-radius: 12px; */
     margin: 10px auto;
   }
   .list-product .product img{
