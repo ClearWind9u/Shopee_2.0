@@ -15,9 +15,13 @@ import ShippingPolicy from "./components/ShippingPolicy/ShippingPolicy";
 import Menu from "./components/Menu/Menu";
 import About from "./components/About/About";
 import FAQPage from "./components/FAQPage/FAQPage";
+import CreateQuestion from "./components/FAQPage/createQuestion";
+import AnswerQuestion from "./components/FAQPage/answerQuestion";
 import Detail from "./components/Detail/Detail";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
 import { UserContext, UserProvider } from "./context/UserContext";
+import Cart from "./components/Cart/Cart";
+import AdminMenu from "./components/Admin/AdminMenu/AdminMenu";
 
 function AppContent() {
   const { user } = useContext(UserContext);
@@ -39,11 +43,17 @@ function AppContent() {
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/qa" element={<FAQPage />} />
+        <Route path="/qa/create-question" element={<CreateQuestion />} />
+        <Route path="/qa/answer-question" element={<AnswerQuestion />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/menu/detail" element={<Detail />} />
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
+        />
+        <Route
+          path="/seller/manageProduct"
+          element={<ProtectedRoute role="seller" element={<AdminMenu />} />}
         />
         <Route
           path="/order-history"
@@ -52,7 +62,10 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
-        />
+        /><Route
+        path="/buyer/cart"
+        element={<ProtectedRoute role="buyer" element={<Cart />} />}
+      />
         <Route
           path="/manager/profile"
           element={<ProtectedRoute role="manager" element={<ProfileBuyer />} />}
