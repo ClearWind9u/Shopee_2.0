@@ -158,7 +158,7 @@ const FAQPage = () => {
                 .includes(searchInput.toLowerCase())
             ).length <= 0
               ? "d-none"
-              : "dropdown"
+              : "dropdown-search"
           }
         >
           {listQuestion

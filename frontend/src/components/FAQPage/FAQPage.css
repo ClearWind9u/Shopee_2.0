@@ -52,7 +52,7 @@
 .search button:hover{
     background-color: rgb(156, 111, 20);
 }
-.dropdown{
+.dropdown-search{
     background-color: white;
     display: flex;
     flex-direction: column;
@@ -63,7 +63,7 @@
     padding: 5px;
     z-index: 999;
 }
-.dropdown:empty{
+.dropdown-search:empty{
     border: none
 }
 .dropdown-row{
@@ -234,7 +234,7 @@
         flex: 0.5;
         padding: 2% 2% 0 0;
     }
-    .dropdown{
+    .dropdown-search{
         background-color: white;
         display: flex;
         flex-direction: column;
