@@ -84,6 +84,7 @@
 .faq-name{
     flex: 0.5;
     width: 100%;
+    display: block;
     margin-top: 0;
     margin-left: 30px;
     padding: 2% 2% 0 0;
@@ -169,14 +170,14 @@
 }
 
 /*      CREATE QUESTION    */
-.form-label{
+.form-label-style{
     font-size: 25px;
     color: gray;
 }
-.form-control{
+.form-control-style{
     border-radius: 0;
 }
-.form-control:focus, .form-select:focus  {
+.form-control-style:focus, .form-select:focus  {
     border-color: #ea8a0c;
     box-shadow: 0 0 0 0.2rem rgba(232, 141, 5, 0.25);
 }

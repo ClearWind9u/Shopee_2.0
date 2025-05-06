@@ -42,27 +42,51 @@ const AnswerQuestion = () => {
             }
         }
     }
-    return(
-        <div className="container mt-5 mb-5 ">
-            <h1 >Chỉnh sửa câu trả lời</h1>
-            <Form>
-      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-        <Form.Label>Câu hỏi</Form.Label>
-        <Form.Control type="text" value={data.question} disabled/>
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-        <Form.Label>Trả lời</Form.Label>
-        <Form.Control as="textarea" rows={3} value={answer} onChange={(e) => {handleOnChangeAnswer(e)}} required/>
-      </Form.Group>
-      <div className={nullAns ? "text-danger" : "d-none"}>Vui lòng điền câu trả lời</div>
-      <Button className="btn btn-warning" onClick={() => {handleEditAnswer()}}>
-        Lưu
-      </Button>
-      <Button className="btn btn-secondary btn-cancel" type="button">
-       <a className="text-decoration-none text-light" href="/qa"> Hủy</a>
-      </Button>
-    </Form>
-        </div>
-    )
+    return (
+      <div className="container mt-5 mb-5 ">
+        <h1>Chỉnh sửa câu trả lời</h1>
+        <Form>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Label className="form-label-style">Câu hỏi</Form.Label>
+            <Form.Control
+              className="form-control-style"
+              type="text"
+              value={data.question}
+              disabled
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+            <Form.Label className="form-label-style">Trả lời</Form.Label>
+            <Form.Control
+              className="form-control-style"
+              as="textarea"
+              rows={3}
+              value={answer}
+              onChange={(e) => {
+                handleOnChangeAnswer(e);
+              }}
+              required
+            />
+          </Form.Group>
+          <div className={nullAns ? "text-danger" : "d-none"}>
+            Vui lòng điền câu trả lời
+          </div>
+          <Button
+            className="btn btn-warning"
+            onClick={() => {
+              handleEditAnswer();
+            }}
+          >
+            Lưu
+          </Button>
+          <Button className="btn btn-secondary btn-cancel" type="button">
+            <a className="text-decoration-none text-light" href="/qa">
+              {" "}
+              Hủy
+            </a>
+          </Button>
+        </Form>
+      </div>
+    );
 }
 export default AnswerQuestion;

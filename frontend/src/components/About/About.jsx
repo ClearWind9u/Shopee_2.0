@@ -23,7 +23,7 @@ const About = () => {
               </p>
               <p>
                 <a
-                  href="#"
+                  href="/"
                   className="btn btn-warning mt-3 text-light rounded-pill"
                 >
                   Tìm hiểu thêm
@@ -46,7 +46,7 @@ const About = () => {
               </p>
               <p>
                 <a
-                  href="#"
+                  href="/"
                   className="btn btn-warning mt-3 text-light rounded-pill"
                 >
                   Tìm hiểu thêm
@@ -69,7 +69,7 @@ const About = () => {
               </p>
               <p>
                 <a
-                  href="#"
+                  href="/"
                   className="btn btn-warning mt-3 text-light rounded-pill"
                 >
                   Tìm hiểu thêm
