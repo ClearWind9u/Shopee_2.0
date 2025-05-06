@@ -21,6 +21,7 @@ import Detail from "./components/Detail/Detail";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
 import { UserContext, UserProvider } from "./context/UserContext";
 import Cart from "./components/Cart/Cart";
+import AdminMenu from "./components/Admin/AdminMenu/AdminMenu";
 
 function AppContent() {
   const { user } = useContext(UserContext);
@@ -49,6 +50,10 @@ function AppContent() {
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
+        />
+        <Route
+          path="/seller/manageProduct"
+          element={<ProtectedRoute role="seller" element={<AdminMenu />} />}
         />
         <Route
           path="/order-history"

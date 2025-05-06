@@ -1,0 +1,137 @@
+.addProductButton button{
+    margin: 10px;
+    color: white;
+    background-color: rgb(19, 18, 98);
+    border-radius: 12px;
+}
+.addProductButton button:hover{
+    color: yellow;
+}
+.form-add-product label{
+    font-size: 15px;
+}
+.form-add-product{
+    padding: 20px;
+    width: 90%;
+    background-color: white;
+    margin: 15px auto;
+    border-radius: 5px;
+    transition: 5s ease;
+}
+.form-add-product button {
+    margin: 15px 10px ;
+    width: 80px;
+    border-radius: 12px;
+}
+.adminMenu button:hover{
+    color: yellow;
+}
+
+.form-add-product .addButton, .editButton{
+    background-color:rgb(19, 18, 98); ;
+    color: white;
+}
+.form-add-product .cancelButton, .removeButton{
+    background-color:#dc354a; ;
+    color: white;
+}
+.form-add-product {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    opacity: 0;
+    transform: translateY(-20px); /* Start slightly above */
+    pointer-events: none; /* Prevent interaction when hidden */
+  }
+  
+  .form-add-product.form-enter {
+    opacity: 1;
+    transform: translateY(0); /* Slide to original position */
+    pointer-events: auto; /* Allow interaction when visible */
+  }
+  
+  .form-add-product.form-exit {
+    opacity: 0;
+    transform: translateY(-20px); /* Slide back up when hiding */
+    pointer-events: none;
+  }
+  .list-product{
+    width: 100%;
+    padding: 10px;
+    background-color: gainsboro;
+    margin: 20px auto;
+  }
+  .product{
+    display: flex;
+    width: 100%;
+    border-style: solid;
+    border-color:aliceblue;
+    border-radius: 12px;
+    margin: 10px auto;
+  }
+  .list-product .product img{
+    width: 100%;
+    height: 100%;
+  }
+  .product .col1{
+    width: 10%;
+  }
+  .product .col2{
+    width: 65%;
+  }
+  .product .col3{
+    display: flex;
+    align-items: center;
+
+    width: 25%;
+  }
+  .product .col3 button{
+    height: 30%;
+    width: 50%;
+    margin: 10px;
+    border-radius: 12px;
+  }
+  .product .column{
+    padding: 10px;
+  }
+  .form-edit-product{
+    position: fixed;
+    left: 37%;
+    right: auto;
+    top:80px;
+    width: 30%;
+    background-color: white;
+    margin: 15px auto;
+    border-radius: 5px;
+    transition: 5s ease;
+  }
+  .form-edit-product .addButton, .editButton{
+    background-color:rgb(19, 18, 98); ;
+    color: white;
+}
+.form-edit-product .cancelButton, .removeButton{
+    background-color:#dc354a; ;
+    color: white;
+}
+.form-edit-product button {
+  margin: 15px 10px ;
+  width: 80px;
+  border-radius: 12px;
+}
+.form-edit-product {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    opacity: 0;
+    transform: translateY(-20px); /* Start slightly above */
+    pointer-events: none; /* Prevent interaction when hidden */
+  }
+  
+  .form-edit-product.form-enter {
+    opacity: 1;
+    transform: translateY(0); /* Slide to original position */
+    pointer-events: auto; /* Allow interaction when visible */
+  }
+  
+  .form-edit-product.form-exit {
+    opacity: 0;
+    transform: translateY(-20px); /* Slide back up when hiding */
+    pointer-events: none;
+  }
+ 
