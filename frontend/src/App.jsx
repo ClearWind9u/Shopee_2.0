@@ -20,6 +20,7 @@ import AnswerQuestion from "./components/FAQPage/answerQuestion";
 import Detail from "./components/Detail/Detail";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
 import { UserContext, UserProvider } from "./context/UserContext";
+import Cart from "./components/Cart/Cart";
 
 function AppContent() {
   const { user } = useContext(UserContext);
@@ -56,7 +57,10 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
-        />
+        /><Route
+        path="/buyer/cart"
+        element={<ProtectedRoute role="buyer" element={<Cart />} />}
+      />
         <Route
           path="/manager/profile"
           element={<ProtectedRoute role="manager" element={<ProfileBuyer />} />}
