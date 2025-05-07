@@ -8,19 +8,22 @@ function handleProductRoutes($route, $method) {
     
     // Lấy dữ liệu request và token
     $data = json_decode(file_get_contents("php://input"), true);
-    // $headers = getallheaders();
-    // $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
+    $headers = getallheaders();
+    $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
     
-    // if (!$token) {
-    //     http_response_code(401);
-    //     echo json_encode(["error" => "Thiếu token xác thực"]);
-    //     exit();
-    // }
-    // $data['token'] = $token;
+    if (!$token) {
+        http_response_code(401);
+        echo json_encode(["error" => "Thiếu token xác thực"]);
+        exit();
+    }
+    $data['token'] = $token;
 
     // Lấy tất cả sản phẩm
     if ($method == 'GET' && $route == '/listProduct') {
         echo json_encode($controller->getAllProduct($data));
+    }
+    if ($method == 'GET' && $route == '/listProductSeller') {
+        echo json_encode($controller->getAllProductSeller($data));
     }
     // Tạo sản phẩm
     elseif ($method == 'POST' && $route == '/createProduct') {

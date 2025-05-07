@@ -20,26 +20,21 @@ const Detail = () => {
       try {
         setLoading(true);
         const response = await axios.get(`${API_BASE_URL}/product/getProduct`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           params: { productId },
         });
         console.log("Product response:", response);
         const fetchedProduct = response.data.product || {};
-        const variantOptions = fetchedProduct.typeWithImageLink || [];
+        const variantOptions = fetchedProduct.typeWithImage || [];
         setProduct({
           ...fetchedProduct,
           price: `₫${fetchedProduct.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`,
           stock: fetchedProduct.stock,
           variantOptions,
         });
-        if (variantOptions.length > 0) {
-          setSelectedVariant({
-            imageLink: variantOptions[0].imageLink,
-            ...variantOptions[0],
-          });
-        }
+       
       } catch (err) {
         setError(err.response?.data?.error || "Không thể tải thông tin sản phẩm");
       } finally {
@@ -50,20 +45,7 @@ const Detail = () => {
     if (productId) fetchProduct();
   }, [productId, token]);
 
-  const handleVariantChange = (field, value) => {
-    const updatedVariant = { ...selectedVariant, [field]: value };
-    const matchingVariant = product?.variantOptions.find(
-      (v) =>
-        (!v.color || v.color === updatedVariant.color) &&
-        (!v.size || v.size === updatedVariant.size)
-    );
-    if (matchingVariant) {
-      setSelectedVariant({
-        ...updatedVariant,
-        imageLink: matchingVariant.imageLink,
-      });
-    }
-  };
+  
 
   // Handle quantity change
   const handleQtyChange = (change) => {
@@ -96,19 +78,9 @@ const Detail = () => {
         <div className="product-flex">
           <div className="left-section">
             <div className="big-picture">
-              <img src={selectedVariant.imageLink || product.typeWithImageLink?.[0]?.imageLink} alt={product.name} />
+              <img src={API_BASE_URL + product.typeWithImage || product.typeWithImageLink?.[0]?.imageLink} alt={product.name} />
             </div>
-            <div className="smail-pictures">
-              {product.variantOptions.map((variant, index) => (
-                <div className="thumb" key={index}>
-                  <img
-                    onClick={() => setSelectedVariant({ ...selectedVariant, imageLink: variant.imageLink })}
-                    src={variant.imageLink}
-                    alt={`${product.name} - Variant ${index + 1}`}
-                  />
-                </div>
-              ))}
-            </div>
+           
           </div>
 
           <div className="right-section">
@@ -122,41 +94,6 @@ const Detail = () => {
                 Nhận từ {product.shippingTime || "23 Th04 - 25 Th04"}<br />
                 Miễn phí vận chuyển
               </div>
-              {product.variantOptions.length > 0 &&
-                product.variantOptions[0].color &&
-                product.variantOptions[0].size && (
-                  <div className="section">
-                    <strong>Màu sắc:</strong>
-                    <div className="colors">
-                      {[...new Set(product.variantOptions.map((v) => v.color))].map((color, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleVariantChange("color", color)}
-                          className={selectedVariant.color === color ? "selected" : ""}
-                        >
-                          {color}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              {product.variantOptions.length > 0 &&
-                product.variantOptions[0].size && (
-                  <div className="section">
-                    <strong>Kích thước:</strong>
-                    <div className="colors">
-                      {[...new Set(product.variantOptions.map((v) => v.size))].map((size, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleVariantChange("size", size)}
-                          className={selectedVariant.size === size ? "selected" : ""}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
               <div className="section">
                 <strong>Số Lượng:</strong>
                 <div className="qty">

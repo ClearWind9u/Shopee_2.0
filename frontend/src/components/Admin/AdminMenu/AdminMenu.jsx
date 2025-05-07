@@ -1,9 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import "../AdminMenu/AdminMenu.css"
+import Notification from "../../Notification/Notification";
+import { UserContext } from "../../../context/UserContext";
+
+
 
 const AdminMenu = () => {
     const [showAddForm, setShowAddForm] = useState(false)
     const [showEditForm, setShowEditForm] = useState(false)
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+    const { user, token } = useContext(UserContext);
+    
+    const fetchUserProfile = async () => {
+        try {
+          const response = await axios.get(`${API_BASE_URL}/user/profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          console.log("Fetch profile response:", response.data);
+    
+          const userData = response.data;
+          setUsername(userData.username);
+          setEmail(userData.email);
+          setAvatar(userData.avatar || "/default-avatar.jpg");
+          setRole(getRoleName(userData.role));
+          setAddress(userData.address || "");
+          setBirthdate(userData.birthdate || "");
+          setDetails(userData.details || "");
+        } catch (err) {
+          console.error("Fetch profile error:", err.response || err);
+          setError("Không thể lấy thông tin hồ sơ");
+        }
+      };
+    const handleCloseNotification = () => {
+        setError("");
+        setSuccess("");
+      };
+    
     return (
         <div className="adminMenu">
             <h2 style={{ textAlign: "center" }}>
@@ -35,6 +68,14 @@ const AdminMenu = () => {
                                 <input type="text" id="productDescription" name="productDescription" className="form-control" placeholder="Không quá 50 ký tự" />
                             </div>
                             <div>
+                                <label htmlFor="productImage" className="form-label">Hình ảnh:</label>
+                                <input
+                                    id="productImage"
+                                    type="file"
+                                    className="form-control "
+                                />
+                            </div>
+                            <div>
                                 <label htmlFor="productPrice" className="form-label">Giá:</label>
                                 <input type="number" id="productPrice" name="productPrice" className="form-control" placeholder="VNĐ" />
                             </div>
@@ -47,7 +88,7 @@ const AdminMenu = () => {
                                 <input type="number" id="productShipTime" name="productShipTime" className="form-control" placeholder="ngày" />
                             </div>
                             <div>
-                                <label htmlFor="productType" className="form-label">Thời gian ship:</label>
+                                <label htmlFor="productType" className="form-label">Loại sản phẩm:</label>
                                 <select className="form-select" name="productType" id="productType">
                                     <option value="volvo">Volvo</option>
                                     <option value="saab">Saab</option>
@@ -188,6 +229,14 @@ const AdminMenu = () => {
                                 <input type="text" id="productDescription" name="productDescription" className="form-control" placeholder="Không quá 50 ký tự" />
                             </div>
                             <div>
+                                <label htmlFor="productImage" className="form-label">Hình ảnh:</label>
+                                <input
+                                    id="productImage"
+                                    type="file"
+                                    className="form-control "
+                                />
+                            </div>
+                            <div>
                                 <label htmlFor="productPrice" className="form-label">Giá:</label>
                                 <input type="number" id="productPrice" name="productPrice" className="form-control" placeholder="VNĐ" />
                             </div>
@@ -217,6 +266,16 @@ const AdminMenu = () => {
                         </>
                     )
                     }
+                    <Notification
+                        message={success}
+                        type="success"
+                        onClose={handleCloseNotification}
+                    />
+                    <Notification
+                        message={error}
+                        type="error"
+                        onClose={handleCloseNotification}
+                    />
                 </div>
             }
 

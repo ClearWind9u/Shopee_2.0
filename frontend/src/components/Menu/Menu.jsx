@@ -51,9 +51,9 @@ const Menu = () => {
       try {
         setLoading(true);
         const response = await axios.get(`${API_BASE_URL}/product/listProduct`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const fetchedProducts = response.data.product || [];

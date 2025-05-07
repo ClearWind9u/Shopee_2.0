@@ -23,12 +23,19 @@ class ManageProductController
             $shippingTime = $req['shippingTime'];
             $price = $req['price'];
             $stock = $req['stock'];
-
+            $token = $req['token'];
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401); // Unauthorized
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
+            }
+            
 
            
 
             // Tạo người dùng mới
-            $product = $this->productModel->createProduct($name, $description, $typeWithImageLink, $category, $shippingTime, $price, $stock );
+            $product = $this->productModel->createProduct($name, $description, $typeWithImageLink, $category, $shippingTime, $price, $stock,$decoded['userId']);
 
 
             // Tạo token JWT
@@ -54,12 +61,18 @@ class ManageProductController
             $shippingTime = $req['shippingTime'];
             $price = $req['price'];
             $stock = $req['stock'];
-
+            $token = $req['token'];
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401); // Unauthorized
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
+            }
 
            
 
             // Tạo người dùng mới
-            $product = $this->productModel->updateProduct($productId,$name, $description, $typeWithImageLink, $category, $shippingTime, $price, $stock );
+            $product = $this->productModel->updateProduct($productId,$name, $description, $typeWithImageLink, $category, $shippingTime, $price, $stock,$decoded['userId'] );
 
 
             // Tạo token JWT
@@ -74,11 +87,39 @@ class ManageProductController
             exit();
         }
     }
+    public function getAllProductSeller($req)
+    {
+        try {
+            $token = $req['token'];
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401); // Unauthorized
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
+            }
+            $listProduct = $this->productModel->findAllProductsSeller($decoded['userId']);
+            // Xử lý trường hợp không có hội thoại
+            if (empty($listProduct)) {
+                http_response_code(200);
+                echo json_encode([
+                    "message" => "No product found",
+                    "product" => []
+                ]);
+                exit();
+            }
+
+            http_response_code(200);
+            echo json_encode(["product" => $listProduct]);
+            exit();
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
+        }
+    }
     public function getAllProduct($req)
     {
         try {
-            
-
             $listProduct = $this->productModel->findAllProducts();
             // Xử lý trường hợp không có hội thoại
             if (empty($listProduct)) {
