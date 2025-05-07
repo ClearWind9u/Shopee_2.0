@@ -21,7 +21,7 @@ class Cart
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function addToCart($productId, $userId)
+    public function addToCart($productId, $userId,$quantity)
     {
         $findProductStmt = $this->conn->prepare("SELECT * FROM products WHERE id = ? ");
         $findProductStmt->execute([$productId]);
@@ -34,8 +34,8 @@ class Cart
             $stmt->execute([$productId, $userId, $product["price"]]);
             return $this->getCart($userId);
         } else {
-            $productInCart["totalPrice"] += $product["price"];
-            $productInCart["quantity"] += 1;
+            $productInCart["totalPrice"] += $product["price"]*$quantity;
+            $productInCart["quantity"] += $quantity;
             $stmt = $this->conn->prepare("UPDATE carts SET quantity = ?, totalPrice = ? WHERE userID = ? and productID = ? ");
             $stmt->execute([$productInCart["quantity"], $productInCart["totalPrice"], $userId, $productId]);
             return $this->getCart($userId);
