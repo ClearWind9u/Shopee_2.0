@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes, Navigate } from "react-router-dom";
 import ChatWidget from "./components/ChatWidget/ChatWidget";
 import Footer from "./components/Footer/Footer";
 import Home from "./components/Home/Home";
@@ -27,10 +27,9 @@ function AppContent() {
   const { user } = useContext(UserContext);
 
   const ProtectedRoute = ({ role, element }) => {
-    if (user && user.role === role) {
-      return element;
+    if (!user || user.role !== role) {
+      return <Navigate to="/" />;
     }
-    // return <Navigate to="/" />;
     return element;
   };
 
@@ -46,7 +45,7 @@ function AppContent() {
         <Route path="/qa/create-question" element={<CreateQuestion />} />
         <Route path="/qa/answer-question" element={<AnswerQuestion />} />
         <Route path="/menu" element={<Menu />} />
-        <Route path="/menu/detail" element={<Detail />} />
+        <Route path="/detail/:productId" element={<Detail />} />
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
@@ -62,10 +61,11 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
-        /><Route
-        path="/buyer/cart"
-        element={<ProtectedRoute role="buyer" element={<Cart />} />}
-      />
+        />
+        <Route
+          path="/buyer/cart"
+          element={<ProtectedRoute role="buyer" element={<Cart />} />}
+        />
         <Route
           path="/manager/profile"
           element={<ProtectedRoute role="manager" element={<ProfileBuyer />} />}

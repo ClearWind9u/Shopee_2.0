@@ -31,7 +31,7 @@ else if (strpos($request_uri, '/message/') === 0) {
     handleMessageRoutes($route, $method); // Gọi hàm xử lý từ messageRoutes.php
 }
 else if (strpos($request_uri, '/product/') === 0) {
-    $route = str_replace('/product', '', $request_uri); // Loại bỏ tiền tố "/message"
+    $route = str_replace('/product', '', $request_uri); // Loại bỏ tiền tố "/product"
     handleProductRoutes($route, $method); // Gọi hàm xử lý từ messageRoutes.php
 }
 else if(strpos($request_uri, '/Q&A/') === 0){

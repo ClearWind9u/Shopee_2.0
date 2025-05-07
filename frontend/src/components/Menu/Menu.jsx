@@ -1,8 +1,10 @@
 import axios from "axios";
+import { Link } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
 import API_BASE_URL from "../../config";
 import { UserContext } from "../../context/UserContext";
 import "./Menu.css";
+
 const categories = [
   { id: 0, img: '/image/thoitrangnam.webp', label: 'Thời Trang Nam' },
   { id: 1, img: '/image/dienthoaivaphukien.webp', label: 'Điện Thoại & Phụ Kiện' },
@@ -24,40 +26,10 @@ const categories = [
   { id: 17, img: '/image/dochoi.webp', label: 'Đồ Chơi' }
 ];
 
-const products = Array(3).fill([
-  {
-    img: '/image/aotuyenanh.webp',
-    name: 'Áo bóng đá retro Anh 1998 In Beckham-7',
-    price: '₫339.000',
-    sold: 'Đã bán 29'
-  },
-  {
-    img: '/image/aotuyenanh.webp',
-    name: 'Áo thun T-shirt cổ V form Âu Unisex',
-    price: '₫115.000',
-    sold: 'Đã bán 210,6k'
-  },
-  {
-    img: '/image/aotuyenanh.webp',
-    name: 'Áo thun bóng chày tay ngắn EERSHENSHI',
-    price: '₫149.688',
-    sold: 'Đã bán 2,1k'
-  },
-  {
-    img: '/image/aotuyenanh.webp',
-    name: 'Thẻ cầu thủ Ngoại Hạng Anh 2012/13',
-    price: '₫395.000',
-    sold: 'Đã bán 20'
-  },
-  {
-    img: '/image/aotuyenanh.webp',
-    name: 'Áo bóng đá Retro A.C đỏ 1998',
-    price: '₫270.000',
-    sold: 'Đã bán 37'
-  }
-]).flat();
+const parsePrice = (price) => {
+  return `₫${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+};
 
-const parsePrice = (priceStr) => parseInt(priceStr.replace(/[^\d]/g, ""));
 const parseSold = (soldStr) => {
   const match = soldStr.match(/(\d+([,.]\d+)?)(k)?/i);
   if (!match) return 0;
@@ -70,6 +42,39 @@ const Menu = () => {
   const [currentCate, setCurrentCate] = useState(categories[0]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_BASE_URL}/product/listProduct`, {
+          // headers: {
+          //   Authorization: `Bearer ${token}`,
+          // },
+        });
+
+        const fetchedProducts = response.data.product || [];
+        const mappedProducts = fetchedProducts.map((product) => ({
+          id: product.id || `temp-${index}`,
+          img: product.typeWithImageLink?.length > 0 ? product.typeWithImageLink[0].imageLink : '/image/default.webp',
+          name: product.name,
+          price: parsePrice(product.price),
+          sold: `Đã bán ${product.stock}`,
+        }));
+
+        setProducts(mappedProducts);
+      } catch (err) {
+        setError(err.response?.data?.error || "Không thể tải danh sách sản phẩm");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [token]);
 
   const handleChangeCategories = (cateId) => {
     setCurrentCate(categories[cateId]);
@@ -78,8 +83,8 @@ const Menu = () => {
   const filteredProducts = products
     .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
-      const aPrice = parsePrice(a.price);
-      const bPrice = parsePrice(b.price);
+      const aPrice = parseInt(a.price.replace(/[^\d]/g, ""));
+      const bPrice = parseInt(b.price.replace(/[^\d]/g, ""));
       const aSold = parseSold(a.sold);
       const bSold = parseSold(b.sold);
 
@@ -101,9 +106,16 @@ const Menu = () => {
       }
     });
 
+  if (loading) {
+    return <div className="text-center my-5">Đang tải sản phẩm...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center my-5 text-red-500">{error}</div>;
+  }
+
   return (
     <div className="menu-container">
-
       <div className="container text-center categories">
         <div className="row row-name">Danh Mục</div>
         <div className="row row-cate">
@@ -115,7 +127,7 @@ const Menu = () => {
           ))}
         </div>
       </div>
-      
+
       <div className="container my-3 filter-bar">
         <div className="row justify-content-between align-items-center">
           <div className="col-md-6 mb-2">
@@ -149,20 +161,24 @@ const Menu = () => {
         Danh sách các sản phẩm theo chủ đề {currentCate.label}
       </div>
 
-      <div className="product-grid container text-center">
-        {[0, 1, 2].map((rowIdx) => (
-          <div className="row" key={rowIdx}>
-            {filteredProducts.slice(rowIdx * 5, rowIdx * 5 + 5).map((product, i) => (
-              <div className="col product-card" key={i}>
-                <img src={product.img} alt={`SP${i + 1}`} />
-                <div className="product-name">{product.name}</div>
-                <div className="product-price">{product.price}</div>
-                <div className="product-sold">{product.sold}</div>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      {filteredProducts.length === 0 ? (
+        <div className="text-center my-5">Không tìm thấy sản phẩm nào.</div>
+      ) : (
+        <div className="product-grid container text-center">
+          {[0, 1, 2].map((rowIdx) => (
+            <div className="row" key={rowIdx}>
+              {filteredProducts.slice(rowIdx * 5, rowIdx * 5 + 5).map((product, i) => (
+                <Link to={`/detail/${product.id}`} className="col product-card" key={product.id || i}>
+                  <img src={product.img} alt={product.name} />
+                  <div className="product-name">{product.name}</div>
+                  <div className="product-price">{product.price}</div>
+                  <div className="product-sold">{product.sold}</div>
+                </Link>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
