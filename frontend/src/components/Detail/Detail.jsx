@@ -1,116 +1,187 @@
-
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import API_BASE_URL from "../../config";
 import { UserContext } from "../../context/UserContext";
-import './Detail.css';
-const productType = [
-  { id: 0, img: '/image/thoitrangnam.webp', label: 'Thời Trang Nam', listFields : [{id:0,label:'Màu',field:['Đen','Trắng','Đỏ Đô','Xanh Than']},{id:0,label:'Size',field:['M','L','XL','XXL']}] },
-  { id: 1, img: '/image/dienthoaivaphukien.webp', label: 'Điện Thoại & Phụ Kiện', listFields : [{id:0,label:'Màu1',field:['Đen','Trắng','Đỏ Đô','Xanh Than']},{id:0,label:'Size1',field:['M','L','XL','XXL']}] },
-  { id: 2, img: '/image/thietbidientu.webp', label: 'Thiết bị điện tử', listFields : [{id:0,label:'Màu2',field:['Đen','Trắng','Đỏ Đô','Xanh Than']},{id:0,label:'Size2',field:['M','L','XL','XXL']}] },
-  { id: 3, img: '/image/maytinhlaptop.webp', label: 'Máy Tính & Laptop', listFields : [{id:0,label:'Màu3',field:['Đen','Trắng','Đỏ Đô','Xanh Than']},{id:0,label:'Size3',field:['M','L','XL','XXL']}] },
-  { id: 4, img: '/image/mayanhvaquayphim.webp', label: 'Máy Ảnh & Máy Quay Phim', listFields : [{id:0,label:'Màu4',field:['Đen','Trắng','Đỏ Đô','Xanh Than']},{id:0,label:'Size4',field:['M','L','XL','XXL']}] },
-  
-];
+import "./Detail.css";
+
 const Detail = () => {
-   const [listType, setListType] = useState(productType);
-   const [currentImg, setCurrentImg] = useState(productType[0])
-   const [selectedField, setSelectedField] = useState([])
-   const [qty,setQty] = useState(1)
-   const [qtyLeft,setQtyLeft] = useState(10)
+  const { productId } = useParams();
+  const { user, token } = useContext(UserContext);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState({});
+  const [qty, setQty] = useState(1);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      console.log("Fetching product with ID:", productId);
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_BASE_URL}/product/getProduct`, {
+          // headers: {
+          //   Authorization: `Bearer ${token}`,
+          // },
+          params: { productId },
+        });
+        console.log("Product response:", response);
+        const fetchedProduct = response.data.product || {};
+        const variantOptions = fetchedProduct.typeWithImageLink || [];
+        setProduct({
+          ...fetchedProduct,
+          price: `₫${fetchedProduct.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`,
+          stock: fetchedProduct.stock,
+          variantOptions,
+        });
+        if (variantOptions.length > 0) {
+          setSelectedVariant({
+            imageLink: variantOptions[0].imageLink,
+            ...variantOptions[0],
+          });
+        }
+      } catch (err) {
+        setError(err.response?.data?.error || "Không thể tải thông tin sản phẩm");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) fetchProduct();
+  }, [productId, token]);
+
+  const handleVariantChange = (field, value) => {
+    const updatedVariant = { ...selectedVariant, [field]: value };
+    const matchingVariant = product?.variantOptions.find(
+      (v) =>
+        (!v.color || v.color === updatedVariant.color) &&
+        (!v.size || v.size === updatedVariant.size)
+    );
+    if (matchingVariant) {
+      setSelectedVariant({
+        ...updatedVariant,
+        imageLink: matchingVariant.imageLink,
+      });
+    }
+  };
+
+  // Handle quantity change
+  const handleQtyChange = (change) => {
+    const newQty = qty + change;
+    if (newQty >= 1 && newQty <= (product?.stock || 10)) {
+      setQty(newQty);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center my-5">Đang tải sản phẩm...</div>;
+  }
+
+  if (error || !product) {
+    return <div className="text-center my-5 text-red-500">{error || "Sản phẩm không tồn tại"}</div>;
+  }
+
   return (
     <div>
-      {/* <div className="navbar">
-        <div className="logo">
-          <img className="img-hover" src="shopee-logo.png" alt="Shopee Logo" />
-        </div>
-        <div className="search-bar">
-          <input type="text" placeholder="NGUYỄN BÁ VIỆT QUANG  ASDASDASD123" />
-          <button>🔍</button>
-        </div>
-        <div className="menu">
-          <a href="#">Hỗ Trợ</a>
-          <a href="#">Tiếng Việt</a>
-          <a href="#">nguyenbavietquang</a>
-          <a href="#" className="cart">🛒<span>11</span></a>
-        </div>
-      </div> */}
-
       <div className="container breadcrumb">
-        <nav style={{ "--bs-breadcrumb-divider": "'>'" }} aria-label="breadcrumb">
+        <nav style={{ "--bs-breadcrumb-divider": "'>" }} aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item"><a href="#">Xoppii</a></li>
-            <li className="breadcrumb-item active" aria-current="page">San pham</li>
+            <li className="breadcrumb-item active" aria-current="page">Sản phẩm</li>
           </ol>
         </nav>
       </div>
 
       <div className="container product-detail">
-  <div className="product-flex">
-    <div className="left-section">
-      <div className="big-picture">
-        <img src={currentImg.img} alt={currentImg.label} />
-      </div>
-      {/* <div className="smail-pictures">
-        {listType.map((type) => (
-          <div className="thumb" key={type.id}>
-            <img onClick={() => {
-              setCurrentImg(productType[type.id])
-            }} src={type.img} alt={type.label} />
+        <div className="product-flex">
+          <div className="left-section">
+            <div className="big-picture">
+              <img src={selectedVariant.imageLink || product.typeWithImageLink?.[0]?.imageLink} alt={product.name} />
+            </div>
+            <div className="smail-pictures">
+              {product.variantOptions.map((variant, index) => (
+                <div className="thumb" key={index}>
+                  <img
+                    onClick={() => setSelectedVariant({ ...selectedVariant, imageLink: variant.imageLink })}
+                    src={variant.imageLink}
+                    alt={`${product.name} - Variant ${index + 1}`}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div> */}
-    </div>
 
-    <div className="right-section">
-      <div className="product-card">
-        <div className="title">{currentImg.label}</div>
-        <div className="section">
-          <span className="price">₫179.550</span>
-        </div>
-        <div className="section">
-          <strong>Vận Chuyển:</strong><br />
-          Nhận từ 23 Th04 - 25 Th04<br />
-          Miễn phí vận chuyển
-        </div>
-        {/* {currentImg.listFields.map((listField) => (
-           <div className="section" key={listField.id}>
-           <strong>{listField.label}:</strong>
-           <div className="colors" key={listField.id}>
-             {listField.field.map((type,i) => (
-               <button key={i}>{type}</button>
-             ))}
-           </div>
-         </div>
-        ))} */}
-        
-        <div className="section">
-          <strong>Số Lượng:</strong>
-          <div className="qty">
-            <button onClick={() => {
-              let newQty = qty-1;
-              if(newQty>=1){
-                setQty(newQty);
-              }
-            }} >-</button>
-            <input type="number" defaultValue="1" min="1" value={qty} style={{ width: "60px", textAlign: "center" }} />
-            <button onClick={() => {
-              let newQty = qty+1;
-              if(newQty<=qtyLeft){
-                setQty(newQty); 
-              }
-            }}>+</button>
-            <span>{qtyLeft} sản phẩm có sẵn</span>
+          <div className="right-section">
+            <div className="product-card">
+              <div className="title">{product.name}</div>
+              <div className="section">
+                <span className="price">{product.price}</span>
+              </div>
+              <div className="section">
+                <strong>Vận Chuyển:</strong><br />
+                Nhận từ {product.shippingTime || "23 Th04 - 25 Th04"}<br />
+                Miễn phí vận chuyển
+              </div>
+              {product.variantOptions.length > 0 &&
+                product.variantOptions[0].color &&
+                product.variantOptions[0].size && (
+                  <div className="section">
+                    <strong>Màu sắc:</strong>
+                    <div className="colors">
+                      {[...new Set(product.variantOptions.map((v) => v.color))].map((color, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleVariantChange("color", color)}
+                          className={selectedVariant.color === color ? "selected" : ""}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              {product.variantOptions.length > 0 &&
+                product.variantOptions[0].size && (
+                  <div className="section">
+                    <strong>Kích thước:</strong>
+                    <div className="colors">
+                      {[...new Set(product.variantOptions.map((v) => v.size))].map((size, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleVariantChange("size", size)}
+                          className={selectedVariant.size === size ? "selected" : ""}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              <div className="section">
+                <strong>Số Lượng:</strong>
+                <div className="qty">
+                  <button onClick={() => handleQtyChange(-1)}>-</button>
+                  <input
+                    type="number"
+                    value={qty}
+                    min="1"
+                    max={product.stock}
+                    style={{ width: "60px", textAlign: "center" }}
+                    onChange={(e) => setQty(Math.min(Math.max(1, parseInt(e.target.value) || 1), product.stock))}
+                  />
+                  <button onClick={() => handleQtyChange(1)}>+</button>
+                  <span>{product.stock} sản phẩm có sẵn</span>
+                </div>
+              </div>
+              <div className="buy-section">
+                <button className="cart-btn">🛒 Thêm Vào Giỏ Hàng</button>
+                <button className="buy-btn">Mua Với Giá {product.price}</button>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="buy-section">
-          <button className="cart-btn">🛒 Thêm Vào Giỏ Hàng</button>
-          <button className="buy-btn">Mua Với Giá ₫179.550</button>
-        </div>
       </div>
-    </div>
-  </div>
-</div>
+
       <div className="container order-product">
         <p>Các sản phẩm liên quan</p>
       </div>

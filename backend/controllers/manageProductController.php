@@ -102,7 +102,16 @@ class ManageProductController
     public function getProductById($req)
     {
         try {
-            $productID = $req['productId'];
+            $productID = isset($_GET['productId']) ? $_GET['productId'] : null;
+            // Kiểm tra nếu productId không tồn tại
+            if (is_null($productID)) {
+                http_response_code(400);
+                echo json_encode([
+                    "message" => "Missing productId parameter",
+                    "product" => []
+                ]);
+                exit();
+            }
 
             $product = $this->productModel->findProductById($productID);
             // Xử lý trường hợp không có hội thoại
