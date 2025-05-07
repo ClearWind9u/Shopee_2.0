@@ -51,19 +51,21 @@ const Menu = () => {
       try {
         setLoading(true);
         const response = await axios.get(`${API_BASE_URL}/product/listProduct`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const fetchedProducts = response.data.product || [];
+        console.log(fetchProducts)
         const mappedProducts = fetchedProducts.map((product) => ({
           id: product.id || `temp-${index}`,
-          img: product.typeWithImageLink?.length > 0 ? product.typeWithImageLink[0].imageLink : '/image/default.webp',
+          img: product.typeWithImage || '/image/default.webp',
           name: product.name,
           price: parsePrice(product.price),
           sold: `Đã bán ${product.stock}`,
         }));
+        console.log(mappedProducts)
 
         setProducts(mappedProducts);
       } catch (err) {
@@ -169,7 +171,7 @@ const Menu = () => {
             <div className="row" key={rowIdx}>
               {filteredProducts.slice(rowIdx * 5, rowIdx * 5 + 5).map((product, i) => (
                 <Link to={`/detail/${product.id}`} className="col product-card" key={product.id || i}>
-                  <img src={product.img} alt={product.name} />
+                  <img src={API_BASE_URL + product.img} alt={product.name} />
                   <div className="product-name">{product.name}</div>
                   <div className="product-price">{product.price}</div>
                   <div className="product-sold">{product.sold}</div>
