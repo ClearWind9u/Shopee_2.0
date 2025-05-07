@@ -51,8 +51,8 @@ function AppContent() {
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
         />
         <Route
-          path="/seller/manageProduct"
-          element={<ProtectedRoute role="seller" element={<AdminMenu />} />}
+          path="/seller/manageProduct" element={<AdminMenu />}
+          // element={<ProtectedRoute role="seller" element={<AdminMenu />} />}
         />
         <Route
           path="/order-history"
