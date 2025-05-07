@@ -45,6 +45,7 @@ function AppContent() {
         <Route path="/qa/create-question" element={<CreateQuestion />} />
         <Route path="/qa/answer-question" element={<AnswerQuestion />} />
         <Route path="/menu" element={<Menu />} />
+        {/* <Route path="/manageProduct" element={<AdminMenu />} /> */}
         <Route path="/detail/:productId" element={<Detail />} />
         <Route
           path="/seller/profile"
