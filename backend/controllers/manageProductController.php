@@ -65,7 +65,7 @@ class ManageProductController
             $decoded = $this->authMiddleware->verifyToken($token);
             if (!$decoded || !isset($decoded['userId'])) {
                 http_response_code(401); // Unauthorized
-                echo json_encode(["error" => "Token không hợp lệ"]);
+                echo json_encode(["error" => "Token không hợp lệ","decode"=>$decoded]);
                 exit();
             }
 

@@ -42,7 +42,8 @@ class CartController
                 exit(); 
             }
             $productId = $req['productId'];
-            $data = $this->cartModel->addToCart($productId,$decoded['userId']);
+            $quantity = $req['quantity'];
+            $data = $this->cartModel->addToCart($productId,$decoded['userId'],$quantity);
             http_response_code(200);
             echo json_encode(["message"=>"Thanh Cong","value"=>$data]);
             exit();
