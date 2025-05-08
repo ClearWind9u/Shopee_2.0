@@ -62,11 +62,11 @@ const NewsList = () => {
             newErrors.content = "Nội dung không được để trống";
         }
 
-        if (editForm.image && !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(editForm.image)) {
-            newErrors.image = "Link ảnh không hợp lệ (phải là .jpg, .png, .gif...)";
-        }
+        // if (editForm.image && !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(editForm.image)) {
+        //     newErrors.image = "Link ảnh không hợp lệ (phải là .jpg, .png, .gif...)";
+        // }
 
-        setSuccess(newErrors);
+        setErrors(newErrors);
 
         if (Object.keys(newErrors).length > 0) {
             setSuccess("Vui lòng sửa các lỗi bên dưới.");
