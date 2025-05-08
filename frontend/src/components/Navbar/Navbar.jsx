@@ -59,7 +59,7 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-actions">
-          <Link to="/cart" className="navbar-cart">
+          <Link to="/buyer/cart" className="navbar-cart">
             <FaShoppingCart size={22} />
           </Link>
           <div className="navbar-user dropdown">

@@ -46,6 +46,11 @@ function handleMessageRoutes($route, $method) {
         $data['otherUserId'] = $matches[1];
         echo json_encode($controller->deleteConversation($data));
     }
+    // Xóa tin nhắn
+    elseif ($method == 'DELETE' && preg_match('/^\/delete\/(\d+)$/', $route, $matches)) {
+        $data['messageId'] = $matches[1];
+        echo json_encode($controller->deleteMessage($data));
+    }
     else {
         http_response_code(404);
         echo json_encode(["error" => "Route không tồn tại"]);

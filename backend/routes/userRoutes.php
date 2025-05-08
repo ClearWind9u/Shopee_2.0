@@ -12,9 +12,10 @@ function handleUserRoutes($route, $method)
         echo json_encode($controller->login($data));
     } elseif ($method == 'POST' && $route == '/register') {
         $data = json_decode(file_get_contents("php://input"), true);
+        $data['balance'] = isset($data['balance']) ? floatval($data['balance']) : 0.00;
         echo json_encode($controller->register($data));
     } elseif ($method == 'GET' && $route == '/profile') {
-        $headers = getallheaders(); // Lấy toàn bộ header
+        $headers = getallheaders();
         $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
 
         if (!$token) {
@@ -25,12 +26,12 @@ function handleUserRoutes($route, $method)
     } elseif ($method == 'POST' && $route == '/update-profile') {
         $headers = getallheaders();
         $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
-    
-        // Lấy thông tin từ $_POST cho các trường văn bản
+
         $username = $_POST['username'] ?? '';
         $address = $_POST['address'] ?? '';
         $birthdate = $_POST['birthdate'] ?? '';
         $details = $_POST['details'] ?? '';
+        $balance = isset($_POST['balance']) ? floatval($_POST['balance']) : null;
     
         // Nếu có file, lấy từ $_FILES
         $avatar = $_FILES['avatar'] ?? null;
@@ -49,14 +50,32 @@ function handleUserRoutes($route, $method)
             "birthdate" => $birthdate,
             "details" => $details,
             "avatar" => $avatar,
-            "token" => $token
+            "token" => $token,
+            "balance" => $balance
         ];
     
         // Gọi hàm cập nhật profile từ controller
         echo json_encode($controller->updateProfile($data));
-    }    
-    // Lấy ảnh từ thư mục uploads/avatars
-    elseif ($method == 'GET' && preg_match('/^\/uploads\/avatars\/(.*)$/', $route, $matches)) {
+    } elseif ($method == 'POST' && $route == '/update-balance') {
+        $headers = getallheaders();
+        $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
+
+        if (!$token) {
+            http_response_code(401);
+            echo json_encode(["error" => "Thiếu token xác thực"]);
+            exit();
+        }
+
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (!isset($data['balance'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Thiếu số dư trong request"]);
+            exit();
+        }
+
+        $data['token'] = $token;
+        echo json_encode($controller->updateBalance($data));
+    } elseif ($method == 'GET' && preg_match('/^\/uploads\/avatars\/(.*)$/', $route, $matches)) {
         $file = __DIR__ . '/../uploads/avatars/' . $matches[1];
 
         if (file_exists($file)) {

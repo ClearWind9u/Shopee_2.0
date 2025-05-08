@@ -1,0 +1,192 @@
+.cart-container .col-left {
+    width: 60%;
+    float: left;
+    padding: 10px;
+}
+
+.cart-container .col-right {
+    width: 40%;
+    float: left;
+}
+
+.cart-container .clear {
+    clear: both;
+}
+
+.col-left .first-line .nameInput {
+    width: 60%;
+    float: left;
+    padding: 10px;
+}
+
+.col-left .first-line .phoneInput {
+    width: 40%;
+    float: left;
+    padding: 10px;
+}
+
+.cart-container input {
+    border-radius: 25px;
+}
+
+.col-left .second-line {
+    padding: 10px;
+}
+
+.third-line {
+    display: flex;
+}
+
+.third-line .column {
+    padding: 10px;
+    width: 33%;
+    border-radius: 25px;
+}
+
+.third-line .column select {
+    border-radius: 25px;
+}
+
+.other-receiver {
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.other-receiver .gender {
+    padding: 10px;
+}
+
+.otherReceiverDetail .column {
+    display: inline-block;
+    padding: 10px;
+    width: 50%;
+}
+
+.cart-container form {
+    margin-bottom: 10px;
+}
+
+.paymentMethod {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.payment-check {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding-left: 40px;
+    background-color: #fff;
+    margin-bottom: 15px;
+    border-radius: 13px;
+}
+
+.payment-check img {
+    height: 50px;
+    width: 50px;
+    padding: 4px;
+}
+
+.col-right .form-check {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    margin-bottom: 5px;
+}
+
+.col-right .form-check label {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+}
+
+.col-right .form-check .col1 {
+    width: 30%;
+    font-size: 12px;
+    padding: 10px;
+}
+
+.col-right .form-check .col2 {
+    width: 45%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-right .form-check .col3 {
+    width: 25%;
+    text-align: center;
+}
+
+.col-right .form-check-product {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    margin-bottom: 5px;
+}
+
+.col-right .form-check-product img {
+    height: 150px;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.col-right .form-check-product .col1 .product-name {
+    word-wrap: break-word;
+    height: 50%;
+    text-align: center;
+}
+
+.col-right .form-check-product .col1 img {
+    margin-bottom: 20px;
+}
+
+.col-right .form-check-product .col2 {
+    height: 100%;
+}
+
+.col-right .form-check-product .col2 .qty-input {
+    text-align: center;
+}
+
+.total-container {
+    display: flex;
+    bottom: 0;
+    width: 100%;
+}
+
+.total-container .col1 img {
+    padding: 10px;
+    height: 100%;
+}
+
+.total-container .col1 {
+    display: flex;
+    background-color: rgba(59, 130, 246, .5);
+    width: 50%;
+    justify-content: center;
+}
+
+.total-container .col2 {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    background-color: white;
+}
+
+.total-container .col2 button {
+    width: 120px;
+    padding: 10px;
+    margin-left: 10px;
+    background-color: black;
+    color: white;
+    border-radius: 12px;
+}
+
+.total-container .col2 div {
+    font-size: 20px;
+}

@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-
+import { Route, BrowserRouter as Router, Routes, Navigate } from "react-router-dom";
 import ChatWidget from "./components/ChatWidget/ChatWidget";
 import Footer from "./components/Footer/Footer";
 import Home from "./components/Home/Home";
@@ -16,6 +15,8 @@ import ShippingPolicy from "./components/ShippingPolicy/ShippingPolicy";
 import Menu from "./components/Menu/Menu";
 import About from "./components/About/About";
 import FAQPage from "./components/FAQPage/FAQPage";
+import CreateQuestion from "./components/FAQPage/createQuestion";
+import AnswerQuestion from "./components/FAQPage/answerQuestion";
 import Detail from "./components/Detail/Detail";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
 import Post from "./components/Posts/User/Post";
@@ -23,15 +24,17 @@ import PostDetail from "./components/Posts/User/PostDetail";
 import NewsList from "./components/Posts/Admin/NewsList";
 import { UserContext, UserProvider } from "./context/UserContext";
 import AdminCommentManager from "./components/Posts/Admin/AdminCommentManager";
+import Cart from "./components/Cart/Cart";
+import AdminMenu from "./components/Admin/AdminMenu/AdminMenu";
+
 
 function AppContent() {
   const { user } = useContext(UserContext);
 
   const ProtectedRoute = ({ role, element }) => {
-    if (user && user.role === role) {
-      return element;
+    if (!user || user.role !== role) {
+      return <Navigate to="/" />;
     }
-    // return <Navigate to="/" />;
     return element;
   };
 
@@ -44,11 +47,18 @@ function AppContent() {
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/qa" element={<FAQPage />} />
+        <Route path="/qa/create-question" element={<CreateQuestion />} />
+        <Route path="/qa/answer-question" element={<AnswerQuestion />} />
         <Route path="/menu" element={<Menu />} />
-        <Route path="/menu/detail" element={<Detail />} />
+        {/* <Route path="/manageProduct" element={<AdminMenu />} /> */}
+        <Route path="/detail/:productId" element={<Detail />} />
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
+        />
+        <Route
+          path="/seller/manageProduct" element={<AdminMenu />}
+          // element={<ProtectedRoute role="seller" element={<AdminMenu />} />}
         />
         <Route
           path="/order-history"
@@ -57,6 +67,10 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
+        />
+        <Route
+          path="/buyer/cart"
+          element={<ProtectedRoute role="buyer" element={<Cart />} />}
         />
         <Route
           path="/manager/profile"

@@ -166,7 +166,7 @@ class MessageController
         }
     }
 
-    // Xóa hội thoại (xóa mềm)
+    // Xóa hội thoại giữa 2 người dùng
     public function deleteConversation($req)
     {
         try {
@@ -188,18 +188,65 @@ class MessageController
                 exit();
             }
 
+            error_log("Deleting conversation: userId=$userId, otherUserId=$otherUserId, productId=" . ($productId ?? 'null'));
+
             $success = $this->messageModel->deleteConversation($userId, $otherUserId, $productId);
 
             if ($success) {
                 http_response_code(200);
-                echo json_encode(["message" => "Conversation deleted"]);
+                echo json_encode(["message" => "Conversation deleted successfully"]);
+                exit();
             } else {
                 http_response_code(404);
-                echo json_encode(["error" => "Conversation not found or already deleted"]);
+                echo json_encode(["error" => "Conversation not found"]);
+                exit();
             }
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
+        }
+    }
+
+    // Xóa tin nhắn theo ID
+    public function deleteMessage($req)
+    {
+        try {
+            $token = $req['token'];
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
+                exit();
+            }
+
+            $userId = $decoded['userId'];
+            $messageId = $req['messageId'] ?? null;
+
+            if (empty($messageId)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Message ID is required"]);
+                exit();
+            }
+
+            // Log for debugging
+            error_log("Deleting message: messageId=$messageId, userId=$userId");
+
+            $success = $this->messageModel->deleteMessage($messageId, $userId);
+
+            if ($success) {
+                http_response_code(200);
+                echo json_encode(["message" => "Message deleted successfully"]);
+                exit();
+            } else {
+                http_response_code(404);
+                echo json_encode(["error" => "Message not found or not authorized to delete"]);
+                exit();
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
         }
     }
 }

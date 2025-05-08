@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
 import API_BASE_URL from "../../config";
+import Notification from "../Notification/Notification";
 import "./ProfileSeller.css";
 import defaultAvatar from "/default-avatar.jpg";
 
@@ -9,7 +10,8 @@ const ProfileSeller = () => {
   const { user, token } = useContext(UserContext);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [file, setFile] = useState(null);
   const [profile, setProfile] = useState({
     username: "",
@@ -53,7 +55,8 @@ const ProfileSeller = () => {
         birthdate: data.birthdate || "",
         details: data.details || "",
       });
-    } catch {
+    } catch (err) {
+      console.error("Fetch profile error:", err.response || err);
       setError("Không thể lấy thông tin hồ sơ");
     }
   };
@@ -73,11 +76,14 @@ const ProfileSeller = () => {
   const handleRemoveAvatar = () => {
     setFile(null);
     setProfile({ ...profile, avatar: defaultAvatar });
+    setSuccess("Đã xóa ảnh đại diện");
   };
 
   const handleSave = async () => {
     setLoading(true);
-    setError("");
+    setError(null);
+    setSuccess(null);
+
     const formData = new FormData();
     formData.append("userId", user.id);
     formData.append("username", profile.username);
@@ -87,25 +93,32 @@ const ProfileSeller = () => {
     formData.append("avatar", file || profile.avatar);
 
     try {
-      await axios.post(`${API_BASE_URL}/user/update-profile`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/user/update-profile`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("Cập nhật thành công!");
+      console.log("API response:", response.data);
+      setSuccess("Cập nhật hồ sơ thành công!");
       setEditMode(false);
     } catch (err) {
-      setError(err.response?.data?.error || "Lỗi cập nhật");
+      console.error("API error:", err.response || err);
+      setError(err.response?.data?.error || "Lỗi cập nhật hồ sơ");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCloseNotification = () => {
+    console.log("Closing notification");
+    setError(null);
+    setSuccess(null);
+  };
+
   return (
     <div className="container mt-5 mb-5">
       <h2 className="mb-4 text-center">Hồ sơ cửa hàng</h2>
-      {error && <p className="alert alert-danger">{error}</p>}
 
       <div className="card shadow-lg p-4 rounded-4">
         <div className="row g-4 align-items-center">
@@ -223,6 +236,22 @@ const ProfileSeller = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="notification-container">
+        <Notification
+          key={`success-${success}-${Date.now()}`}
+          message={success}
+          type="success"
+          duration={5000}
+          onClose={handleCloseNotification}
+        />
+        <Notification
+          key={`error-${error}-${Date.now()}`}
+          message={error}
+          type="error"
+          duration={5000}
+          onClose={handleCloseNotification}
+        />
       </div>
     </div>
   );
