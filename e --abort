@@ -1,0 +1,269 @@
+[33mcommit 779d3142c30c34be5e55c46a3f8c26399b0a4616[m[33m ([m[1;36mHEAD[m[33m)[m
+Merge: aa69f08 4f4e564
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Wed May 7 18:17:58 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit aa69f08ee84472ffc591afc43f918678989ba63e[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Wed May 7 18:17:31 2025 +0700
+
+    add balance for User
+
+[33mcommit 4f4e56465ca881c2ec1ca958005078e406dc6815[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Wed May 7 17:56:52 2025 +0700
+
+    update detail UI and add token for Menu API
+
+[33mcommit 1dbdf628b34cce01334778afb40e1634e7d72cf9[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Wed May 7 16:19:23 2025 +0700
+
+    update menu ui
+
+[33mcommit 8d91d09d984ef9f32ca923f37406d683b7233396[m
+Merge: 1e3b302 e0bf3f8
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Wed May 7 13:33:02 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit 1e3b30277bc1fecf4bb1e8553698bb0077112e73[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Wed May 7 13:32:50 2025 +0700
+
+    art Cart Api
+
+[33mcommit e0bf3f871e004cb14fe8a075510852df0e8f13fd[m
+Merge: 466b218 998d099
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Wed May 7 12:13:44 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit 466b2182e4651b6be0daea5eb832a00038fd9c25[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Wed May 7 12:09:54 2025 +0700
+
+    update connect API getAllProduct and getProductById
+
+[33mcommit 998d099ec0a84856c2fa3f8dc1cd0bdf17f3057d[m
+Author: binh2308 <phuongbinh.conan@gmail.com>
+Date:   Tue May 6 22:31:29 2025 +0700
+
+    Update CSS dropdown
+
+[33mcommit a9fb784a0a5c1cdf38f3e5bd69f789d0c8589b25[m
+Merge: 09870a7 bccf3e6
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Tue May 6 22:22:08 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit bccf3e6ed11c65f2d4c2bfc3f8b2645d623e6216[m
+Author: binh2308 <phuongbinh.conan@gmail.com>
+Date:   Tue May 6 22:12:49 2025 +0700
+
+    Updata CSS FAQ 6/5
+
+[33mcommit 09870a79f0426aee0ea01d27aa4e44816e51bcbf[m
+Merge: 8cb0435 2396e98
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Tue May 6 22:03:18 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit 2396e9810ea24c69c789916c73c444ac7903f96f[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Tue May 6 22:00:44 2025 +0700
+
+    update AdminMenu UI
+
+[33mcommit 8cb043512e179d86159ac72cdc68292091cc924a[m
+Merge: 69a23dd e488e61
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Tue May 6 21:42:32 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit 69a23dd7d6c33a5d0fbcf6157f3c51d9907086fe[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Tue May 6 21:42:25 2025 +0700
+
+    pull
+
+[33mcommit e488e6139feada1407a6ecdeff14dda6d615e1f2[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Tue May 6 21:33:24 2025 +0700
+
+    add AdminMenu UI
+
+[33mcommit 7b0d083f7f7e815dc8876a4c86814d5ad663269f[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Tue May 6 14:40:53 2025 +0700
+
+    add Cart UI
+
+[33mcommit 404c04b3042333996f6e651cd44dd047e2bf41f9[m
+Author: binh2308 <phuongbinh.conan@gmail.com>
+Date:   Mon May 5 00:15:14 2025 +0700
+
+    Update FAQPage 5/5
+
+[33mcommit ac7ea528741344dd361f41e9bf0caaf381248e90[m
+Merge: 575a452 0750971
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Thu May 1 22:58:40 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit 575a45239243d7061a5d74dd5650c68a45ec6ce9[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Thu May 1 22:58:13 2025 +0700
+
+    update Notification and done ChatWidget
+
+[33mcommit 075097176eba93929c402c28f97df623d305704a[m
+Author: Phạm Thanh Phong <133841678+ClearWind9u@users.noreply.github.com>
+Date:   Thu May 1 11:31:24 2025 +0700
+
+    Update README.md
+
+[33mcommit 701821a00cab9a8862a8dac0e4c5e00bd8815407[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Thu May 1 10:55:07 2025 +0700
+
+    update chatwidget api and UI
+
+[33mcommit 1652222842e7cf25eea8c40a22e197f2d705a2f7[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Sat Apr 26 17:34:17 2025 +0700
+
+    product api
+
+[33mcommit 1c873f5052ee32b71b2532bf9649506685b2b97a[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Thu Apr 24 23:14:07 2025 +0700
+
+    add search and filter in Menu
+
+[33mcommit 821b7433bfbb853649db1337d5779a317848a115[m
+Merge: 3f59324 eb211d3
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Thu Apr 24 21:58:02 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit 3f59324fc0c1923842a3e775a8629220d7260255[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Thu Apr 24 21:56:50 2025 +0700
+
+    add-interaction-in-detail-page
+
+[33mcommit eb211d35951e5799c784a001902a4582a8dc9d97[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Thu Apr 24 21:53:37 2025 +0700
+
+    fix some UI
+
+[33mcommit 221dc2d54c862c4f3a87e54e91fcfa40d4db0dc2[m
+Merge: d38c68e 51b2581
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Thu Apr 24 21:02:46 2025 +0700
+
+    add About and FAQPage
+
+[33mcommit d38c68e643fb21f552f372688369799c1fe0aaf7[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Thu Apr 24 21:01:52 2025 +0700
+
+    pull
+
+[33mcommit 51b2581987eb137c3a49439ac017743ec0ed3c4a[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Thu Apr 24 20:44:12 2025 +0700
+
+    detail
+
+[33mcommit 4e9719135ed78c4923a9e2476de005a6b879668f[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Wed Apr 23 16:24:43 2025 +0700
+
+    trang menu
+
+[33mcommit 22afdb000b6f1fec966ac3d88f7d98672d34122e[m
+Merge: 9b014bb 435d2ef
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Wed Apr 23 15:41:11 2025 +0700
+
+    Merge branch 'main' of https://github.com/ClearWind9u/Shopee_2.0
+
+[33mcommit 9b014bb34feb00ef04f9ec0aa52df5fa924ee7e3[m
+Author: LangTuDaTinh <quangviet210804@gmail.com>
+Date:   Wed Apr 23 15:39:56 2025 +0700
+
+    abc
+
+[33mcommit 435d2ef2364f13563b24c9750b4b179b90dadcc3[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 21 13:18:35 2025 +0700
+
+    add responsive css
+
+[33mcommit 8ef89735868c557f2858294167f83ec17d90457d[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Sat Apr 12 22:50:34 2025 +0700
+
+    update chatwidget UI
+
+[33mcommit a25adc07161a14ff37775b7f1f986818c03d731c[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Sat Apr 12 22:32:19 2025 +0700
+
+    update a little api message
+
+[33mcommit 5316271dfe3bba690a41ee42129f07e6888cb791[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 7 16:49:59 2025 +0700
+
+    update chatwidget
+
+[33mcommit e0d011c6f2c2a22126e269b8b36e1a3ae680329d[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 7 15:57:50 2025 +0700
+
+    update database and some backend
+
+[33mcommit 7ad41080182d9cb62242827bb4b18a0840047014[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 7 10:59:09 2025 +0700
+
+    update register
+
+[33mcommit 1018056a64361e137a58b05e2f7f696edd7e53c7[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 7 10:20:01 2025 +0700
+
+    update port
+
+[33mcommit 92571e28d22641a1f52f121c6f3c7b935dc6cf3c[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 7 09:04:43 2025 +0700
+
+    update docker file
+
+[33mcommit 040bcd271413b2f63e9a979403e74dc450f02eda[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 7 09:02:46 2025 +0700
+
+    update docker file
+
+[33mcommit ca0224c20acea86c9aede509b08d8e215a3ecf94[m
+Author: Phạm Thanh Phong <phamthanhphong9u@gmail.com>
+Date:   Mon Apr 7 08:57:35 2025 +0700
+
+    update docker file
+
+[33mcommit 06069843cfc4017624d9bb523d6e2db204af1
