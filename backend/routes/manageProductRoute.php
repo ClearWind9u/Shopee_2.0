@@ -37,6 +37,9 @@ function handleProductRoutes($route, $method) {
     elseif ($method == 'GET' && $route == '/getProduct') {
         echo json_encode($controller->getProductById($data));
     }
+    elseif ($method == 'POST' && $route == '/deleteProduct') {
+        echo json_encode($controller->deleteProduct($data));
+    }
     else {
         http_response_code(404);
         echo json_encode(["error" => "Route không tồn tại"]);

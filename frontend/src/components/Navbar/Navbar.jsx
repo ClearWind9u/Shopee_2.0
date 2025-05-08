@@ -46,7 +46,10 @@ const Navbar = () => {
             <Link className="nav-link" to="/posts">
               <FaNewspaper size={20} /> Bài viết
             </Link>
-            <Link className="nav-link" to="/order-history">
+            <Link
+              className="nav-link"
+              to={user?.role === "manager" ? "/manager/order-history" : "/order-history"}
+            >
               <FaBox size={20} /> Lịch sử đặt hàng
             </Link>
             <Link className="nav-link" to="/qa">
@@ -71,7 +74,7 @@ const Navbar = () => {
               aria-expanded="false"
             >
               <img src={avatarSrc} alt="Avatar" className="navbar-avatar" />
-              <span className="navbar-role">{user.role}</span>
+              <span className="navbar-role">{user?.role}</span>
             </button>
 
             <ul className="dropdown-menu" aria-labelledby="userMenu">
@@ -79,11 +82,11 @@ const Navbar = () => {
                 <Link
                   className="dropdown-item"
                   to={
-                    user.role === "buyer"
+                    user?.role === "buyer"
                       ? "/buyer/profile"
-                      : user.role === "seller"
+                      : user?.role === "seller"
                       ? "/seller/profile"
-                      : user.role === "manager"
+                      : user?.role === "manager"
                       ? "/manager/profile"
                       : "/"
                   }

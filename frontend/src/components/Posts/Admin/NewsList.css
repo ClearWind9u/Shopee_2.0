@@ -1,0 +1,182 @@
+/* Tăng z-index của popup ảnh */
+.rdw-image-modal {
+    z-index: 1060 !important;
+}
+
+.rdw-image-modal-upload-option input[type="file"] {
+    opacity: 1 !important;
+    position: static !important;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: pointer;
+}
+
+/* .table th.action-col {
+    text-align: center;
+} */
+
+.table td.action-row {
+    text-align: center;
+}
+
+
+.action-row .btn {
+    height: 40px !important;
+    min-width: 90px !important;
+    font-size: 13px !important;
+    padding: 6px 12px !important;
+    flex: 1 1 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    font-weight: 500 !important;
+}
+
+.news-card {
+    padding: 10px;
+    box-shadow: 0 0 5px #ffdfdf;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.news-card .top {
+    text-align: center;
+}
+
+.news-card p {
+    font-weight: bold;
+    color: #0086fe;
+}
+
+.news-card button {
+    outline: 0;
+    border: 0;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 400;
+    padding: 8px 13px;
+    width: 100%;
+    background: #0086fe;
+}
+
+.news-card .drag-area {
+    height: 150px;
+    border-radius: 5px;
+    border: 2px dashed #0086fe;
+    color: #0086fe;
+    background: #f4f3f9;
+    display: flex;
+    flex-direction: column;
+    /* để chữ và label xuống dòng */
+    justify-content: center;
+    /* căn giữa theo chiều dọc */
+    align-items: center;
+    /* căn giữa theo chiều ngang */
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    margin-top: 10px;
+}
+
+
+.news-card .drag-area .visible {
+    font-size: 18px;
+}
+
+.news-card .select {
+    color: #5256ad;
+    margin-left: 5px;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+.news-card .select:hover {
+    opacity: 0.6;
+}
+
+.news-card .container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.news-card .container .image {
+    width: 75px;
+    margin-right: 5px;
+    height: 75px;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.news-card .container .image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.news-card .container .image span {
+    position: absolute;
+    top: -2px;
+    right: 9px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.news-card input,
+.news-card .drag-area .on-drop,
+.news-card .drag-area.drag-over .visible {
+    display: none;
+}
+
+.delete {
+    z-index: 999;
+    color: #0086fe;
+}
+
+
+@media (max-width: 767px) {
+
+    .action-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .action-row .btn {
+        width: 100%;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+
+}
+
+
+@media (min-width: 768px) {
+    .action-row {
+        flex-direction: row;
+
+    }
+
+
+    .action-row .btn {
+        /* Ưu tiên cao hơn */
+        height: 40px !important;
+        min-width: 90px !important;
+        font-size: 13px !important;
+        padding: 6px 12px !important;
+        flex: 1 1 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+}

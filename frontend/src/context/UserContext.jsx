@@ -7,9 +7,10 @@ const UserProvider = ({ children }) => {
     const [token, setToken] = useState(null);
 
     // Quan trọng: Khôi phục user từ localStorage khi tải lại trang
+    // let user = null;
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-
+        
         try {
             // Nếu là null, "undefined", hoặc không phải JSON -> bỏ qua
             if (storedUser && storedUser !== "undefined") {
@@ -30,6 +31,7 @@ const UserProvider = ({ children }) => {
             setToken(null);
         }
     }, []);
+
 
     // Hàm đăng nhập - lưu vào state và localStorage
     const login = (userData) => {

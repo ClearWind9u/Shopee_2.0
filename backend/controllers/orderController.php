@@ -48,8 +48,8 @@ class OrderController {
                 exit();
             }
 
-            // Lấy chi tiết sản phẩm trong đơn hàng
-            $orderItems = $this->orderItemModel->getOrderItemsByOrderId($orderId);
+            // Lấy chi tiết sản phẩm trong đơn hàng với tên từ bảng products
+            $orderItems = $this->orderItemModel->getOrderItemsWithProductNames($orderId);
 
             // Tính lại quantity và total_price dựa trên order_items
             $quantity = 0;
@@ -58,7 +58,7 @@ class OrderController {
             foreach ($orderItems as $item) {
                 $quantity += $item['quantity'];
                 $totalPrice += $item['quantity'] * $item['price'];
-                $itemsList[] = "Product ID {$item['product_id']} (x{$item['quantity']})";
+                $itemsList[] = "{$item['product_name']} (x{$item['quantity']})";
             }
 
             // Cập nhật dữ liệu trả về để khớp với OrderHistory
@@ -117,7 +117,7 @@ class OrderController {
             // Lấy chi tiết sản phẩm và định dạng lại cho từng đơn hàng
             $detailedOrders = [];
             foreach ($orders as $order) {
-                $orderItems = $this->orderItemModel->getOrderItemsByOrderId($order['id']);
+                $orderItems = $this->orderItemModel->getOrderItemsWithProductNames($order['id']);
                 
                 // Tính lại quantity và total_price dựa trên order_items
                 $quantity = 0;
@@ -126,7 +126,7 @@ class OrderController {
                 foreach ($orderItems as $item) {
                     $quantity += $item['quantity'];
                     $totalPrice += $item['quantity'] * $item['price'];
-                    $itemsList[] = "Product ID {$item['product_id']} (x{$item['quantity']})";
+                    $itemsList[] = "{$item['product_name']} (x{$item['quantity']})";
                 }
 
                 // So sánh quantity và total_price với dữ liệu trong orders
@@ -178,7 +178,7 @@ class OrderController {
             // Lấy chi tiết sản phẩm và định dạng lại cho từng đơn hàng
             $detailedOrders = [];
             foreach ($orders as $order) {
-                $orderItems = $this->orderItemModel->getOrderItemsByOrderId($order['id']);
+                $orderItems = $this->orderItemModel->getOrderItemsWithProductNames($order['id']);
                 
                 // Tính lại quantity và total_price dựa trên order_items
                 $quantity = 0;
@@ -187,7 +187,7 @@ class OrderController {
                 foreach ($orderItems as $item) {
                     $quantity += $item['quantity'];
                     $totalPrice += $item['quantity'] * $item['price'];
-                    $itemsList[] = "Product ID {$item['product_id']} (x{$item['quantity']})";
+                    $itemsList[] = "{$item['product_name']} (x{$item['quantity']})";
                 }
 
                 // So sánh quantity và total_price với dữ liệu trong orders
@@ -197,6 +197,7 @@ class OrderController {
 
                 $detailedOrders[] = [
                     "id" => $order['id'],
+                    "username" => $order['buyer_username'] ?? "Unknown User", // Hiển thị username thay vì buyer_id
                     "created_at" => $order['created_at'],
                     "items" => implode(", ", $itemsList),
                     "total_amount" => $totalPrice,
@@ -206,6 +207,68 @@ class OrderController {
 
             http_response_code(200);
             echo json_encode(["orders" => $detailedOrders]);
+            exit();
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
+        }
+    }
+
+    // Cập nhật trạng thái đơn hàng (chỉ dành cho admin)
+    public function updateOrderStatus($req) {
+        try {
+            $token = $req['token'] ?? '';
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
+                exit();
+            }
+
+            if (!isset($decoded['role']) || $decoded['role'] !== 'manager') {
+                http_response_code(403);
+                echo json_encode(["error" => "Only admin can update order status"]);
+                exit();
+            }
+
+            $orderId = $req['orderId'] ?? null;
+            if (empty($orderId) || !is_numeric($orderId)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Order ID is required and must be a number"]);
+                exit();
+            }
+
+            // Lấy trạng thái từ body
+            $data = json_decode(file_get_contents("php://input"), true);
+            $status = $data['status'] ?? null;
+
+            // Danh sách trạng thái hợp lệ
+            $validStatuses = ['pending', 'shipped', 'delivered', 'canceled'];
+            if (empty($status) || !in_array($status, $validStatuses)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Invalid status. Must be one of: pending, shipped, delivered, canceled"]);
+                exit();
+            }
+
+            // Kiểm tra đơn hàng tồn tại
+            $order = $this->orderModel->findOrderById($orderId);
+            if (!$order) {
+                http_response_code(404);
+                echo json_encode(["error" => "Order not found"]);
+                exit();
+            }
+
+            // Cập nhật trạng thái
+            $updated = $this->orderModel->updateStatus($orderId, $status);
+            if (!$updated) {
+                http_response_code(500);
+                echo json_encode(["error" => "Failed to update order status"]);
+                exit();
+            }
+
+            http_response_code(200);
+            echo json_encode(["message" => "Order status updated successfully", "order_id" => $orderId, "status" => $status]);
             exit();
         } catch (Exception $e) {
             http_response_code(500);

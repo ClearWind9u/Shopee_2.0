@@ -24,13 +24,18 @@ function handleOrderRoutes($route, $method) {
         echo json_encode($controller->getOrderById($data));
     }
     // Xem tất cả đơn hàng của người dùng
-    elseif ($method == 'GET' && $route == '/orders' && isset($_GET['buyer_id'])) {
+    elseif ($method == 'GET' && $route == '/ofuser' && isset($_GET['buyer_id'])) {
         $data['buyer_id'] = $_GET['buyer_id'];
         echo json_encode($controller->getOrdersByUserId($data));
     }
     // Xem tất cả đơn hàng
     elseif ($method == 'GET' && $route == '/all') {
         echo json_encode($controller->getAllOrders($data));
+    }
+    // Cập nhật trạng thái đơn hàng
+    elseif ($method == 'PUT' && preg_match('/^\/status\/(\d+)$/', $route, $matches)) {
+        $data['orderId'] = $matches[1];
+        echo json_encode($controller->updateOrderStatus($data));
     }
     else {
         http_response_code(404);

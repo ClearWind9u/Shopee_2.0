@@ -20,7 +20,7 @@ const OrderHistory = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${API_BASE_URL}/order/orders?buyer_id=${user.id}`, {
+      const response = await axios.get(`${API_BASE_URL}/order/ofuser?buyer_id=${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const fetchedOrders = Array.isArray(response.data.orders)

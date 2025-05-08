@@ -19,9 +19,15 @@ import CreateQuestion from "./components/FAQPage/createQuestion";
 import AnswerQuestion from "./components/FAQPage/answerQuestion";
 import Detail from "./components/Detail/Detail";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
+import Post from "./components/Posts/User/Post";
+import PostDetail from "./components/Posts/User/PostDetail";
+import NewsList from "./components/Posts/Admin/NewsList";
 import { UserContext, UserProvider } from "./context/UserContext";
+import AdminCommentManager from "./components/Posts/Admin/AdminCommentManager";
 import Cart from "./components/Cart/Cart";
 import AdminMenu from "./components/Admin/AdminMenu/AdminMenu";
+import AdminOrderHistory from "./components/Admin/AdminHistory/AdminOrderHistory";
+
 
 function AppContent() {
   const { user } = useContext(UserContext);
@@ -45,7 +51,6 @@ function AppContent() {
         <Route path="/qa/create-question" element={<CreateQuestion />} />
         <Route path="/qa/answer-question" element={<AnswerQuestion />} />
         <Route path="/menu" element={<Menu />} />
-        {/* <Route path="/manageProduct" element={<AdminMenu />} /> */}
         <Route path="/detail/:productId" element={<Detail />} />
         <Route
           path="/seller/profile"
@@ -58,6 +63,10 @@ function AppContent() {
         <Route
           path="/order-history"
           element={<ProtectedRoute role="buyer" element={<OrderHistory />} />}
+        />
+        <Route
+          path="/manager/order-history"
+          element={<ProtectedRoute role="manager" element={<AdminOrderHistory />} />}
         />
         <Route
           path="/buyer/profile"
@@ -75,6 +84,18 @@ function AppContent() {
         <Route path="/regulations" element={<Regulations />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/return-refund" element={<RefundPolicy />} />
+        {/* <Route path="/posts" element={<Post />} /> */}
+        <Route path="/posts/:id" element={<PostDetail />} />
+        <Route path="/admin/comments" element={<AdminCommentManager />} />
+
+        <Route
+          path="/posts"
+          element={
+            user?.role === "manager"
+              ? <NewsList />
+              : <Post />
+          }
+        />
       </Routes>
       {user && <Footer />}
       {user && <ChatWidget />}

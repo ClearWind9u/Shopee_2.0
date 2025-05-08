@@ -37,11 +37,22 @@ class Order {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Lấy tất cả đơn hàng
+    // Lấy tất cả đơn hàng và join với bảng users để lấy username
     public function getAllOrders() {
-        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table_name);
+        $stmt = $this->conn->prepare("
+            SELECT o.*, u.username AS buyer_username 
+            FROM " . $this->table_name . " o
+            LEFT JOIN users u ON o.buyer_id = u.id
+        ");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Cập nhật trạng thái đơn hàng
+    public function updateStatus($orderId, $status) {
+        $stmt = $this->conn->prepare("UPDATE " . $this->table_name . " SET status = ?, updated_at = NOW() WHERE id = ?");
+        $stmt->execute([$status, $orderId]);
+        return $stmt->rowCount() > 0;
     }
 }
 ?>
