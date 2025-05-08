@@ -7,16 +7,25 @@ class PostController
 {
 
     // Lấy danh sách tất cả bài viết
-    public function getAllPosts()
+    public function getAllPosts($page = 1, $limit = 9)
     {
         global $pdo;
         try {
+
+            $offset = ($page - 1) * $limit;
+
             // Thực hiện JOIN để lấy tên người dùng (author_name) từ bảng users
             $stmt = $pdo->prepare("
                 SELECT Posts.*, users.username AS author_name 
                 FROM Posts 
                 LEFT JOIN users ON Posts.author_id = users.id
+                ORDER BY Posts.created_at DESC
+                LIMIT :limit OFFSET :offset
             ");
+
+            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+
             $stmt->execute();
             $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $posts;
@@ -32,7 +41,11 @@ class PostController
     {
         global $pdo;
         try {
-            $stmt = $pdo->prepare("SELECT * FROM Posts WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT Posts.*, users.username AS author_name 
+            FROM Posts 
+            LEFT JOIN users ON Posts.author_id = users.id
+            WHERE Posts.id = ?
+            ");
             $stmt->execute([$id]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($post) {
@@ -107,5 +120,60 @@ class PostController
             return ["error" => "Error deleting post", "details" => $e->getMessage()];
         }
     }
+
+    public function adminUpdatePost($id, $data)
+    {
+        global $pdo;
+
+        $title = $data['title'] ?? '';
+        $content = $data['content'] ?? '';
+        $image = $data['image'] ?? null;
+        $author_id = $data['author_id'] ?? null;
+
+        try {
+
+            $stmt = $pdo->prepare("UPDATE Posts SET title = ?, content = ?, image = ?, author_id = ? WHERE id = ?");
+            $stmt->execute([$title, $content, $image, $author_id, $id]);
+
+            return $this->getPostById($id);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            return ["error" => "Lỗi cập nhật (admin)", "details" => $e->getMessage()];
+        }
+    }
+
+
+
+    public function searchPostsForAdmin($keyword, $page = 1)
+    {
+        global $pdo;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        // Thêm JOIN để lấy tên tác giả
+        $stmt = $pdo->prepare("
+        SELECT Posts.*, users.username AS author_name
+        FROM Posts
+        LEFT JOIN users ON Posts.author_id = users.id
+        WHERE Posts.title LIKE :keyword
+        ORDER BY Posts.created_at DESC
+        LIMIT :limit OFFSET :offset
+    ");
+        $stmt->bindValue(":keyword", "%$keyword%", PDO::PARAM_STR);
+        $stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
+        $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Đếm tổng số bản ghi (không cần JOIN)
+        $countStmt = $pdo->prepare("SELECT COUNT(*) FROM Posts WHERE title LIKE :keyword");
+        $countStmt->bindValue(":keyword", "%$keyword%", PDO::PARAM_STR);
+        $countStmt->execute();
+        $total = $countStmt->fetchColumn();
+
+        return ["data" => $posts, "total" => intval($total)];
+    }
+
+
 }
 ?>

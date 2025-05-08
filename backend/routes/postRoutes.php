@@ -9,7 +9,9 @@ function handlePostRoutes($route, $method)
 
     // Nếu route rỗng hoặc chỉ là dấu "/" thì thực hiện thao tác với tất cả bài viết
     if ($method === 'GET' && ($route === '' || $route === '/')) {
-        echo json_encode($controller->getAllPosts());
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 9;
+        echo json_encode($controller->getAllPosts($page, $limit));
     }
     // Lấy bài viết theo ID: route dạng "/{id}"
     elseif ($method === 'GET' && preg_match('/^\/\d+$/', $route)) {
