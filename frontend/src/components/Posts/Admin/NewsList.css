@@ -81,6 +81,32 @@
     margin-top: 10px;
 }
 
+/* Full-screen modal dialog with margin and rounded corners */
+.full-modal.modal-dialog {
+    width: 95vw;
+    max-width: none;
+    height: 95vh;
+    margin: auto;
+}
+
+.full-modal .modal-content {
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.full-modal .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.full-modal .modal-header,
+.full-modal .modal-footer {
+    flex-shrink: 0;
+}
 
 .news-card .drag-area .visible {
     font-size: 18px;

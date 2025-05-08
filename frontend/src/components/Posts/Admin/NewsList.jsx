@@ -428,7 +428,7 @@ const NewsList = () => {
             </nav>
 
             {/* Modal quản lý bình luận */}
-            <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)} size="lg">
+            <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)} size="lg" dialogClassName="post-modal-comment">
                 <Modal.Header closeButton>
                     <Modal.Title>Quản lý bình luận bài viết #{selectedPostIdForComment}</Modal.Title>
                 </Modal.Header>
@@ -513,7 +513,7 @@ const NewsList = () => {
                 </Modal.Footer>
             </Modal>
 
-            <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" backdrop="static" enforceFocus={false}>
+            <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="post-modal-dialog" backdrop="static" enforceFocus={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>{isEditing ? "Sửa bài viết" : "Thêm bài viết"}</Modal.Title>
                 </Modal.Header>

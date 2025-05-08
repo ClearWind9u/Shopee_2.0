@@ -22,10 +22,77 @@
     }
 }
 
-.modal-content {
-    animation: zoomIn 0.3s ease-out;
-    transition: transform 0.3s ease-out;
+/* Chỉ áp dụng cho modal thêm/sửa bài viết */
+.post-modal-dialog {
+    max-width: 95vw;
+    width: 95vw;
+    height: 95vh;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30px;
 }
+
+.post-modal-dialog .modal-content {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: zoomIn 0.3s ease-out;
+}
+
+
+
+.post-modal-dialog .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.post-modal-dialog .modal-header,
+.post-modal-dialog .modal-footer {
+    flex-shrink: 0;
+    padding: 16px 20px;
+}
+
+.post-modal-comment {
+    max-width: 60vw;
+    width: 95vw;
+    height: 95vh;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30px;
+}
+
+.post-modal-comment .modal-content {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: zoomIn 0.3s ease-out;
+}
+
+
+
+.post-modal-comment .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.post-modal-comment .modal-header,
+.post-modal-comment .modal-footer {
+    flex-shrink: 0;
+    padding: 16px 20px;
+}
+
 
 .post-image-wrapper {
     position: relative;
