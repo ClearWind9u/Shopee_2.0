@@ -203,9 +203,9 @@ const Post = () => {
     // }, [currentPage]);
 
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    // if (loading) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
 
@@ -227,9 +227,10 @@ const Post = () => {
                             }}
                             onClick={() => handleClick(highlightPosts[0].id)}
                         />
-                        <div className="mt-3">
+                        <div className="mt-3" style={{ cursor: "pointer" }}
+                            onClick={() => handleClick(highlightPosts[0].id)}>
                             <span className="text-danger fw-bold">Xu hướng (Insight)</span>
-                            <h3 className="fw-bold mt-2 text-hover-orange">{highlightPosts[0].title}</h3>
+                            <h3 className="fw-bold mt-2 text-hover-orange" >{highlightPosts[0].title}</h3>
                             <p className="text-muted mb-1">
                                 {highlightPosts[0].content?.replace(/<[^>]+>/g, '').slice(0, 100)}...
                             </p>
@@ -376,7 +377,7 @@ const Post = () => {
             <div className="row">
                 {posts.map(post => (
                     <div className="col-md-4 mb-4" key={post.id}>
-                        <div className="card" style={{ cursor: "pointer" }} onClick={() => handleClick(p.id)} // với các bài viết nhỏ
+                        <div className="card" style={{ cursor: "pointer" }} onClick={() => handleClick(post.id)} // với các bài viết nhỏ
                         >
                             <div className="post-image-wrapper">
                                 <img
@@ -407,7 +408,7 @@ const Post = () => {
                                                 </div>
                                                 <div className="date mb-0">
                                                     <p className="card-text text-muted mb-0">
-                                                        {new Date(post.created_at).toLocaleDateString()}
+                                                        {formatRelativeTime(post.created_at)}
                                                     </p>
                                                 </div>
                                             </div>

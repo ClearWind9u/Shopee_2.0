@@ -38,12 +38,47 @@ const NewsList = () => {
     const [editingReplyContent, setEditingReplyContent] = useState("");
     const [confirmVisible, setConfirmVisible] = useState(false);
     const [pendingDeletePostId, setPendingDeletePostId] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [error, setError] = useState("");
+
     const { user } = useContext(UserContext);
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const userId = user?.id || storedUser?.id || 0;
 
 
     const isMounted = useRef(true);
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!editForm.title || editForm.title.trim().length === 0) {
+            newErrors.title = "Tiêu đề không được để trống";
+        } else if (editForm.title.length > 200) {
+            newErrors.title = "Tiêu đề không được vượt quá 200 ký tự";
+        }
+
+        const plainText = editorState.getCurrentContent().getPlainText().trim();
+        if (plainText.length === 0) {
+            newErrors.content = "Nội dung không được để trống";
+        }
+
+        if (editForm.image && !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(editForm.image)) {
+            newErrors.image = "Link ảnh không hợp lệ (phải là .jpg, .png, .gif...)";
+        }
+
+        setSuccess(newErrors);
+
+        if (Object.keys(newErrors).length > 0) {
+            setSuccess("Vui lòng sửa các lỗi bên dưới.");
+
+            // setTimeout(() => setSuccess(""), 3000); // ẩn sau 3s
+            return false;
+        }
+
+        return true;
+    };
+
+
 
     useEffect(() => {
         if (success) {
@@ -54,10 +89,21 @@ const NewsList = () => {
 
     const formatVietnamTime = (utcDateStr) => {
         const utcDate = new Date(utcDateStr);
-        const vietnamOffset = 7 * 60; // GMT+7
-        const localTime = new Date(utcDate.getTime() + vietnamOffset * 60 * 1000);
-        return localTime.toLocaleString('vi-VN');
+        const vietnamTime = new Date(utcDate.getTime() + 7 * 60 * 60 * 1000);
+
+        const pad = (n) => n.toString().padStart(2, '0');
+
+        const hours = pad(vietnamTime.getHours());
+        const minutes = pad(vietnamTime.getMinutes());
+        const seconds = pad(vietnamTime.getSeconds());
+
+        const day = pad(vietnamTime.getDate());
+        const month = pad(vietnamTime.getMonth() + 1);
+        const year = vietnamTime.getFullYear();
+
+        return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
     };
+
 
 
     useEffect(() => {
@@ -103,23 +149,62 @@ const NewsList = () => {
         setEditForm({ ...editForm, [e.target.name]: e.target.value });
     };
 
+    // const handleSubmitPost = async () => {
+    //     const rawContent = convertToRaw(editorState.getCurrentContent());
+    //     const htmlContent = draftToHtml(rawContent);
+    //     const data = { ...editForm, content: htmlContent, author_id: userId };
+
+    //     if (isEditing) {
+    //         const res = await axios.put(`${API_BASE}/admin/posts/${selectedPost.id}`, data);
+    //         const updated = res.data;
+    //         setPosts(posts.map((p) => (p.id === updated.id ? updated : p)));
+    //         setSuccess("Cập nhật bài viết thành công!");
+    //     } else {
+    //         await axios.post(`${API_BASE}/admin/posts`, data);
+    //         setSuccess("Thêm bài viết thành công!");
+    //         loadPosts();
+    //     }
+    //     setShowModal(false);
+    // };
+
     const handleSubmitPost = async () => {
+        if (!validateForm()) return;
+
         const rawContent = convertToRaw(editorState.getCurrentContent());
         const htmlContent = draftToHtml(rawContent);
         const data = { ...editForm, content: htmlContent, author_id: userId };
 
-        if (isEditing) {
-            const res = await axios.put(`${API_BASE}/admin/posts/${selectedPost.id}`, data);
-            const updated = res.data;
-            setPosts(posts.map((p) => (p.id === updated.id ? updated : p)));
-            setSuccess("Cập nhật bài viết thành công!");
-        } else {
-            await axios.post(`${API_BASE}/admin/posts`, data);
-            setSuccess("Thêm bài viết thành công!");
-            loadPosts();
+        try {
+            if (isEditing) {
+                const unchanged =
+                    editForm.title === selectedPost.title &&
+                    editForm.image === selectedPost.image &&
+                    htmlContent === selectedPost.content;
+
+                // if (unchanged) {
+                //     setSuccess("Bạn không thay đổi gì, vẫn tiến hành cập nhật.");
+                //     setTimeout(() => setSuccess(""), 3000);
+                // }
+
+                const res = await axios.put(`${API_BASE}/admin/posts/${selectedPost.id}`, data);
+                const updated = res.data;
+                setPosts(posts.map((p) => (p.id === updated.id ? updated : p)));
+                setSuccess("Cập nhật bài viết thành công!");
+            } else {
+                await axios.post(`${API_BASE}/admin/posts`, data);
+                setSuccess("Thêm bài viết thành công!");
+                loadPosts();
+            }
+
+            handleCloseModal();
+        } catch (err) {
+            console.error("Gửi thất bại:", err);
+            setSuccess("Đã xảy ra lỗi.");
+            setTimeout(() => setSuccess(""), 3000);
         }
-        setShowModal(false);
     };
+
+
 
     // const handleDelete = async (id) => {
     //     if (window.confirm("Bạn có chắc muốn xoá bài viết này?")) {
@@ -266,9 +351,22 @@ const NewsList = () => {
         return res.data?.path ? `${API_BASE}${res.data.path}` : "";
     };
 
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setErrors({});
+        setError("");
+        setSuccess("");
+        setEditForm({ title: "", content: "", image: "" });
+        setEditorState(EditorState.createEmpty());
+        setSelectedPost(null);
+        setIsEditing(false);
+    };
+
+
 
     return (
         <div className="container mt-4">
+
             {success && (
                 <Notification
                     message={success}
@@ -335,6 +433,8 @@ const NewsList = () => {
                     <Modal.Title>Quản lý bình luận bài viết #{selectedPostIdForComment}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+
+
                     {comments
                         .filter(c => c.parent_id === null)
                         .map(parent => (
@@ -419,12 +519,15 @@ const NewsList = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <label>Tiêu đề</label>
+
+
                     <input
                         name="title"
-                        className="form-control mb-2"
+                        className={`form-control mb-2`}
                         value={editForm.title}
                         onChange={handleEditChange}
                     />
+
 
                     <label>Link ảnh thumbnail (tuỳ chọn)</label>
 
@@ -459,6 +562,7 @@ const NewsList = () => {
                                     />
                                 </div>
                             )}
+
                             <input
                                 type="file"
                                 accept="image/*"
@@ -509,16 +613,23 @@ const NewsList = () => {
                     /> */}
 
                     <label className="mt-3">Nội dung</label>
-                    <Editor
-                        editorState={editorState}
-                        wrapperClassName="demo-wrapper"
-                        editorClassName="demo-editor"
-                        onEditorStateChange={setEditorState}
-                        toolbar={{
-                            options: ['inline', 'list', 'textAlign', 'history'],
-                        }}
-                    />
+                    <div >
+
+                        <Editor
+                            editorState={editorState}
+                            wrapperClassName="demo-wrapper"
+                            editorClassName="demo-editor"
+                            onEditorStateChange={setEditorState}
+                            toolbar={{
+                                options: ['inline', 'list', 'textAlign', 'history'],
+                            }}
+                        />
+
+
+                    </div>
                     <label className="mt-3">Chèn nhiều ảnh vào nội dung:</label>
+
+
                     <input
                         type="file"
                         accept="image/*"

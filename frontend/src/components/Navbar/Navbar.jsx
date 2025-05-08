@@ -72,6 +72,7 @@ const Navbar = () => {
               id="userMenu"
               data-bs-toggle="dropdown"
               aria-expanded="false"
+
             >
               <img src={avatarSrc} alt="Avatar" className="navbar-avatar" />
               <span className="navbar-role">{user?.role}</span>
@@ -85,10 +86,10 @@ const Navbar = () => {
                     user?.role === "buyer"
                       ? "/buyer/profile"
                       : user?.role === "seller"
-                      ? "/seller/profile"
-                      : user?.role === "manager"
-                      ? "/manager/profile"
-                      : "/"
+                        ? "/seller/profile"
+                        : user?.role === "manager"
+                          ? "/manager/profile"
+                          : "/"
                   }
                 >
                   <FaUserCircle size={18} /> Hồ sơ
