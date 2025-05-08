@@ -27,6 +27,7 @@ import AdminCommentManager from "./components/Posts/Admin/AdminCommentManager";
 import Cart from "./components/Cart/Cart";
 import AdminMenu from "./components/Admin/AdminMenu/AdminMenu";
 import AdminOrderHistory from "./components/Admin/AdminHistory/AdminOrderHistory";
+import Wallet from "./components/Wallet/Wallet";
 
 
 function AppContent() {
@@ -71,6 +72,10 @@ function AppContent() {
         <Route
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
+        />
+         <Route
+          path="/buyer/balance"
+          element={<Wallet />}
         />
         <Route
           path="/buyer/cart"
