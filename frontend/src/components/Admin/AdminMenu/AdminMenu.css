@@ -1,138 +1,356 @@
-.addProductButton button{
-    margin: 10px;
-    color: white;
-    background-color: rgb(19, 18, 98);
-    border-radius: 12px;
+.addProductButton button {
+  margin-left: 80px;
+  color: white;
+  background-color: rgb(19, 18, 98);
+  border-radius: 12px;
 }
-.addProductButton button:hover{
-    color: yellow;
+.addProductButton button:hover {
+  color: yellow;
 }
-.form-add-product label{
-    font-size: 15px;
-}
-.form-add-product{
-    padding: 20px;
-    width: 90%;
-    background-color: white;
-    margin: 15px auto;
-    border-radius: 5px;
-    transition: 5s ease;
-}
-.form-add-product button {
-    margin: 15px 10px ;
-    width: 80px;
-    border-radius: 12px;
-}
-.adminMenu button:hover{
-    color: yellow;
-}
-
-.form-add-product .addButton, .editButton{
-    background-color:rgb(19, 18, 98); ;
-    color: white;
-}
-.form-add-product .cancelButton, .removeButton{
-    background-color:#dc354a; ;
-    color: white;
+.form-add-product label {
+  font-size: 15px;
 }
 .form-add-product {
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    opacity: 0;
-    transform: translateY(-20px); /* Start slightly above */
-    pointer-events: none; /* Prevent interaction when hidden */
-  }
-  
-  .form-add-product.form-enter {
-    opacity: 1;
-    transform: translateY(0); /* Slide to original position */
-    pointer-events: auto; /* Allow interaction when visible */
-  }
-  
-  .form-add-product.form-exit {
-    opacity: 0;
-    transform: translateY(-20px); /* Slide back up when hiding */
-    pointer-events: none;
-  }
-  .list-product{
-    width: 100%;
-    padding: 10px;
-    background-color: gainsboro;
-    margin: 20px auto;
-    border-radius: 12px;
-  }
-  .product{
-    display: flex;
-    width: 100%;
-    /* border-style: solid;
-    border-color:aliceblue;
-    border-radius: 12px; */
-    margin: 10px auto;
-  }
-  .list-product .product img{
-    width: 100%;
-    height: 100%;
-  }
-  .product .col1{
-    width: 15%;
-  }
-  .product .col2{
-    width: 66%;
-  }
-  .product .col3{
-    display: flex;
-    align-items: center;
-
-    width: 25%;
-  }
-  .product .col3 button{
-    height: 30%;
-    width: 50%;
-    margin: 10px;
-    border-radius: 12px;
-  }
-  .product .column{
-    padding: 10px;
-  }
-  .form-edit-product{
-    position: fixed;
-    left: 37%;
-    right: auto;
-    top:80px;
-    width: 30%;
-    background-color: white;
-    margin: 15px auto;
-    border-radius: 5px;
-    transition: 5s ease;
-  }
-  .form-edit-product .addButton, .editButton{
-    background-color:rgb(19, 18, 98); ;
-    color: white;
+  padding: 20px;
+  width: 90%;
+  background-color: white;
+  margin: 15px auto;
+  border-radius: 5px;
+  transition: 5s ease;
 }
-.form-edit-product .cancelButton, .removeButton{
-    background-color:#dc354a; ;
-    color: white;
+.form-add-product button {
+  margin: 15px 10px;
+  width: 80px;
+  border-radius: 12px;
+}
+.adminMenu button:hover {
+  color: yellow;
+}
+.form-add-product .addButton, .editButton {
+  background-color: rgb(19, 18, 98);
+  color: white;
+}
+.form-add-product .cancelButton, .removeButton {
+  background-color: #dc354a;
+  color: white;
+}
+.form-add-product {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+.form-add-product.form-enter {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.form-add-product.form-exit {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+.list-product {
+  width: 100%;
+  padding: 10px;
+  background-color: gainsboro;
+  margin: 20px auto;
+  border-radius: 12px;
+}
+.product {
+  display: flex;
+  width: 100%;
+  margin: 10px auto;
+}
+.list-product .product img {
+  width: 100%;
+  height: 100%;
+}
+.product .col1 {
+  width: 15%;
+}
+.product .col2 {
+  width: 66%;
+}
+.product .col3 {
+  display: flex;
+  align-items: center;
+  width: 25%;
+}
+.product .col3 button {
+  height: 30%;
+  width: 50%;
+  margin: 10px;
+  border-radius: 12px;
+}
+.product .column {
+  padding: 10px;
+}
+.form-edit-product {
+  position: fixed;
+  left: 37%;
+  right: auto;
+  top: 80px;
+  width: 30%;
+  background-color: white;
+  margin: 15px auto;
+  border-radius: 5px;
+  transition: 5s ease;
+}
+.form-edit-product .addButton, .editButton {
+  background-color: rgb(19, 18, 98);
+  color: white;
+}
+.form-edit-product .cancelButton, .removeButton {
+  background-color: #dc354a;
+  color: white;
 }
 .form-edit-product button {
-  margin: 15px 10px ;
+  margin: 15px 10px;
   width: 80px;
   border-radius: 12px;
 }
 .form-edit-product {
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    opacity: 0;
-    transform: translateY(-20px); /* Start slightly above */
-    pointer-events: none; /* Prevent interaction when hidden */
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+.form-edit-product.form-enter {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.form-edit-product.form-exit {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+.pagination-bar-admin {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+.pagination-bar-admin button {
+  margin: 20px;
+  height: 40px;
+  width: 30px;
+}
+.pagination-bar-admin .active-page {
+  background-color: black;
+  color: white;
+}
+
+/* Responsive Design for max-width: 768px */
+@media (max-width: 768px) {
+  .adminMenu h2 {
+      font-size: 24px;
   }
-  
-  .form-edit-product.form-enter {
-    opacity: 1;
-    transform: translateY(0); /* Slide to original position */
-    pointer-events: auto; /* Allow interaction when visible */
+
+  .addProductButton button {
+      margin: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
   }
-  
-  .form-edit-product.form-exit {
-    opacity: 0;
-    transform: translateY(-20px); /* Slide back up when hiding */
-    pointer-events: none;
+
+  .form-add-product {
+      width: 95%;
+      padding: 15px;
+      margin: 10px auto;
   }
- 
+
+  .form-add-product label {
+      font-size: 14px;
+  }
+
+  .form-add-product input,
+  .form-add-product select {
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .form-add-product button {
+      margin: 10px 8px;
+      width: 70px;
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .list-product {
+      width: 95%;
+      padding: 8px;
+      margin: 15px auto;
+  }
+
+  .product {
+      flex-direction: column;
+      align-items: center;
+      margin: 8px auto;
+  }
+
+  .product .col1 {
+      width: 100%;
+      max-width: 150px;
+  }
+
+  .product .col2 {
+      width: 100%;
+      text-align: center;
+  }
+
+  .product .col3 {
+      width: 100%;
+      justify-content: center;
+      flex-direction: row;
+      gap: 10px;
+  }
+
+  .product .col3 button {
+      width: 40%;
+      height: auto;
+      margin: 5px;
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .product .column {
+      padding: 8px;
+  }
+
+  .list-product .product img {
+      height: 150px;
+      object-fit: cover;
+  }
+
+  .form-edit-product {
+      position: fixed;
+      left: 5%;
+      right: 5%;
+      width: 90%;
+      top: 60px;
+      padding: 15px;
+      margin: 10px auto;
+  }
+
+  .form-edit-product h2 {
+      font-size: 20px;
+  }
+
+  .form-edit-product label {
+      font-size: 14px;
+  }
+
+  .form-edit-product input,
+  .form-edit-product select {
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .form-edit-product button {
+      margin: 10px 8px;
+      width: 70px;
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .pagination-bar-admin button {
+      margin: 10px;
+      height: 35px;
+      width: 25px;
+      font-size: 14px;
+  }
+}
+
+/* Responsive Design for max-width: 576px */
+@media (max-width: 576px) {
+  .adminMenu h2 {
+      font-size: 20px;
+  }
+
+  .addProductButton button {
+      margin: 5px;
+      padding: 6px 10px;
+      font-size: 13px;
+  }
+
+  .form-add-product {
+      width: 98%;
+      padding: 10px;
+      margin: 8px auto;
+  }
+
+  .form-add-product label {
+      font-size: 13px;
+  }
+
+  .form-add-product input,
+  .form-add-product select {
+      font-size: 13px;
+      padding: 6px;
+  }
+
+  .form-add-product button {
+      margin: 8px 5px;
+      width: 60px;
+      font-size: 13px;
+      padding: 6px;
+  }
+
+  .list-product {
+      width: 98%;
+      padding: 5px;
+      margin: 10px auto;
+  }
+
+  .product .col1 {
+      max-width: 120px;
+  }
+
+  .product .col2 {
+      font-size: 14px;
+  }
+
+  .product .col3 button {
+      width: 45%;
+      font-size: 13px;
+      padding: 6px;
+  }
+
+  .list-product .product img {
+      height: 120px;
+  }
+
+  .form-edit-product {
+      width: 95%;
+      top: 50px;
+      padding: 10px;
+  }
+
+  .form-edit-product h2 {
+      font-size: 18px;
+  }
+
+  .form-edit-product label {
+      font-size: 13px;
+  }
+
+  .form-edit-product input,
+  .form-edit-product select {
+      font-size: 13px;
+      padding: 6px;
+  }
+
+  .form-edit-product button {
+      margin: 8px 5px;
+      width: 60px;
+      font-size: 13px;
+      padding: 6px;
+  }
+
+  .pagination-bar-admin button {
+      margin: 5px;
+      height: 30px;
+      width: 20px;
+      font-size: 13px;
+  }
+}

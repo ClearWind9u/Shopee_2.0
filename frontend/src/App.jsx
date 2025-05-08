@@ -26,6 +26,7 @@ import { UserContext, UserProvider } from "./context/UserContext";
 import AdminCommentManager from "./components/Posts/Admin/AdminCommentManager";
 import Cart from "./components/Cart/Cart";
 import AdminMenu from "./components/Admin/AdminMenu/AdminMenu";
+import AdminOrderHistory from "./components/Admin/AdminHistory/AdminOrderHistory";
 
 
 function AppContent() {
@@ -50,19 +51,22 @@ function AppContent() {
         <Route path="/qa/create-question" element={<CreateQuestion />} />
         <Route path="/qa/answer-question" element={<AnswerQuestion />} />
         <Route path="/menu" element={<Menu />} />
-        {/* <Route path="/manageProduct" element={<AdminMenu />} /> */}
         <Route path="/detail/:productId" element={<Detail />} />
         <Route
           path="/seller/profile"
           element={<ProtectedRoute role="seller" element={<ProfileSeller />} />}
         />
         <Route
-          path="/seller/manageProduct" element={<AdminMenu />}
-          // element={<ProtectedRoute role="seller" element={<AdminMenu />} />}
+          path="/seller/manageProduct"
+          element={<ProtectedRoute role="seller" element={<AdminMenu />} />}
         />
         <Route
           path="/order-history"
           element={<ProtectedRoute role="buyer" element={<OrderHistory />} />}
+        />
+        <Route
+          path="/manager/order-history"
+          element={<ProtectedRoute role="manager" element={<AdminOrderHistory />} />}
         />
         <Route
           path="/buyer/profile"
@@ -84,7 +88,6 @@ function AppContent() {
         <Route path="/posts/:id" element={<PostDetail />} />
         <Route path="/admin/comments" element={<AdminCommentManager />} />
 
-
         <Route
           path="/posts"
           element={
@@ -93,7 +96,6 @@ function AppContent() {
               : <Post />
           }
         />
-
       </Routes>
       {user && <Footer />}
       {user && <ChatWidget />}

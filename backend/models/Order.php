@@ -4,9 +4,10 @@ class Order {
     private $table_name = "orders";
 
     public $id;
-    public $user_id;
+    public $buyer_id;
+    public $quantity;
+    public $total_price;
     public $status;
-    public $total_amount;
     public $created_at;
     public $updated_at;
 
@@ -15,10 +16,10 @@ class Order {
     }
 
     // Tạo đơn hàng mới
-    public function createOrder($userId, $status, $totalAmount) {
-        $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (user_id, status, total_amount, created_at, updated_at) 
-                                      VALUES (?, ?, ?, NOW(), NOW())");
-        $stmt->execute([$userId, $status, $totalAmount]);
+    public function createOrder($buyerId, $quantity, $status, $totalPrice) {
+        $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (buyer_id, quantity, total_price, status, created_at, updated_at) 
+                                      VALUES (?, ?, ?, ?, NOW(), NOW())");
+        $stmt->execute([$buyerId, $quantity, $totalPrice, $status]);
         return $this->conn->lastInsertId();
     }
 
@@ -31,9 +32,27 @@ class Order {
 
     // Lấy tất cả đơn hàng của người dùng
     public function findOrdersByUserId($userId) {
-        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table_name . " WHERE user_id = ?");
+        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table_name . " WHERE buyer_id = ?");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Lấy tất cả đơn hàng và join với bảng users để lấy username
+    public function getAllOrders() {
+        $stmt = $this->conn->prepare("
+            SELECT o.*, u.username AS buyer_username 
+            FROM " . $this->table_name . " o
+            LEFT JOIN users u ON o.buyer_id = u.id
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Cập nhật trạng thái đơn hàng
+    public function updateStatus($orderId, $status) {
+        $stmt = $this->conn->prepare("UPDATE " . $this->table_name . " SET status = ?, updated_at = NOW() WHERE id = ?");
+        $stmt->execute([$status, $orderId]);
+        return $stmt->rowCount() > 0;
     }
 }
 ?>

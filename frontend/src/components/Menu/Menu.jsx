@@ -45,6 +45,10 @@ const Menu = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [numOfPage, setNumOfPage] = useState(null)
+  const [filteredProducts, setfilteredProducts] = useState([])
+  const [currentPageProduct, setCurrentPageProduct] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -68,6 +72,9 @@ const Menu = () => {
         console.log(mappedProducts)
 
         setProducts(mappedProducts);
+        const numPage = Math.ceil(mappedProducts.length / 5);
+        setNumOfPage(numPage)
+        setCurrentPageProduct(numPage > 1 ? mappedProducts.slice(0, 5) : mappedProducts)
       } catch (err) {
         setError(err.response?.data?.error || "Không thể tải danh sách sản phẩm");
       } finally {
@@ -77,36 +84,47 @@ const Menu = () => {
 
     fetchProducts();
   }, [token]);
+  useEffect(() => {
+    const filteredProducts = products
+      .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      .sort((a, b) => {
+        const aPrice = parseInt(a.price.replace(/[^\d]/g, ""));
+        const bPrice = parseInt(b.price.replace(/[^\d]/g, ""));
+        const aSold = parseSold(a.sold);
+        const bSold = parseSold(b.sold);
 
+        switch (sortType) {
+          case "price-asc":
+            return aPrice - bPrice;
+          case "price-desc":
+            return bPrice - aPrice;
+          case "sold-desc":
+            return bSold - aSold;
+          case "sold-asc":
+            return aSold - bSold;
+          case "name-asc":
+            return a.name.localeCompare(b.name);
+          case "name-desc":
+            return b.name.localeCompare(a.name);
+          default:
+            return 0;
+        }
+
+      });
+    const numPage = Math.ceil(filteredProducts.length / 5);
+    setNumOfPage(numPage)
+    setfilteredProducts(filteredProducts)
+    setCurrentPageProduct(numPage > 1 ? filteredProducts.slice(0, 5) : filteredProducts)
+  }, [searchTerm, sortType, products])
+  const handleChangePage = (index) => {
+    setCurrentPage(index + 1);
+    setCurrentPageProduct(filteredProducts.slice(index * 5, index * 5 + 5));
+  }
   const handleChangeCategories = (cateId) => {
     setCurrentCate(categories[cateId]);
   };
 
-  const filteredProducts = products
-    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      const aPrice = parseInt(a.price.replace(/[^\d]/g, ""));
-      const bPrice = parseInt(b.price.replace(/[^\d]/g, ""));
-      const aSold = parseSold(a.sold);
-      const bSold = parseSold(b.sold);
 
-      switch (sortType) {
-        case "price-asc":
-          return aPrice - bPrice;
-        case "price-desc":
-          return bPrice - aPrice;
-        case "sold-desc":
-          return bSold - aSold;
-        case "sold-asc":
-          return aSold - bSold;
-        case "name-asc":
-          return a.name.localeCompare(b.name);
-        case "name-desc":
-          return b.name.localeCompare(a.name);
-        default:
-          return 0;
-      }
-    });
 
   if (loading) {
     return <div className="text-center my-5">Đang tải sản phẩm...</div>;
@@ -119,7 +137,8 @@ const Menu = () => {
   return (
     <div className="menu-container">
       <div className="container text-center categories">
-        <div className="row row-name">Danh Mục</div>
+        <input type="checkbox" id="cate-toggle" style={{ display: 'none' }} />
+        <label htmlFor="cate-toggle" className="row-name">Danh Mục</label>
         <div className="row row-cate">
           {categories.map((cate, index) => (
             <div onClick={() => handleChangeCategories(index)} className="col" key={index}>
@@ -163,13 +182,13 @@ const Menu = () => {
         Danh sách các sản phẩm theo chủ đề {currentCate.label}
       </div>
 
-      {filteredProducts.length === 0 ? (
+      {currentPageProduct.length === 0 ? (
         <div className="text-center my-5">Không tìm thấy sản phẩm nào.</div>
       ) : (
         <div className="product-grid container text-center">
           {[0, 1, 2].map((rowIdx) => (
             <div className="row" key={rowIdx}>
-              {filteredProducts.slice(rowIdx * 5, rowIdx * 5 + 5).map((product, i) => (
+              {currentPageProduct.slice(rowIdx * 5, rowIdx * 5 + 5).map((product, i) => (
                 <Link to={`/detail/${product.id}`} className="col product-card" key={product.id || i}>
                   <img src={API_BASE_URL + product.img} alt={product.name} />
                   <div className="product-name">{product.name}</div>
@@ -181,6 +200,13 @@ const Menu = () => {
           ))}
         </div>
       )}
+      <div className="pagination-bar-admin">
+        {
+          Array.from({ length: numOfPage }, (_, index) => (
+            <button onClick={() => handleChangePage(index)} className={currentPage === index + 1 ? "active-page" : ""} key={index}> {index + 1}</button>
+          ))
+        }
+      </div>
     </div>
   );
 };

@@ -30,8 +30,8 @@ class Cart
         $findProductInCartStmt->execute([$userId, $productId]);
         $productInCart = $findProductInCartStmt->fetch(PDO::FETCH_ASSOC);
         if (empty($productInCart)) {
-            $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (quantity, productID, userID, totalPrice) VALUES (1,?,?,?)");
-            $stmt->execute([$productId, $userId, $product["price"]]);
+            $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (quantity, productID, userID, totalPrice) VALUES (?,?,?,?)");
+            $stmt->execute([$quantity,$productId, $userId, $product["price"]]);
             return $this->getCart($userId);
         } else {
             $productInCart["totalPrice"] += $product["price"]*$quantity;
@@ -62,6 +62,16 @@ class Cart
             $stmt->execute([$productInCart["quantity"], $productInCart["totalPrice"], $userId, $productId]);
             return $this->getCart($userId);
         }
+    }
+    public function deleteToCart($listProductId, $userId)
+    {
+        
+        
+        foreach ($listProductId as $productId){
+            $stmt = $this->conn->prepare("DELETE FROM carts WHERE userID = ? and productID = ? ");
+            $stmt->execute([$userId, $productId]);
+        }
+        
     }
 }
 
