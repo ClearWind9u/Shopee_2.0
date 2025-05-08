@@ -12,6 +12,8 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [qty, setQty] = useState({});
+  const [paymentMethod,setPaymentMethod] = useState("cod")
+  const [paymentMethodImg,setPaymentMethodImg] = useState("/cod_img.png")
 
   const fetchCart = async () => {
     try {
@@ -143,7 +145,7 @@ const Cart = () => {
             <div className="third-line">
               <div className="column left">
                 <select className="form-select" name="cars" id="cars">
-                  <option value="volvo">Volvo</option>
+                  <option value="volvo">Phường/Xã</option>
                   <option value="saab">Saab</option>
                   <option value="mercedes">Mercedes</option>
                   <option value="audi">Audi</option>
@@ -151,7 +153,7 @@ const Cart = () => {
               </div>
               <div className="column mid">
                 <select className="form-select" name="cars" id="cars">
-                  <option value="volvo">Volvo</option>
+                  <option value="volvo">Quận/Huyện</option>
                   <option value="saab">Saab</option>
                   <option value="mercedes">Mercedes</option>
                   <option value="audi">Audi</option>
@@ -159,7 +161,7 @@ const Cart = () => {
               </div>
               <div className="column right">
                 <select className="form-select" name="cars" id="cars">
-                  <option value="volvo">Volvo</option>
+                  <option value="volvo">Tỉnh/Thành phố</option>
                   <option value="saab">Saab</option>
                   <option value="mercedes">Mercedes</option>
                   <option value="audi">Audi</option>
@@ -206,7 +208,7 @@ const Cart = () => {
             <div>Hình thức thanh toán</div>
             <div>
               <div className="form-check payment-check">
-                <input type="radio" className="form-check-input" name="paymentMethod" id="cod" value="cod" />
+                <input onClick={() => {setPaymentMethod("cod"); setPaymentMethodImg("/cod_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="cod" value="cod" checked = {paymentMethod == "cod" ? "checked": ""} />
                 <label className="form-check-label" htmlFor="cod">
                   <div>
                     <img src="/cod_img.png" alt="cod-img" />
@@ -215,7 +217,7 @@ const Cart = () => {
                 </label>
               </div>
               <div className="form-check payment-check">
-                <input type="radio" className="form-check-input" name="paymentMethod" id="momo" value="momo" />
+                <input onClick={() => {setPaymentMethod("momo"); setPaymentMethodImg("/momo_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="momo" value="momo" checked = {paymentMethod == "momo" ? "checked": ""}/>
                 <label className="form-check-label" htmlFor="momo">
                   <div>
                     <img src="/momo_img.png" alt="cod-img" />
@@ -224,7 +226,7 @@ const Cart = () => {
                 </label>
               </div>
               <div className="form-check payment-check">
-                <input type="radio" className="form-check-input" name="paymentMethod" id="vnpay" value="vnpay" />
+                <input onClick={() => {setPaymentMethod("vnpay"); setPaymentMethodImg("/vnpay_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="vnpay" value="vnpay" checked = {paymentMethod == "vnpay" ? "checked": ""}/>
                 <label className="form-check-label" htmlFor="vnpay">
                   <div>
                     <img src="/vnpay_img.png" alt="vnpay-img" />
@@ -233,7 +235,7 @@ const Cart = () => {
                 </label>
               </div>
               <div className="form-check payment-check">
-                <input type="radio" className="form-check-input" name="paymentMethod" id="zalopay" value="zalopay" />
+                <input onClick={() => {setPaymentMethod("zalopay"); setPaymentMethodImg("/zalopay_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="zalopay" value="zalopay" checked = {paymentMethod == "zalopay" ? "checked": ""}/>
                 <label className="form-check-label" htmlFor="zalopay">
                   <div>
                     <img src="/zalopay_img.png" alt="zalopay-img" />
@@ -323,7 +325,7 @@ const Cart = () => {
       </div>
       <div className="total-container">
         <div className="column col1">
-          <img src="/vnpay_img.png" alt="vnpay-img" />
+          <img src={paymentMethodImg} alt="" />
         </div>
         <div className="column col2">
           <div>Thành tiền {`₫${total.toLocaleString('vi-VN')}`}</div>
