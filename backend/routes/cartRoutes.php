@@ -30,6 +30,9 @@ function handleCartRoutes($route, $method) {
     elseif ($method == 'POST' && $route == '/minus') {
         echo json_encode($controller->minusToCart($data));
     }
+    elseif ($method == 'POST' && $route == '/delete') {
+        echo json_encode($controller->deleteToCart($data));
+    }
     // Lấy sản phẩm cụ thể
     else {
         http_response_code(404);

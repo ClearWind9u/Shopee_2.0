@@ -63,32 +63,32 @@
   font-size: 12px;
   font-weight: bold;
 }
-.breadcrumb{
+.breadcrumb {
   margin: 10px auto;
 }
-.product-detail{
+.product-detail {
   width: 90%;
   background-color: #fff;
-  padding: 10px ;
+  padding: 10px;
 }
-.product-detail .row{
+.product-detail .row {
   width: 100%;
 }
-.product-detail .row .left{
+.product-detail .row .left {
   width: 40%;
 }
-.product-detail .row .big-picture{
+.product-detail .row .big-picture {
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.product-detail .row .big-picture img{
+.product-detail .row .big-picture img {
   width: 90%;
 }
 
-.product-detail .row .left .row{
- padding-bottom: 10px;
+.product-detail .row .left .row {
+  padding-bottom: 10px;
 }
 
 .order-product {
@@ -96,20 +96,19 @@
   justify-content: center;
 }
 
-.order-product p{
+.order-product p {
   margin-top: 10px;
   width: 100%;
   text-align: center;
   font-size: 30px;
   border-bottom-color: #ff5722;
-  border-bottom-style:solid ;
+  border-bottom-style: solid;
 }
 
 .product-card:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   border-color: #ff5722;
   border-style: solid;
-
 }
 
 .product-card img {
@@ -148,7 +147,7 @@
   border-radius: 4px;
   margin-bottom: 5px;
 }
-.product-grid .row{
+.product-grid .row {
   margin-bottom: 10px;
 }
 
@@ -309,7 +308,7 @@
   padding: 30px 10px;
 }
 
-.left-section {
+.left-setion {
   flex: 1;
   max-width: 45%;
 }
@@ -422,4 +421,212 @@
 button,
 img {
   transition: all 0.3s ease;
+}
+
+/* Responsive Design for max-width: 768px */
+@media (max-width: 768px) {
+    .product-detail {
+        width: 95%;
+        padding: 8px;
+    }
+
+    .product-flex {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 8px;
+    }
+
+    .left-section {
+        max-width: 100%;
+    }
+
+    .right-section {
+        align-items: center;
+    }
+
+    .big-picture img {
+        width: 100%;
+        height: 300px;
+    }
+
+    .smail-pictures {
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .thumb img {
+        width: 50px;
+        height: 50px;
+        padding: 2px;
+    }
+
+    .product-card {
+        padding: 15px;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .price {
+        font-size: 24px;
+    }
+
+    .section {
+        margin-top: 15px;
+    }
+
+    .qty {
+        gap: 8px;
+    }
+
+    .qty button {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+
+    .qty input {
+        width: 50px;
+        font-size: 14px;
+    }
+
+    .buy-section {
+        margin-top: 15px;
+    }
+
+    .buy-section button {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    .order-product p {
+        font-size: 24px;
+        margin-top: 8px;
+    }
+
+    .product-grid {
+        width: 95%;
+    }
+
+    .product-grid .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .product-grid .product-card {
+        width: 30%;
+        margin-bottom: 10px;
+    }
+
+    .product-grid .product-card img {
+        height: 140px;
+    }
+
+    .product-grid .product-name {
+        font-size: 14px;
+        height: 36px;
+    }
+
+    .product-grid .product-price {
+        font-size: 14px;
+    }
+
+    .product-grid .product-sold {
+        font-size: 12px;
+    }
+}
+
+/* Responsive Design for max-width: 576px */
+@media (max-width: 576px) {
+    .product-detail {
+        width: 98%;
+        padding: 5px;
+    }
+
+    .product-flex {
+        gap: 15px;
+        padding: 15px 5px;
+    }
+
+    .big-picture img {
+        height: 250px;
+    }
+
+    .smail-pictures {
+        gap: 6px;
+    }
+
+    .thumb img {
+        width: 40px;
+        height: 40px;
+        padding: 1px;
+    }
+
+    .product-card {
+        padding: 10px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+
+    .price {
+        font-size: 20px;
+    }
+
+    .section {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .qty button {
+        width: 24px;
+        height: 24px;
+        font-size: 16px;
+    }
+
+    .qty input {
+        width: 40px;
+        font-size: 13px;
+    }
+
+    .buy-section button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .order-product p {
+        font-size: 20px;
+        margin-top: 5px;
+    }
+
+    .product-grid {
+        width: 98%;
+    }
+
+    .product-grid .product-card {
+        width: 48%;
+    }
+
+    .product-grid .product-card img {
+        height: 120px;
+    }
+
+    .product-grid .product-name {
+        font-size: 13px;
+        height: 32px;
+    }
+
+    .product-grid .product-price {
+        font-size: 13px;
+    }
+
+    .product-grid .product-sold {
+        font-size: 11px;
+    }
 }

@@ -63,6 +63,16 @@ class Cart
             return $this->getCart($userId);
         }
     }
+    public function deleteToCart($listProductId, $userId)
+    {
+        
+        
+        foreach ($listProductId as $productId){
+            $stmt = $this->conn->prepare("DELETE FROM carts WHERE userID = ? and productID = ? ");
+            $stmt->execute([$userId, $productId]);
+        }
+        
+    }
 }
 
 ?>
