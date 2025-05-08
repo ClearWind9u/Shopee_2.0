@@ -1,40 +1,68 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import API_BASE_URL from "../../config";
 import { UserContext } from "../../context/UserContext";
 import "./Detail.css";
+import Notification from "../Notification/Notification";
 
 const Detail = () => {
   const { productId } = useParams();
   const { user, token } = useContext(UserContext);
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedVariant, setSelectedVariant] = useState({});
+  const [success, setSuccess] = useState(null);
   const [qty, setQty] = useState(1);
+
+  const parsePrice = (price) => {
+    return `₫${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  };
+
+  const parseSold = (soldStr) => {
+    const match = soldStr.match(/(\d+([,.]\d+)?)(k)?/i);
+    if (!match) return 0;
+    const num = parseFloat(match[1].replace(',', '.'));
+    return match[3] ? num * 1000 : num;
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
-      console.log("Fetching product with ID:", productId);
       try {
         setLoading(true);
-        const response = await axios.get(`${API_BASE_URL}/product/getProduct`, {
+        const productResponse = await axios.get(`${API_BASE_URL}/product/getProduct`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
           params: { productId },
         });
-        console.log("Product response:", response);
-        const fetchedProduct = response.data.product || {};
+        const fetchedProduct = productResponse.data.product || {};
         const variantOptions = fetchedProduct.typeWithImage || [];
         setProduct({
           ...fetchedProduct,
-          price: `₫${fetchedProduct.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`,
+          price: parsePrice(fetchedProduct.price),
           stock: fetchedProduct.stock,
           variantOptions,
         });
-       
+
+        const relatedResponse = await axios.get(`${API_BASE_URL}/product/listProduct`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const fetchedRelatedProducts = relatedResponse.data.product || [];
+        const mappedRelatedProducts = fetchedRelatedProducts
+          .filter(p => p.id !== productId) // Loại bỏ sản phẩm hiện tại khỏi danh sách liên quan
+          .map((product, index) => ({
+            id: product.id || `temp-${index}`,
+            img: product.typeWithImage || '/image/default.webp',
+            name: product.name,
+            price: parsePrice(product.price),
+            sold: `Đã bán ${product.stock}`,
+          }))
+          .slice(0, 21);
+        setRelatedProducts(mappedRelatedProducts);
       } catch (err) {
         setError(err.response?.data?.error || "Không thể tải thông tin sản phẩm");
       } finally {
@@ -45,14 +73,40 @@ const Detail = () => {
     if (productId) fetchProduct();
   }, [productId, token]);
 
-  
-
   // Handle quantity change
   const handleQtyChange = (change) => {
     const newQty = qty + change;
     if (newQty >= 1 && newQty <= (product?.stock || 10)) {
       setQty(newQty);
     }
+  };
+
+  // Handle add to cart
+  const handleAddToCart = async () => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/cart/add`,
+        { productId, quantity: qty },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      if (response.status === 200) {
+        setSuccess("Sản phẩm đã được thêm vào giỏ hàng!");
+        setTimeout(() => setSuccess(null), 5000);
+        setError(null);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || "Không thể thêm vào giỏ hàng");
+    }
+  };
+
+  const handleCloseNotification = () => {
+    setSuccess(null);
+    setError(null);
   };
 
   if (loading) {
@@ -65,22 +119,16 @@ const Detail = () => {
 
   return (
     <div>
-      <div className="container breadcrumb">
-        <nav style={{ "--bs-breadcrumb-divider": "'>" }} aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item"><a href="#">Xoppii</a></li>
-            <li className="breadcrumb-item active" aria-current="page">Sản phẩm</li>
-          </ol>
-        </nav>
-      </div>
-
       <div className="container product-detail">
         <div className="product-flex">
           <div className="left-section">
             <div className="big-picture">
-              <img src={API_BASE_URL + product.typeWithImage || product.typeWithImageLink?.[0]?.imageLink} alt={product.name} />
+              <img
+                src={API_BASE_URL + product.typeWithImage || product.typeWithImageLink?.[0]?.imageLink}
+                alt={product.name}
+                style={{ width: "400px", height: "400px", objectFit: "cover" }}
+              />
             </div>
-           
           </div>
 
           <div className="right-section">
@@ -111,8 +159,7 @@ const Detail = () => {
                 </div>
               </div>
               <div className="buy-section">
-                <button className="cart-btn">🛒 Thêm Vào Giỏ Hàng</button>
-                <button className="buy-btn">Mua Với Giá {product.price}</button>
+                <button className="cart-btn" onClick={handleAddToCart}>🛒 Thêm Vào Giỏ Hàng</button>
               </div>
             </div>
           </div>
@@ -124,18 +171,43 @@ const Detail = () => {
       </div>
 
       <div className="container product-grid">
-        {[...Array(3)].map((_, rowIdx) => (
-          <div className="row" key={rowIdx}>
-            {[...Array(7)].map((_, i) => (
-              <div className="col product-card" key={i}>
-                <img src="/image/aotuyenanh.webp" alt={`SP${i + 1}`} />
-                <div className="product-name">Áo bóng đá Retro A.C đỏ 1998</div>
-                <div className="product-price">₫270.000</div>
-                <div className="product-sold">Đã bán 37</div>
-              </div>
-            ))}
-          </div>
-        ))}
+        {relatedProducts.length === 0 ? (
+          <div className="text-center my-5">Không có sản phẩm liên quan nào.</div>
+        ) : (
+          [0, 1, 2].map((rowIdx) => (
+            <div className="row" key={rowIdx}>
+              {relatedProducts.slice(rowIdx * 7, rowIdx * 7 + 7).map((relatedProduct, i) => (
+                <Link to={`/detail/${relatedProduct.id}`} className="col product-card" key={relatedProduct.id || i}>
+                  <img src={API_BASE_URL + relatedProduct.img} alt={relatedProduct.name} />
+                  <div className="product-name">{relatedProduct.name}</div>
+                  <div className="product-price">{relatedProduct.price}</div>
+                  <div className="product-sold">{relatedProduct.sold}</div>
+                </Link>
+              ))}
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="notification-container">
+        {error && (
+          <Notification
+            key={`error-${error}-${Date.now()}`}
+            message={error}
+            type="error"
+            duration={5000}
+            onClose={handleCloseNotification}
+          />
+        )}
+        {success && (
+          <Notification
+            key={`success-${success}-${Date.now()}`}
+            message={success}
+            type="success"
+            duration={5000}
+            onClose={handleCloseNotification}
+          />
+        )}
       </div>
     </div>
   );

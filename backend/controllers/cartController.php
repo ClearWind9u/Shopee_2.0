@@ -32,23 +32,22 @@ class CartController
             return json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
         }
     }
-    public function addToCart($req){
-        try{
+    public function addToCart($req) {
+        try {
             $token = $req['token'];
             $decoded = $this->authMiddleware->verifyToken($token);
-            if(!$decoded|| !isset($decoded['userId'])){
+            if (!$decoded || !isset($decoded['userId'])) {
                 http_response_code(401);
-                echo json_encode(["error"=> "Token khong hop le"]);
+                echo json_encode(["error" => "Token khong hop le"]);
                 exit(); 
             }
             $productId = $req['productId'];
-            $quantity = $req['quantity'];
-            $data = $this->cartModel->addToCart($productId,$decoded['userId'],$quantity);
+            $quantity = isset($req['quantity']) ? (int)$req['quantity'] : 1;
+            $data = $this->cartModel->addToCart($productId, $decoded['userId'], $quantity);
             http_response_code(200);
-            echo json_encode(["message"=>"Thanh Cong","value"=>$data]);
+            echo json_encode(["message" => "Thanh Cong", "value" => $data]);
             exit();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             http_response_code(500);
             return json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
         }
