@@ -43,12 +43,17 @@ class Product {
 
     // Lấy tất cả sản phẩm
     public function findAllProductsSeller($seller_id) {
-        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table_name . " WHERE seller_id=?");
+        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table_name . " WHERE seller_id=? and deleted = false");
         $stmt->execute([$seller_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function deleteProductWithId($id,$userId){
+        $stmt = $this->conn->prepare("UPDATE " . $this->table_name . " SET deleted = 1 WHERE id = ? and seller_id = ?");
+        $stmt->execute([$id,$userId]);
+        return $this->findProductById($id);
+    }
     public function findAllProducts() {
-        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table_name);
+        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table_name. " WHERE deleted = false");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
