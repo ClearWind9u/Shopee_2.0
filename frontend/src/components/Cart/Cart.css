@@ -103,19 +103,21 @@
 }
 
 .col-right .form-check .col1 {
-    width: 25%;
+    width: 30%;
     font-size: 12px;
     padding: 10px;
 }
 
 .col-right .form-check .col2 {
-    width: 50%;
-    text-align: end;
+    width: 45%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .col-right .form-check .col3 {
     width: 25%;
-    text-align: end;
+    text-align: center;
 }
 
 .col-right .form-check-product {
@@ -132,10 +134,14 @@
     border-radius: 12px;
 }
 
-.col-right .form-check-product .col2 .product-name {
+.col-right .form-check-product .col1 .product-name {
     word-wrap: break-word;
     height: 50%;
-    text-align: left;
+    text-align: center;
+}
+
+.col-right .form-check-product .col1 img {
+    margin-bottom: 20px;
 }
 
 .col-right .form-check-product .col2 {
@@ -143,7 +149,7 @@
 }
 
 .col-right .form-check-product .col2 .qty-input {
-    text-align: end;
+    text-align: center;
 }
 
 .total-container {

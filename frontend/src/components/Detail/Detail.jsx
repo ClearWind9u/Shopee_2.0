@@ -14,7 +14,6 @@ const Detail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [selectedVariant, setSelectedVariant] = useState({});
   const [qty, setQty] = useState(1);
 
   const parsePrice = (price) => {
@@ -32,7 +31,6 @@ const Detail = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        // Fetch product details
         const productResponse = await axios.get(`${API_BASE_URL}/product/getProduct`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,7 +46,6 @@ const Detail = () => {
           variantOptions,
         });
 
-        // Fetch related products
         const relatedResponse = await axios.get(`${API_BASE_URL}/product/listProduct`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -64,7 +61,7 @@ const Detail = () => {
             price: parsePrice(product.price),
             sold: `Đã bán ${product.stock}`,
           }))
-          .slice(0, 21); // Giới hạn số lượng sản phẩm liên quan (3 hàng, mỗi hàng 7 sản phẩm)
+          .slice(0, 21);
         setRelatedProducts(mappedRelatedProducts);
       } catch (err) {
         setError(err.response?.data?.error || "Không thể tải thông tin sản phẩm");
@@ -87,7 +84,7 @@ const Detail = () => {
   // Handle add to cart
   const handleAddToCart = async () => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `${API_BASE_URL}/cart/add`,
         { productId, quantity: qty },
         {
@@ -97,9 +94,11 @@ const Detail = () => {
           },
         }
       );
-      setSuccess("Sản phẩm đã được thêm vào giỏ hàng!");
-      setTimeout(() => setSuccess(null), 5000); // Tự động ẩn sau 5 giây
-      setError(null);
+      if (response.status === 200) {
+        setSuccess("Sản phẩm đã được thêm vào giỏ hàng!");
+        setTimeout(() => setSuccess(null), 5000);
+        setError(null);
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Không thể thêm vào giỏ hàng");
     }

@@ -89,7 +89,18 @@ const Cart = () => {
     setError(null);
   };
 
-  const total = cartItems.reduce((sum, item) => sum + parseFloat(item.totalPrice || 0), 0);
+  const total = cartItems.reduce((sum, item) => {
+    const quantity = qty[item.productID] || 1;
+    const unitPrice = parseFloat(item.price) || 0;
+    const itemTotal = unitPrice * quantity;
+    return sum + itemTotal;
+  }, 0);
+
+  const getItemTotal = (item) => {
+    const quantity = qty[item.productID] || 1;
+    const unitPrice = parseFloat(item.price) || 0;
+    return unitPrice * quantity;
+  };
 
   return (
     <div>
@@ -225,7 +236,6 @@ const Cart = () => {
           </div>
         </div>
         <div className="col-right">
-          <div>Giỏ hàng</div>
           <div className="form-check">
             <input className="form-check-input" type="checkbox" name="checkAll" id="checkAll" onChange={(e) => {
               const checked = e.target.checked;
@@ -259,10 +269,14 @@ const Cart = () => {
                   />
                   <label htmlFor={`product${index}`} className="product">
                     <div className="column col1">
-                      <img src={item.typeWithImage || "/image/aotuyenanh.webp"} alt={item.name} />
+                      <div className="product-name">{item.name || "Tên sản phẩm không xác định"}</div>
+                      <img
+                        src={API_BASE_URL + item.typeWithImage || item.typeWithImageLink?.[0]?.imageLink || "/image/aotuyenanh.webp"}
+                        alt={item.name}
+                        style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                      />
                     </div>
                     <div className="column col2">
-                      <div className="product-name">{item.name || "Tên sản phẩm không xác định"}</div>
                       <div className="qty-input">
                         <button
                           className="qty-count qty-count--minus"
@@ -288,7 +302,7 @@ const Cart = () => {
                         >+</button>
                       </div>
                     </div>
-                    <div className="column col3">{item.totalPrice ? `₫${parseFloat(item.totalPrice).toLocaleString('vi-VN')}` : "0đ"}</div>
+                    <div className="column col3">{`₫${getItemTotal(item).toLocaleString('vi-VN')}`}</div>
                   </label>
                 </div>
                 <hr />
@@ -303,7 +317,7 @@ const Cart = () => {
           <img src="/vnpay_img.png" alt="vnpay-img" />
         </div>
         <div className="column col2">
-          <div>Thành tiền {total ? `₫${total.toLocaleString('vi-VN')}` : "0đ"}</div>
+          <div>Thành tiền {`₫${total.toLocaleString('vi-VN')}`}</div>
           <button>Thanh toán</button>
         </div>
       </div>
