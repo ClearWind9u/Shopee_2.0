@@ -4,7 +4,7 @@ import { UserContext } from "../../context/UserContext";
 import Notification from "../Notification/Notification";
 import { QRCodeCanvas } from "qrcode.react";
 import "../Wallet/Wallet.css";
-
+import API_BASE_URL from "../../config";
 const Wallet = () => {
     const { user, token } = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
@@ -13,24 +13,29 @@ const Wallet = () => {
     const [balance, setBalance] = useState(0);
     const [showQRModal, setShowQRModal] = useState(false);
     const [transactionInfo, setTransactionInfo] = useState(null);
-
+    const [error, setError] = useState(null);
+      const [success, setSuccess] = useState(null);
     // Fetch balance for the logged-in user
     useEffect(() => {
-        const fetchBalance = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/user/${"a"}`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                const customer = response.data;
-                setBalance(customer.balance || 0);
-            } catch (error) {
-                console.error("Error fetching balance:", error);
-            }
-        };
-        fetchBalance();
-    }, []);
+        if (user?.id) {
+          fetchBalance(user.id);
+        }
+      }, [user?.id]);
+    const fetchBalance = async () =>  {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/user/profile`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("Fetch profile response:", response.data);
+      
+            const userData = response.data;
+            setBalance(parseInt(userData['balance']))
+            
+          } catch (err) {
+            console.error("Fetch profile error:", err.response || err);
+            setError("Không thể lấy thông tin hồ sơ");
+          }
+    }
 
     const showNotification = (message) => {
         setNotification(message);
@@ -50,7 +55,6 @@ const Wallet = () => {
         const newAmount = parseInt(amount);
         if (!isNaN(newAmount) && newAmount > 0) {
             setTransactionInfo({
-                userId:"",
                 amount: newAmount,
                 transactionId: `TXN-${Date.now()}`,
                 bankInfo: {
@@ -67,10 +71,11 @@ const Wallet = () => {
     const handleConfirmTransaction = async () => {
         if (transactionInfo) {
             try {
+                const newBalance = balance+amount
                 const response = await axios.post(
-                    "http://localhost:8000/wallet",
-                    { id: transactionInfo.userId, money: transactionInfo.amount },
-                    { headers: { "Content-Type": "application/json" } }
+                    `${API_BASE_URL}/user/update-balance`,
+                    { balance: toString(newBalance) },
+                    { headers: {Authorization: `Bearer ${token}`} }
                 );
                 if (response.status === 200) {
                     setBalance((prevBalance) => prevBalance + transactionInfo.amount);
@@ -98,16 +103,15 @@ const Wallet = () => {
 
     return (
         <div className="wallet">
-            <h2 style={{ textAlign: 'center' }}>My Wallet</h2>
-            <div style={{ textAlign: 'center' }}>Save your credit and debit card details for faster checkout</div>
+            <h2 style={{ textAlign: 'center' }}>Ví của tôi</h2>
 
             <div className="wallet-content">
                 <div className="balance-section d-flex justify-content-between align-items-center">
                     <div className="balance-info">
-                        <h4>Your Balance</h4>
+                        <h4>Số dư của bạn</h4>
                         <p className="balance-amount">{balance} VNĐ</p>
                     </div>
-                    <button className="btn btn-secondary blue-btn" onClick={handleAddFunds}>Add Funds</button>
+                    <button className="btn btn-secondary blue-btn" onClick={handleAddFunds}>Nạp tiền</button>
                 </div>
                 {notification && <Notification message={notification} onClose={() => setNotification(null)} />}
             </div>
@@ -115,7 +119,7 @@ const Wallet = () => {
             {showModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <h3>Enter Amount to Add (VNĐ)</h3>
+                        <h3>Nhập số tiền cần nạp (VNĐ)</h3>
                         <input
                             type="number"
                             className="form-control amount-input"
@@ -127,8 +131,8 @@ const Wallet = () => {
                             onKeyDown={handleKeyDown}
                         />
                         <div className="modal-buttons">
-                            <button className="btn red-btn" onClick={handleCloseModal}>Cancel</button>
-                            <button className="btn blue-btn" onClick={handleConfirmAddFunds}>Confirm</button>
+                            <button className="btn red-btn" onClick={handleCloseModal}>Hủy bỏ</button>
+                            <button className="btn blue-btn" onClick={handleConfirmAddFunds}>Xác nhận</button>
                         </div>
                     </div>
                 </div>
@@ -151,14 +155,14 @@ const Wallet = () => {
                                 />
                             </div>
                             <div className="col-md-6 text-start">
-                                <p><strong>Account Number:</strong> {transactionInfo.bankInfo.accountNumber}</p>
-                                <p><strong>Account Holder:</strong> {transactionInfo.bankInfo.accountHolder}</p>
-                                <p><strong>Bank Name:</strong> {transactionInfo.bankInfo.bankName}</p>
-                                <p><strong>Amount:</strong> {transactionInfo.amount.toLocaleString()} VNĐ</p>
+                                <p><strong>STK:</strong> {transactionInfo.bankInfo.accountNumber}</p>
+                                <p><strong>Chủ tài khoản:</strong> {transactionInfo.bankInfo.accountHolder}</p>
+                                <p><strong>Ngân hàng:</strong> {transactionInfo.bankInfo.bankName}</p>
+                                <p><strong>Số tiền:</strong> {transactionInfo.amount.toLocaleString()} VNĐ</p>
                             </div>
                         </div>
                         <p className="mt-3">
-                            Scan this QR code and transfer the specified amount to the above account to complete the transaction.
+                            Quét mã QR trên để thanh toán.
                         </p>
                         <div className="modal-buttons text-center">
                             <button className="btn red-btn me-2" onClick={handleCloseQRModal}>Cancel</button>
