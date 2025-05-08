@@ -296,7 +296,7 @@ const Cart = () => {
                           className="product-qty"
                           type="number"
                           name="product-qty"
-                          min="1"
+                          min="0"
                           max="10"
                           value={qty[item.productID] || 1}
                           onChange={(e) => {

@@ -287,3 +287,241 @@ body {
     background-position: 10px center;
     background-size: 20px;
 }
+
+/* Responsive Design for max-width: 768px */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 10px 16px;
+    }
+
+    .logo img {
+        height: 36px;
+    }
+
+    .search-bar {
+        margin: 10px 0;
+        width: 100%;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .menu a {
+        margin: 8px 12px;
+        font-size: 14px;
+    }
+
+    .categories {
+        width: 95%;
+        padding: 15px;
+        position: relative;
+    }
+
+    .categories .row-name {
+        font-size: 18px;
+        padding-left: 30px;
+        padding-bottom: 10px;
+        cursor: pointer;
+    }
+
+    /* Hamburger icon for categories */
+    .categories .row-name::before {
+        content: '\2630';
+        font-size: 20px;
+        position: absolute;
+        left: 15px;
+        top: 20px;
+        color: #333;
+    }
+
+    .row-cate {
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out;
+        padding: 0;
+    }
+
+    #cate-toggle:checked ~ .row-cate {
+        max-height: 600px; /* Adjust based on number of categories */
+        padding: 10px;
+    }
+
+    .row-cate .col {
+        flex: 1 1 100%;
+        min-width: 100%;
+        text-align: left;
+        border: none;
+        border-radius: 0;
+        padding: 10px 15px;
+        font-size: 14px;
+        background-color: transparent;
+    }
+
+    .row-cate .col:hover {
+        transform: none;
+        background-color: #f5f5f5;
+        box-shadow: none;
+    }
+
+    .categories img {
+        display: none; /* Hide images in dropdown */
+    }
+
+    .list-product-title {
+        width: 95%;
+        font-size: 24px;
+        height: 40px;
+    }
+
+    .product-grid {
+        width: 95%;
+    }
+
+    .product-card {
+        width: 30%;
+        margin-bottom: 15px;
+    }
+
+    .product-card img {
+        height: 140px;
+    }
+
+    .product-name {
+        font-size: 14px;
+        height: 36px;
+    }
+
+    .product-price {
+        font-size: 14px;
+    }
+
+    .product-sold {
+        font-size: 12px;
+    }
+
+    .filter-bar {
+        width: 95%;
+        padding: 10px 15px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+    .ads-left,
+    .ads-right {
+        display: none;
+    }
+}
+
+/* Responsive Design for max-width: 576px */
+@media (max-width: 576px) {
+    .navbar {
+        padding: 8px 12px;
+    }
+
+    .logo img {
+        height: 32px;
+    }
+
+    .search-bar input {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .search-bar button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .menu a {
+        margin: 6px 8px;
+        font-size: 13px;
+    }
+
+    .categories {
+        width: 98%;
+        padding: 10px;
+    }
+
+    .categories .row-name {
+        font-size: 16px;
+        padding-left: 28px;
+        padding-bottom: 8px;
+    }
+
+    .categories .row-name::before {
+        font-size: 18px;
+        left: 12px;
+        top: 18px;
+    }
+
+    .row-cate .col {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .list-product-title {
+        width: 98%;
+        font-size: 20px;
+        height: 36px;
+    }
+
+    .product-grid {
+        width: 98%;
+    }
+
+    .product-card {
+        width: 48%;
+    }
+
+    .product-card img {
+        height: 120px;
+    }
+
+    .product-name {
+        font-size: 13px;
+        height: 32px;
+    }
+
+    .product-price {
+        font-size: 13px;
+    }
+
+    .product-sold {
+        font-size: 11px;
+    }
+
+    .filter-bar {
+        width: 98%;
+        padding: 8px 10px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .filter-bar input {
+        padding-left: 35px;
+        background-size: 18px;
+        background-position: 8px center;
+    }
+
+    .pagination-bar-admin button {
+        padding: 6px 10px;
+        font-size: 12px;
+        margin: 0 4px;
+    }
+}
