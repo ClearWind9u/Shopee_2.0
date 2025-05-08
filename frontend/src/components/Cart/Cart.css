@@ -150,6 +150,37 @@
 
 .col-right .form-check-product .col2 .qty-input {
     text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+}
+
+.col-right .form-check-product .col2 .qty-input button {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+}
+
+.col-right .form-check-product .col2 .qty-input button:hover {
+    background-color: #ff5722;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.col-right .form-check-product .col2 .qty-input input {
+    width: 50px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 4px;
+    font-weight: 500;
 }
 
 .total-container {
@@ -189,4 +220,361 @@
 
 .total-container .col2 div {
     font-size: 20px;
+}
+
+/* Responsive Design for max-width: 768px */
+@media (max-width: 768px) {
+    .cart-container {
+        display: flex;
+        flex-direction: column;
+        width: 95%;
+        margin: 0 auto;
+    }
+
+    .cart-container .col-right {
+        width: 100%;
+        float: none;
+        padding: 8px;
+        order: 1; /* Place .col-right first */
+    }
+
+    .cart-container .col-left {
+        width: 100%;
+        float: none;
+        padding: 8px;
+        order: 2; /* Place .col-left (including .paymentMethod) after .col-right */
+    }
+
+    .col-left .first-line {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .col-left .first-line .nameInput,
+    .col-left .first-line .phoneInput {
+        width: 100%;
+        float: none;
+        padding: 8px;
+    }
+
+    .col-left .second-line {
+        padding: 8px;
+    }
+
+    .col-left .second-line .emailInput,
+    .col-left .second-line .detailaddressInput {
+        width: 100%;
+    }
+
+    .third-line {
+        flex-direction: column;
+    }
+
+    .third-line .column {
+        width: 100%;
+        padding: 8px;
+    }
+
+    .other-receiver .gender {
+        padding: 8px;
+    }
+
+    .otherReceiverDetail .column {
+        width: 100%;
+        display: block;
+        padding: 8px;
+    }
+
+    .cart-container input,
+    .third-line .column select {
+        font-size: 14px;
+        padding: 8px;
+        border-radius: 20px;
+    }
+
+    .col-left .form-label {
+        font-size: 14px;
+    }
+
+    .paymentMethod {
+        margin-top: 20px;
+        margin-bottom: 8px;
+    }
+
+    .payment-check {
+        height: 45px;
+        padding-left: 20px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+    }
+
+    .payment-check img {
+        height: 40px;
+        width: 40px;
+        padding: 3px;
+    }
+
+    .col-right .form-check {
+        height: 35px;
+        padding-left: 20px;
+    }
+
+    .col-right .form-check .col1 {
+        font-size: 11px;
+        padding: 8px;
+    }
+
+    .col-right .form-check .col2,
+    .col-right .form-check .col3 {
+        font-size: 13px;
+    }
+
+    .col-right .form-check-product {
+        height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .col-right .form-check-product img {
+        width: 120px !important;
+        height: 120px !important;
+        margin-bottom: 10px;
+    }
+
+    .col-right .form-check-product .col1 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .col-right .form-check-product .col1 .product-name {
+        font-size: 14px;
+        height: auto;
+        margin-bottom: 8px;
+    }
+
+    .col-right .form-check-product .col2 {
+        width: 100%;
+        text-align: center;
+        margin: 8px 0;
+    }
+
+    .col-right .form-check-product .col2 .qty-input {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .col-right .form-check-product .col2 .qty-input button {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+    }
+
+    .col-right .form-check-product .col2 .qty-input button:hover {
+        background-color: #ff5722;
+        color: #fff;
+        transform: scale(1.1);
+    }
+
+    .col-right .form-check-product .col2 .qty-input input {
+        width: 50px;
+        font-size: 13px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 4px;
+        font-weight: 500;
+    }
+
+    .col-right .form-check-product .col3 {
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .total-container {
+        flex-direction: column;
+        position: relative;
+        bottom: auto;
+    }
+
+    .total-container .col1,
+    .total-container .col2 {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .total-container .col1 img {
+        height: 60px;
+        padding: 8px;
+    }
+
+    .total-container .col2 {
+        padding: 10px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .total-container .col2 div {
+        font-size: 18px;
+    }
+
+    .total-container .col2 button {
+        width: 100px;
+        padding: 8px;
+        font-size: 14px;
+        margin: 0;
+        border-radius: 10px;
+    }
+}
+
+/* Responsive Design for max-width: 576px */
+@media (max-width: 576px) {
+    .cart-container {
+        width: 98%;
+        padding: 5px;
+    }
+
+    .cart-container .col-right {
+        padding: 5px;
+    }
+
+    .cart-container .col-left {
+        padding: 5px;
+    }
+
+    .col-left .first-line .nameInput,
+    .col-left .first-line .phoneInput {
+        padding: 5px;
+    }
+
+    .col-left .second-line {
+        padding: 5px;
+    }
+
+    .third-line .column {
+        padding: 5px;
+    }
+
+    .other-receiver .gender {
+        padding: 5px;
+    }
+
+    .otherReceiverDetail .column {
+        padding: 5px;
+    }
+
+    .cart-container input,
+    .third-line .column select {
+        font-size: 13px;
+        padding: 6px;
+        border-radius: 15px;
+    }
+
+    .col-left .form-label {
+        font-size: 13px;
+    }
+
+    .payment-check {
+        height: 40px;
+        padding-left: 15px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+    }
+
+    .payment-check img {
+        height: 35px;
+        width: 35px;
+        padding: 2px;
+    }
+
+    .col-right .form-check {
+        height: 30px;
+        padding-left: 15px;
+    }
+
+    .col-right .form-check .col1 {
+        font-size: 10px;
+        padding: 5px;
+    }
+
+    .col-right .form-check .col2,
+    .col-right .form-check .col3 {
+        font-size: 12px;
+    }
+
+    .col-right .form-check-product {
+        padding: 8px;
+    }
+
+    .col-right .form-check-product img {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .col-right .form-check-product .col1 .product-name {
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .col-right .form-check-product .col2 .qty-input button {
+        width: 24px;
+        height: 24px;
+        font-size: 13px;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+    }
+
+    .col-right .form-check-product .col2 .qty-input button:hover {
+        background-color: #ff5722;
+        color: #fff;
+        transform: scale(1.1);
+    }
+
+    .col-right .form-check-product .col2 .qty-input input {
+        width: 45px;
+        font-size: 12px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 3px;
+        font-weight: 500;
+    }
+
+    .col-right .form-check-product .col3 {
+        font-size: 13px;
+    }
+
+    .total-container .col1 img {
+        height: 50px;
+        padding: 5px;
+    }
+
+    .total-container .col2 {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .total-container .col2 div {
+        font-size: 16px;
+    }
+
+    .total-container .col2 button {
+        width: 90px;
+        padding: 6px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
 }

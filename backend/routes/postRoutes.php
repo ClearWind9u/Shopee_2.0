@@ -30,9 +30,18 @@ function handlePostRoutes($route, $method)
         echo json_encode($controller->updatePost($postId, $data));
     }
     // Xoá bài viết theo ID: DELETE vào "/{id}"
-    elseif ($method === 'DELETE' && preg_match('/^\/\d+$/', $route)) {
+    else if ($method === 'DELETE' && preg_match('/^\/\d+$/', $route)) {
         $postId = intval(substr($route, 1));
         echo json_encode($controller->deletePost($postId));
+    } else if ($method === 'GET' && preg_match('/\/search$/', $route)) {
+        $keyword = $_GET['keyword'] ?? '';
+        $page = $_GET['page'] ?? 1;
+        echo json_encode($controller->searchPublicPosts($keyword, $page));
+    } else if ($method === 'POST' && preg_match('/^\/click\/\d+$/', $route)) {
+        $postId = intval(substr($route, strrpos($route, '/') + 1));
+        echo json_encode($controller->incrementClick($postId));
+    } else if ($method === 'GET' && $route === '/most-clicked') {
+        echo json_encode($controller->getMostClickedPosts());
     } else {
         http_response_code(404);
         echo json_encode(["error" => "Route không tồn tại"]);

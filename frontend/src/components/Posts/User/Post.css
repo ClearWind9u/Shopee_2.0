@@ -53,6 +53,125 @@
     margin: 0;
 }
 
-@media (max-width: 768px) {
-    
+.highlighted-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
 }
+
+.highlighted-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgba(255, 102, 0, 0.3); */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.highlighted-image::before {
+    content: '';
+    background-image: inherit;
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+.text-hover-orange {
+    transition: color 0.3s ease;
+
+}
+
+
+.mt-3:hover .text-hover-orange {
+    color: #ff6600 !important;
+}
+
+.small-post-card:hover .text-hover-orange {
+    color: #ff6600 !important;
+}
+
+
+.highlighted-image:hover::before {
+    transform: scale(1.05);
+}
+
+.highlighted-image:hover+.mt-3 h3 {
+    color: #ff6600;
+}
+
+.highlighted-image:hover+.mt-3 p {
+    color: #333;
+}
+
+.highlighted-image:hover::after {
+    opacity: 1;
+}
+
+
+.highlighted-wrapper:hover .highlighted-text h3 {
+    color: #ff6600;
+}
+
+.highlighted-text h3 {
+    transition: color 0.3s ease;
+}
+
+
+.highlighted-text h3,
+.small-post-text .fw-bold {
+    transition: color 0.3s ease;
+}
+
+
+
+.small-post-thumbnail {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+    width: 100px;
+    height: 70px;
+    flex-shrink: 0;
+}
+
+.small-post-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.small-post-thumbnail::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 102, 0, 0.25);
+    /* cam nhạt */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.small-post-thumbnail:hover img {
+    transform: scale(1.05);
+}
+
+.small-post-thumbnail:hover::after {
+    opacity: 1;
+}
+
+
+@media (max-width: 768px) {}

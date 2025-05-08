@@ -30,8 +30,8 @@ class Cart
         $findProductInCartStmt->execute([$userId, $productId]);
         $productInCart = $findProductInCartStmt->fetch(PDO::FETCH_ASSOC);
         if (empty($productInCart)) {
-            $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (quantity, productID, userID, totalPrice) VALUES (1,?,?,?)");
-            $stmt->execute([$productId, $userId, $product["price"]]);
+            $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (quantity, productID, userID, totalPrice) VALUES (?,?,?,?)");
+            $stmt->execute([$quantity,$productId, $userId, $product["price"]]);
             return $this->getCart($userId);
         } else {
             $productInCart["totalPrice"] += $product["price"]*$quantity;
