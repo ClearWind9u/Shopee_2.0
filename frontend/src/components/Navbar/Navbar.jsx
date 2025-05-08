@@ -48,9 +48,9 @@ const Navbar = () => {
             </Link>
             <Link
               className="nav-link"
-              to={user?.role === "manager" ? "/manager/order-history" : "/order-history"}
+              to={user?.role === "manager" ? "/manager/order-history" : user?.role === "seller" ? "/seller/manageProduct" : "/order-history"}
             >
-              <FaBox size={20} /> Lịch sử đặt hàng
+              <FaBox size={20} /> {user?.role === "seller" ? "Quản lý sản phẩm" : "Lịch sử đặt hàng"}
             </Link>
             <Link className="nav-link" to="/qa">
               <FaQuestionCircle size={20} /> Hỏi đáp

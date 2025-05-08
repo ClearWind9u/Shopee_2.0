@@ -5,8 +5,6 @@ import { UserContext } from "../../../context/UserContext";
 import axios from "axios";
 import API_BASE_URL from "../../../config";
 
-
-
 const AdminMenu = () => {
     const [showAddForm, setShowAddForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
@@ -36,6 +34,9 @@ const AdminMenu = () => {
     const [numOfPage, setNumOfPage] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentPageProduct, setCurrentPageProduct] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortType, setSortType] = useState("");
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     // const fetchProduct = async () => {
     //     try {
@@ -146,12 +147,12 @@ const AdminMenu = () => {
                 },
             });
             console.log(response)
-            setSuccess("Cập nhật hồ sơ thành công!");
+            setSuccess("Cập nhật sản phẩm thành công!");
             window.location.reload();
             setShowEditForm(!showEditForm)
         } catch (err) {
             console.error("API error:", err.response || err);
-            setError(err.response?.data?.error || "Lỗi cập nhật hồ sơ");
+            setError(err.response?.data?.error || "Lỗi cập nhật sản phẩm");
         }
     }
     const handleDeleteProduct = async (id) => {
@@ -173,7 +174,7 @@ const AdminMenu = () => {
     }
     const handleChangePage = (index) => {
         setCurrentPage(index+1);
-        setCurrentPageProduct(products.slice(index*3,index*3+3));
+        setCurrentPageProduct(filteredProducts.slice(index*3,index*3+3));
     }
 
     useEffect(() => {
@@ -197,6 +198,7 @@ const AdminMenu = () => {
                 }))
                 setProducts(listMappedProduct)
                 console.log(products)
+                setFilteredProducts(listMappedProduct);
                 setNumOfPage(Math.ceil(listMappedProduct.length/3));
                 setCurrentPageProduct(listMappedProduct.slice(0,3))
             } catch (err) {
@@ -206,6 +208,40 @@ const AdminMenu = () => {
         };
         fetchProduct();
     }, [token])
+
+    useEffect(() => {
+        const filtered = products
+            .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+            .sort((a, b) => {
+                const aPrice = parseFloat(a.price) || 0;
+                const bPrice = parseFloat(b.price) || 0;
+                const aStock = parseInt(a.stock) || 0;
+                const bStock = parseInt(b.stock) || 0;
+
+                switch (sortType) {
+                    case "price-asc":
+                        return aPrice - bPrice;
+                    case "price-desc":
+                        return bPrice - aPrice;
+                    case "stock-desc":
+                        return bStock - aStock;
+                    case "stock-asc":
+                        return aStock - bStock;
+                    case "name-asc":
+                        return a.name.localeCompare(b.name);
+                    case "name-desc":
+                        return b.name.localeCompare(a.name);
+                    default:
+                        return 0;
+                }
+            });
+
+        setFilteredProducts(filtered);
+        setNumOfPage(Math.ceil(filtered.length / 3));
+        setCurrentPageProduct(filtered.slice(0, 3));
+        setCurrentPage(1); // Reset về trang đầu
+    }, [searchTerm, sortType, products]);
+
     const handleCloseNotification = () => {
         setError("");
         setSuccess("");
@@ -235,7 +271,7 @@ const AdminMenu = () => {
     return (
         <div className="adminMenu">
             <h2 style={{ textAlign: "center" }}>
-                Manage Product
+                Quản lý sản phẩm
             </h2>
             {
                 !showAddForm && (
@@ -246,13 +282,41 @@ const AdminMenu = () => {
                     </div>
                 )
             }
+
+            <div className="container my-3 filter-bar">
+                <div className="row justify-content-between align-items-center">
+                    <div className="col-md-6 mb-2">
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm sản phẩm..."
+                            className="form-control"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-md-4 mb-2">
+                        <select
+                            className="form-select"
+                            value={sortType}
+                            onChange={(e) => setSortType(e.target.value)}
+                        >
+                            <option value="">Sắp xếp theo...</option>
+                            <option value="price-asc">Giá tăng dần</option>
+                            <option value="price-desc">Giá giảm dần</option>
+                            <option value="name-asc">Tên A → Z</option>
+                            <option value="name-desc">Tên Z → A</option>
+                            <option value="stock-desc">Tồn kho nhiều nhất</option>
+                            <option value="stock-asc">Tồn kho ít nhất</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             {
-                <div className={`form-add-product container ${showAddForm ? "form-enter" : "form-exit"
-                    }`}>
+                <div className={`form-add-product container ${showAddForm ? "form-enter" : "form-exit"}`}>
                     {showAddForm && (
                         <>
                             <h2>
-                                Add Product
+                                Thêm sản phẩm
                             </h2>
                             <div>
                                 <label htmlFor="productName" className="form-label">Tên sản phẩm:</label>
@@ -267,7 +331,7 @@ const AdminMenu = () => {
                                 <input
                                     id="productImage"
                                     type="file"
-                                    className="form-control "
+                                    className="form-control"
                                     onChange={handleAddFileChange}
                                 />
                             </div>
@@ -277,11 +341,11 @@ const AdminMenu = () => {
                             </div>
                             <div>
                                 <label htmlFor="productStock" className="form-label">Số lượng:</label>
-                                <input onChange={(e) => setAddProductQuantity(e.target.value)} value={addProductQuantity} type="number" id="productStock" name="productStock" className="form-control" placeholder="" />
+                                <input onChange={(e) => setAddProductQuantity(e.target.value)} value={addProductQuantity} type="number" id="productStock" name="productStock" className="form-control" placeholder="Số lượng" />
                             </div>
                             <div>
                                 <label htmlFor="productShipTime" className="form-label">Thời gian ship:</label>
-                                <input onChange={(e) => setAddProductShippingTime(e.target.value)} value={addProductShippingTime} type="number" id="productShipTime" name="productShipTime" className="form-control" placeholder="ngày" />
+                                <input onChange={(e) => setAddProductShippingTime(e.target.value)} value={addProductShippingTime} type="number" id="productShipTime" name="productShipTime" className="form-control" placeholder="Ngày" />
                             </div>
                             <div>
                                 <label onChange={(e) => setAddProductType(e.target.value)} value={addProductType} htmlFor="productType" className="form-label">Loại sản phẩm:</label>
@@ -293,71 +357,73 @@ const AdminMenu = () => {
                                 </select>
                             </div>
                             <button onClick={handleAddProduct} className="addButton">
-                                Add Item
+                                Thêm
                             </button>
-                            <button className="cancelButton " onClick={() => setShowAddForm(!showAddForm)} >
-                                Cancel
+                            <button className="cancelButton" onClick={() => setShowAddForm(!showAddForm)}>
+                                Hủy bỏ
                             </button>
                         </>
-                    )
-                    }
+                    )}
                 </div>
             }
 
             <div className="list-product container">
-                {currentPageProduct.map((product) => (
-                    <div key={product.id}>
-                        <div className="product" >
-                            <div className="productImage column col1">
-                                <img src={API_BASE_URL + product.image} alt="" />
+                {currentPageProduct.length === 0 ? (
+                    <div className="text-center my-5">Không tìm thấy sản phẩm nào.</div>
+                ) : (
+                    currentPageProduct.map((product) => (
+                        <div key={product.id}>
+                            <div className="product">
+                                <div className="productImage column col1">
+                                    <img src={API_BASE_URL + product.image} alt="" />
+                                </div>
+                                <div className="column col2">
+                                    <div>
+                                        <h5>{product.name}</h5>
+                                    </div>
+                                    <div style={{ color: 'red' }}>
+                                        Giá: {product.price}
+                                    </div>
+                                    <div>
+                                        Mô tả: {product.description}
+                                    </div>
+                                    <div>
+                                        Thể loại: Thể thao
+                                    </div>
+                                    <div>
+                                        Kho: {product.stock}
+                                    </div>
+                                    <div>
+                                        Giao hàng: {product.shippingTime}
+                                    </div>
+                                </div>
+                                <div className="column col3">
+                                    <button onClick={() => handleDeleteProduct(product.id)} className="removeButton">
+                                        Xóa sản phẩm
+                                    </button>
+                                    <button onClick={() => handleEditForm(product.id)} className="editButton">
+                                        Sửa sản phẩm
+                                    </button>
+                                </div>
                             </div>
-                            <div className="column col2">
-                                <div>
-                                    <h5>{product.name}</h5>
-                                </div>
-                                <div style={{ color: 'red' }} >
-                                    Giá: {product.price}
-                                </div>
-                                <div>
-                                    Mô tả: {product.description}
-                                </div>
-                                <div>
-                                    Thể loại: Thể thao
-                                </div>
-                                <div>
-                                    Kho: {product.stock}
-                                </div>
-                                <div>
-                                    Giao hàng: {product.shippingTime}
-                                </div>
-                            </div>
-                            <div className="column col3">
-                                <button onClick={() => handleDeleteProduct(product.id)} className="removeButton">
-                                    Xóa sản phẩm
-                                </button>
-                                <button onClick={() => handleEditForm(product.id)} className="editButton">
-                                    Sửa sản phẩm
-                                </button>
-                            </div>
+                            <hr />
                         </div>
-                        <hr />
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
             <div className="pagination-bar-admin">
                 {
                     Array.from({length:numOfPage},(_,index) => (
-                        <button onClick={() => handleChangePage(index)} className= {currentPage===index+1?"active-page":""} key={index}> {index + 1}</button>
+                        <button onClick={() => handleChangePage(index)} className={currentPage===index+1?"active-page":""} key={index}> {index + 1}</button>
                     ))
                 }
             </div>
             {
-                <div className={` form-edit-product  container ${showEditForm ? "form-enter" : "form-exit"
-                    }`}>
+                <div className={`form-edit-product container ${showEditForm ? "form-enter" : "form-exit"}`}>
                     {showEditForm && (
                         <>
                             <h2>
-                                Edit Product
+                                Sửa sản phẩm
                             </h2>
                             <div>
                                 <label htmlFor="productName" className="form-label">Tên sản phẩm:</label>
@@ -372,7 +438,7 @@ const AdminMenu = () => {
                                 <input
                                     id="productImage"
                                     type="file"
-                                    className="form-control "
+                                    className="form-control"
                                     onChange={handleFileChange}
                                 />
                             </div>
@@ -382,11 +448,11 @@ const AdminMenu = () => {
                             </div>
                             <div>
                                 <label htmlFor="productStock" className="form-label">Số lượng:</label>
-                                <input onChange={(e) => setProductQuantity(e.target.value)} type="number" id="productStock" name="productStock" className="form-control" placeholder="" value={productQuantity} />
+                                <input onChange={(e) => setProductQuantity(e.target.value)} type="number" id="productStock" name="productStock" className="form-control" placeholder="Số lượng" value={productQuantity} />
                             </div>
                             <div>
                                 <label htmlFor="productShipTime" className="form-label">Thời gian ship:</label>
-                                <input onChange={(e) => setProductShippingTime(e.target.value)} type="number" id="productShipTime" name="productShipTime" className="form-control" placeholder="ngày" value={productShippingTime} />
+                                <input onChange={(e) => setProductShippingTime(e.target.value)} type="number" id="productShipTime" name="productShipTime" className="form-control" placeholder="Ngày" value={productShippingTime} />
                             </div>
                             <div>
                                 <label htmlFor="productType" className="form-label">Thể loại:</label>
@@ -400,12 +466,11 @@ const AdminMenu = () => {
                             <button className="addButton" onClick={handleUpdateProduct}>
                                 Sửa sản phẩm
                             </button>
-                            <button className="cancelButton " onClick={() => handleEditForm("a")} >
-                                Cancel
+                            <button className="cancelButton" onClick={() => handleEditForm("a")}>
+                                Hủy bỏ
                             </button>
                         </>
-                    )
-                    }
+                    )}
                     <Notification
                         message={success}
                         type="success"
@@ -418,7 +483,6 @@ const AdminMenu = () => {
                     />
                 </div>
             }
-
         </div>
     )
 }

@@ -22,8 +22,9 @@ const Cart = () => {
         },
       });
       const data = response.data.value || [];
-      setCartItems(data);
-      const initialQty = data.reduce((acc, item) => {
+      const initializedData = data.map(item => ({ ...item, checked: false }));
+      setCartItems(initializedData);
+      const initialQty = initializedData.reduce((acc, item) => {
         acc[item.productID] = parseInt(item.quantity) || 1;
         return acc;
       }, {});
@@ -50,7 +51,6 @@ const Cart = () => {
           'Content-Type': 'application/json',
         },
       });
-      // fetchCart();
       setSuccess("Đã tăng số lượng sản phẩm!");
       setError(null);
     } catch (err) {
@@ -67,8 +67,13 @@ const Cart = () => {
           'Content-Type': 'application/json',
         },
       });
-      // fetchCart();
-      setSuccess("Đã giảm số lượng sản phẩm!");
+      await fetchCart();
+      const itemExists = cartItems.some(item => item.productID === productId);
+      if (!itemExists) {
+        setSuccess("Đã xóa sản phẩm thành công!");
+      } else {
+        setSuccess("Đã giảm số lượng sản phẩm!");
+      }
       setError(null);
     } catch (err) {
       setError(err.response?.data?.error || "Không thể giảm số lượng");
@@ -77,11 +82,14 @@ const Cart = () => {
   };
 
   const handleQtyChange = (productId, change) => {
-    const newQty = { ...qty };
-    newQty[productId] = Math.max(1, (newQty[productId] || 1) + change);
+    const newQtyValue = Math.max(1, (qty[productId] || 1) + change);
+    const newQty = { ...qty, [productId]: newQtyValue };
     setQty(newQty);
-    if (change > 0) addToCart(productId);
-    else minusToCart(productId);
+    if (change > 0) {
+      addToCart(productId);
+    } else {
+      minusToCart(productId);
+    }
   };
 
   const handleCloseNotification = () => {
@@ -90,6 +98,7 @@ const Cart = () => {
   };
 
   const total = cartItems.reduce((sum, item) => {
+    if (!item.checked) return sum;
     const quantity = qty[item.productID] || 1;
     const unitPrice = parseFloat(item.price) || 0;
     const itemTotal = unitPrice * quantity;
