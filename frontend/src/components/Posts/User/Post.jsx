@@ -18,6 +18,80 @@ const Post = () => {
         image: ""
     });
     const [editingId, setEditingId] = useState(null);
+    const [totalPages, setTotalPages] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [highlightPosts, setHighlightPosts] = useState([]);
+
+
+    const handleClick = async (id) => {
+        try {
+            await fetch(`http://localhost:8000/post/click/${id}`, { method: "POST" });
+            navigate(`/posts/${id}`);
+        } catch (err) {
+            console.error("Lỗi khi ghi nhận lượt click:", err);
+            navigate(`/posts/${id}`);
+        }
+    };
+
+    const formatRelativeTime = (dateString) => {
+        const now = new Date();
+        const postDate = new Date(dateString);
+        const diffInMs = now - postDate;
+        const diffInMinutes = Math.floor(diffInMs / 60000);
+        const diffInHours = Math.floor(diffInMs / 3600000);
+        const diffInDays = Math.floor(diffInMs / (3600000 * 24));
+
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes || 1} phút trước`;
+        } else if (diffInHours < 24) {
+            return `${diffInHours} giờ trước`;
+        } else {
+            return `${diffInDays} ngày trước`;
+        }
+    };
+
+    const fetchPosts = (page = 1, keyword = "") => {
+        setLoading(true);
+
+        const url = keyword
+            ? `http://localhost:8000/post/search?keyword=${encodeURIComponent(keyword)}&page=${page}`
+            : `http://localhost:8000/post/?page=${page}&limit=${postsPerPage}`;
+
+        fetch(url)
+            .then((res) => res.json())
+            .then((data) => {
+                setPosts(data.data || []);
+                setTotalPages(Math.ceil((data.total || 1) / postsPerPage));
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Lỗi khi load bài viết:", error);
+                setPosts([]);
+                setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        fetchPosts(currentPage, searchTerm);
+    }, [currentPage]);
+
+    // Gọi 1 lần duy nhất khi vào trang: lấy bài nổi bật
+    useEffect(() => {
+        fetch("http://localhost:8000/post/most-clicked")
+            .then(res => res.json())
+            .then(data => {
+                setHighlightPosts(data.data || []);
+            })
+            .catch(err => console.error("Lỗi khi load bài nổi bật:", err));
+    }, []);
+
+    // Gọi mỗi lần đổi trang: lấy bài viết bình thường
+    useEffect(() => {
+        fetchPosts(currentPage, searchTerm);
+    }, [currentPage]);
+
+
+
 
     const handleDelete = (postId) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
@@ -30,6 +104,8 @@ const Post = () => {
                 .catch(err => alert("Lỗi khi xóa bài viết"));
         }
     };
+
+
 
     const handleEdit = (post) => {
         setFormData({
@@ -109,19 +185,22 @@ const Post = () => {
     //         });
     // }, []);
 
-    useEffect(() => {
-        setLoading(true);
-        fetch(`http://localhost:8000/post/?page=${currentPage}&limit=${postsPerPage}`)
-            .then(response => response.json())
-            .then(data => {
-                setPosts(data);
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error fetching posts:', error);
-                setLoading(false);
-            });
-    }, [currentPage]);
+    // useEffect(() => {
+    //     setLoading(true);
+    //     fetch(`http://localhost:8000/post/?page=${currentPage}&limit=${postsPerPage}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             setPosts(data.data); // danh sách bài viết
+    //             setTotalPages(Math.ceil(data.total / postsPerPage)); // phân trang
+    //             setLoading(false);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error fetching posts:', error);
+    //             setPosts([]); // tránh map undefined
+    //             setTotalPages(1);
+    //             setLoading(false);
+    //         });
+    // }, [currentPage]);
 
 
     if (loading) {
@@ -132,6 +211,68 @@ const Post = () => {
 
 
         <div className="container mt-4">
+            {highlightPosts.length > 0 && (
+                <div className="highlighted-post row mb-5">
+                    {/* Bài viết nổi bật chính */}
+                    <div className="col-md-8">
+                        <div
+                            className="highlighted-image"
+                            style={{
+                                backgroundImage: `url(${highlightPosts[0]?.image || "/default-banner.jpg"})`,
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                height: "300px",
+                                borderRadius: "8px",
+                                cursor: "pointer",
+                            }}
+                            onClick={() => handleClick(highlightPosts[0].id)}
+                        />
+                        <div className="mt-3">
+                            <span className="text-danger fw-bold">Xu hướng (Insight)</span>
+                            <h3 className="fw-bold mt-2 text-hover-orange">{highlightPosts[0].title}</h3>
+                            <p className="text-muted mb-1">
+                                {highlightPosts[0].content?.replace(/<[^>]+>/g, '').slice(0, 100)}...
+                            </p>
+                            <small className="text-muted">
+                                {formatRelativeTime(highlightPosts[0].created_at)}
+                            </small>
+                        </div>
+                    </div>
+
+                    {/* Các bài nổi bật phụ */}
+                    <div className="col-md-4 d-flex flex-column justify-content-between">
+                        {highlightPosts.slice(1, 5).map((p) => (
+                            <div
+                                key={p.id}
+                                className="d-flex mb-3 small-post-card"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleClick(p.id)}
+                            >
+                                <div className="small-post-thumbnail me-2">
+                                    <img
+                                        src={p.image || "/default-thumb.jpg"}
+                                        alt="thumb"
+                                    />
+                                </div>
+
+                                <div>
+                                    <p className="text-danger mb-1" style={{ fontSize: "0.8rem" }}>
+                                        {p.category || "Xu hướng"}
+                                    </p>
+                                    <p className="fw-bold mb-1 text-hover-orange" style={{ fontSize: "0.9rem" }}>
+                                        {p.title.slice(0, 40)}...
+                                    </p>
+                                    <small className="text-muted">
+                                        {formatRelativeTime(highlightPosts[0].created_at)}
+                                    </small>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+
             <div className="title">
                 <div className='head d-flex justify-content-between'>
 
@@ -154,7 +295,16 @@ const Post = () => {
                         name="search"
                         placeholder="Tìm kiếm bài viết..."
                         className="form-control mb-4"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                setCurrentPage(1); // reset về trang đầu
+                                fetchPosts(1, searchTerm); // tìm kiếm
+                            }
+                        }}
                     />
+
                 </form>
             </div>
 
@@ -226,7 +376,8 @@ const Post = () => {
             <div className="row">
                 {posts.map(post => (
                     <div className="col-md-4 mb-4" key={post.id}>
-                        <div className="card" style={{ cursor: "pointer" }} onClick={() => navigate(`/posts/${post.id}`)}>
+                        <div className="card" style={{ cursor: "pointer" }} onClick={() => handleClick(p.id)} // với các bài viết nhỏ
+                        >
                             <div className="post-image-wrapper">
                                 <img
                                     src={post.image || "/frontend/public/trasenvang.jpg"}
@@ -346,13 +497,22 @@ const Post = () => {
                             Trang trước
                         </button>
                     </li>
-                    {[1, 2, 3].map(page => (
+                    {/* {[1, 2, 3].map(page => (
                         <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
                             <button className="page-link" onClick={() => setCurrentPage(page)}>
                                 {page}
                             </button>
                         </li>
+                    ))} */}
+
+                    {[...Array(totalPages).keys()].map((i) => (
+                        <li key={i} className={`page-item ${i + 1 === currentPage ? "active" : ""}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
+                                {i + 1}
+                            </button>
+                        </li>
                     ))}
+
                     <li className="page-item">
                         <button className="page-link" onClick={() => setCurrentPage(prev => prev + 1)}>
                             Trang sau
