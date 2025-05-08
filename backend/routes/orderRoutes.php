@@ -37,6 +37,10 @@ function handleOrderRoutes($route, $method) {
         $data['orderId'] = $matches[1];
         echo json_encode($controller->updateOrderStatus($data));
     }
+    // Thêm đơn hàng mới
+    elseif ($method == 'POST' && $route == '/add-order') {
+        echo json_encode($controller->addOrder($data));
+    }
     else {
         http_response_code(404);
         echo json_encode(["error" => "Route không tồn tại"]);

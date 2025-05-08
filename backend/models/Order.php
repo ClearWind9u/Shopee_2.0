@@ -16,10 +16,10 @@ class Order {
     }
 
     // Tạo đơn hàng mới
-    public function createOrder($buyerId, $quantity, $status, $totalPrice) {
+    public function createOrder($buyerId, $quantity, $totalPrice, $status, $createdAt) {
         $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (buyer_id, quantity, total_price, status, created_at, updated_at) 
-                                      VALUES (?, ?, ?, ?, NOW(), NOW())");
-        $stmt->execute([$buyerId, $quantity, $totalPrice, $status]);
+                                      VALUES (?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$buyerId, $quantity, $totalPrice, $status, $createdAt]);
         return $this->conn->lastInsertId();
     }
 
@@ -53,6 +53,21 @@ class Order {
         $stmt = $this->conn->prepare("UPDATE " . $this->table_name . " SET status = ?, updated_at = NOW() WHERE id = ?");
         $stmt->execute([$status, $orderId]);
         return $stmt->rowCount() > 0;
+    }
+
+    // Bắt đầu transaction
+    public function beginTransaction() {
+        $this->conn->beginTransaction();
+    }
+
+    // Commit transaction
+    public function commit() {
+        $this->conn->commit();
+    }
+
+    // Rollback transaction
+    public function rollBack() {
+        $this->conn->rollBack();
     }
 }
 ?>

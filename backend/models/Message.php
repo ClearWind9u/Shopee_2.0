@@ -20,7 +20,7 @@ class Message {
     public function sendMessage($senderId, $receiverId, $message, $productId = null) {
         $query = "INSERT INTO " . $this->table_name . " 
                  (sender_id, receiver_id, product_id, message, status, created_at) 
-                 VALUES (?, ?, ?, ?, 'unread', NOW())";
+                 VALUES (?, ?, ?, ?, 'unread', DATE_ADD(NOW(), INTERVAL 7 HOUR))";
         
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$senderId, $receiverId, $productId, $message]);

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaShoppingCart, FaNewspaper, FaBox, FaQuestionCircle, FaStore, FaUserCircle, FaSignOutAlt, FaShoppingBag, FaBars, FaInfoCircle } from "react-icons/fa";
+import { FaWallet, FaShoppingCart, FaNewspaper, FaBox, FaQuestionCircle, FaStore, FaUserCircle, FaSignOutAlt, FaShoppingBag, FaBars, FaInfoCircle } from "react-icons/fa";
 import { UserContext } from "../../context/UserContext";
 import API_BASE_URL from "../../config";
 import "./Navbar.css";
@@ -93,6 +93,11 @@ const Navbar = () => {
                 >
                   <FaUserCircle size={18} /> Hồ sơ
                 </Link>
+              </li>
+              <li>
+              <button className="dropdown-item">
+                  <FaWallet size={18} /> Số dư
+                </button>
               </li>
               <li>
                 <button className="dropdown-item text-danger" onClick={handleLogout}>
