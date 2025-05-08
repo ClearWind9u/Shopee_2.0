@@ -276,5 +276,92 @@ class OrderController {
             exit();
         }
     }
+
+    // Thêm đơn hàng mới
+    public function addOrder($req) {
+        try {
+            $token = $req['token'] ?? '';
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token"]);
+                exit();
+            }
+
+            // Lấy dữ liệu từ body
+            $data = json_decode(file_get_contents("php://input"), true);
+            if (!isset($data['items']) || !is_array($data['items']) || empty($data['items'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Items are required and must be a non-empty array"]);
+                exit();
+            }
+            if (!isset($data['total_price']) || !is_numeric($data['total_price']) || $data['total_price'] < 0) {
+                http_response_code(400);
+                echo json_encode(["error" => "Total price is required and must be a non-negative number"]);
+                exit();
+            }
+
+            $userId = $decoded['userId'];
+            $items = $data['items'];
+            $totalPrice = floatval($data['total_price']);
+            $status = 'pending';
+            $dateTime = new DateTime();
+            $dateTime->modify('+5 hours');
+            $createdAt = $dateTime->format('Y-m-d H:i:s');
+            $quantity = array_sum(array_column($items, 'quantity')); // Tính tổng số lượng từ items
+
+            // Bắt đầu transaction
+            $this->orderModel->beginTransaction();
+
+            // Thêm đơn hàng vào bảng orders
+            $orderId = $this->orderModel->createOrder($userId, $quantity, $totalPrice, $status, $createdAt);
+            if (!$orderId) {
+                $this->orderModel->rollBack();
+                http_response_code(500);
+                echo json_encode(["error" => "Failed to create order"]);
+                exit();
+            }
+
+            // Thêm các mục sản phẩm vào bảng order_items
+            $calculatedTotal = 0;
+            foreach ($items as $item) {
+                if (!isset($item['product_id']) || !isset($item['quantity']) || !isset($item['price'])) {
+                    $this->orderModel->rollBack();
+                    http_response_code(400);
+                    echo json_encode(["error" => "Each item must have product_id, quantity, and price"]);
+                    exit();
+                }
+                $productId = $item['product_id'];
+                $calculatedTotal += $item['quantity'] * $item['price'];
+                if (!$this->orderItemModel->createOrderItem($orderId, $productId, $item['quantity'], $item['price'])) {
+                    $this->orderModel->rollBack();
+                    http_response_code(500);
+                    echo json_encode(["error" => "Failed to add order item"]);
+                    exit();
+                }
+            }
+
+            // Kiểm tra tính nhất quán của total_price
+            if (abs($calculatedTotal - $totalPrice) > 0.01) { // Cho phép sai số nhỏ do làm tròn
+                $this->orderModel->rollBack();
+                error_log("Total price inconsistency for order ID {$orderId}: Submitted total={$totalPrice}, calculated total={$calculatedTotal}");
+                http_response_code(400);
+                echo json_encode(["error" => "Total price does not match calculated total"]);
+                exit();
+            }
+
+            // Commit transaction
+            $this->orderModel->commit();
+
+            http_response_code(201);
+            echo json_encode(["message" => "Order created successfully", "order_id" => $orderId]);
+            exit();
+        } catch (Exception $e) {
+            $this->orderModel->rollBack();
+            http_response_code(500);
+            echo json_encode(["error" => "Server error", "details" => $e->getMessage()]);
+            exit();
+        }
+    }
 }
 ?>

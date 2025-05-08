@@ -6,7 +6,7 @@ import "../Cart/Cart.css";
 import Notification from "../Notification/Notification";
 
 const Cart = () => {
-  const { token } = useContext(UserContext);
+  const { user, token } = useContext(UserContext);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -111,6 +111,112 @@ const Cart = () => {
     const quantity = qty[item.productID] || 1;
     const unitPrice = parseFloat(item.price) || 0;
     return unitPrice * quantity;
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const selectedItems = cartItems.filter(item => item.checked);
+      if (selectedItems.length === 0) {
+        setError("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
+        setSuccess(null);
+        return;
+      }
+
+      const newBalance = user.balance - total;
+      if (newBalance < 0) {
+        setError("Số dư không đủ để thanh toán!");
+        setSuccess(null);
+        return;
+      }
+
+      // API để thêm vào order
+      const orderItems = selectedItems.map(item => ({
+        product_id: item.productID,
+        quantity: qty[item.productID] || 1,
+        price: parseFloat(item.price) || 0,
+      }));
+
+      // Lấy seller_id cho từng sản phẩm
+      const orderItemsWithSeller = await Promise.all(
+        orderItems.map(async (item) => {
+          const productResponse = await axios.get(`${API_BASE_URL}/product/getProduct`, {
+            params: { productId: item.product_id },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          return {
+            ...item,
+            seller_id: productResponse.data.product.seller_id,
+          };
+        })
+      );
+
+      const totalPrice = orderItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+      console.log("Items:", orderItemsWithSeller);
+      const response = await axios.post(
+        `${API_BASE_URL}/order/add-order`,
+        { items: orderItems, total_price: totalPrice },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const orderId = response.data.order_id;
+
+      // API update-balance để trừ tiền
+      await axios.post(
+        `${API_BASE_URL}/user/update-balance`,
+        { balance: newBalance },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // API để xóa các sản phẩm đã chọn khỏi giỏ hàng
+      const productIDs = selectedItems.map(item => item.productID);
+      await axios.post(
+        `${API_BASE_URL}/cart/delete`,
+        { listProductId: productIDs },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      await fetchCart();
+
+      const sellerIds = [...new Set(orderItemsWithSeller.map(item => item.seller_id))];
+
+      // Gửi API sendmessage cho từng seller_id
+      for (const sellerId of sellerIds) {
+        await axios.post(
+          `${API_BASE_URL}/message/send`,
+          {
+            receiverId: sellerId,
+            message: "Chào shop, tôi vừa đặt mua sản phẩm của bạn"
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
+
+      setSuccess("Thanh toán thành công!");
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.error || "Thanh toán thất bại");
+      setSuccess(null);
+    }
   };
 
   return (
@@ -329,7 +435,7 @@ const Cart = () => {
         </div>
         <div className="column col2">
           <div>Thành tiền {`₫${total.toLocaleString('vi-VN')}`}</div>
-          <button>Thanh toán</button>
+          <button onClick={handleCheckout} disabled={total === 0}>Thanh toán</button>
         </div>
       </div>
       <div className="notification-container">

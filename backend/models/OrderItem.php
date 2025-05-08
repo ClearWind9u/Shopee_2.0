@@ -25,5 +25,12 @@ class OrderItem {
         $stmt->execute([$orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Tạo mục đơn hàng mới
+    public function createOrderItem($orderId, $productId, $quantity, $price) {
+        $stmt = $this->conn->prepare("INSERT INTO " . $this->table_name . " (order_id, product_id, quantity, price) 
+                                      VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$orderId, $productId, $quantity, $price]);
+    }
 }
 ?>

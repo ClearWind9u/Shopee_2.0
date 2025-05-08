@@ -319,7 +319,8 @@ class UserController
                 "user" => [
                     "id" => $updatedUser['id'],
                     "username" => $updatedUser['username'],
-                    "balance" => $updatedUser['balance']
+                    "balance" => $updatedUser['balance'],
+                    "inputBalance" => $balance
                 ]
             ]);
             exit();

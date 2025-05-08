@@ -107,7 +107,7 @@ const ChatWidget = () => {
             user: msg.sender_id === currentUserId ? "user" : "other",
             text: msg.message,
             status: msg.status,
-            created_at: msg.created_at, // Lưu created_at
+            created_at: msg.created_at,
             avatar: msg.sender_id === currentUserId
               ? currentUserAvatar
               : activeContact?.avatar || "/default-avatar.jpg",
