@@ -96,7 +96,15 @@ const Navbar = () => {
               </li>
               <li>
               <button className="dropdown-item">
+                  <Link className="dropdown-item"
+                  to={
+                    user?.role === "buyer"
+                      ? "/buyer/balance"
+                      : "/"
+                  }>
                   <FaWallet size={18} /> Số dư
+                  </Link>
+                  
                 </button>
               </li>
               <li>

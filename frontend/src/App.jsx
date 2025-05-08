@@ -75,7 +75,7 @@ function AppContent() {
         />
          <Route
           path="/buyer/balance"
-          element={<Wallet />}
+          element={<ProtectedRoute role="buyer" element={<Wallet/>} />}
         />
         <Route
           path="/buyer/cart"

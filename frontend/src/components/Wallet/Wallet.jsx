@@ -70,15 +70,27 @@ const Wallet = () => {
 
     const handleConfirmTransaction = async () => {
         if (transactionInfo) {
-            try {
-                const newBalance = balance+amount
+            try { 
+                console.log(transactionInfo.amount)
+                let newBalance = balance + parseInt(transactionInfo.amount)
+                const formData = new FormData();
+                let inp = newBalance.toString();
+                console.log(inp)
+                formData.append("balance" , toString(parseFloat(newBalance)))
                 const response = await axios.post(
-                    `${API_BASE_URL}/user/update-balance`,
-                    { balance: toString(newBalance) },
-                    { headers: {Authorization: `Bearer ${token}`} }
+                    `${API_BASE_URL}/user/update-balance`,{
+                        "balance" :  inp
+                    },
+                    {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                    } 
                 );
                 if (response.status === 200) {
-                    setBalance((prevBalance) => prevBalance + transactionInfo.amount);
+                    console.log(response)
+                    setBalance(parseInt(response.data.user.balance));
                     showNotification(`Successfully added ${transactionInfo.amount} VNĐ to your wallet.`);
                 }
             } catch (error) {
