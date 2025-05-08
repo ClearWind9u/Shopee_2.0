@@ -135,4 +135,18 @@
     transform: translateY(-20px); /* Slide back up when hiding */
     pointer-events: none;
   }
+  .pagination-bar-admin{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+  .pagination-bar-admin button{
+    margin: 20px;
+    height: 40px;
+    width: 30px;
+  } 
+  .pagination-bar-admin .active-page{
+    background-color: black;
+    color: white;
+  }
  

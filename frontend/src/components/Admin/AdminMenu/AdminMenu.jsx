@@ -33,6 +33,9 @@ const AdminMenu = () => {
     const [addProductType, setAddProductType] = useState("");
     const [addProductId, setAddProductId] = useState("")
     const [addFile, setAddFile] = useState(null);
+    const [numOfPage, setNumOfPage] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPageProduct, setCurrentPageProduct] = useState([]);
 
     // const fetchProduct = async () => {
     //     try {
@@ -168,7 +171,10 @@ const AdminMenu = () => {
             setError(err.response?.data?.error || "Lỗi xóa sản phẩm");
         }
     }
-
+    const handleChangePage = (index) => {
+        setCurrentPage(index+1);
+        setCurrentPageProduct(products.slice(index*3,index*3+3));
+    }
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -190,6 +196,9 @@ const AdminMenu = () => {
                     image: product.typeWithImage
                 }))
                 setProducts(listMappedProduct)
+                console.log(products)
+                setNumOfPage(Math.ceil(listMappedProduct.length/3));
+                setCurrentPageProduct(listMappedProduct.slice(0,3))
             } catch (err) {
                 console.error("Fetch profile error:", err.response || err);
                 setError("Không thể lấy thông tin sản phẩm");
@@ -296,7 +305,7 @@ const AdminMenu = () => {
             }
 
             <div className="list-product container">
-                {products.map((product) => (
+                {currentPageProduct.map((product) => (
                     <div key={product.id}>
                         <div className="product" >
                             <div className="productImage column col1">
@@ -334,6 +343,13 @@ const AdminMenu = () => {
                         <hr />
                     </div>
                 ))}
+            </div>
+            <div className="pagination-bar-admin">
+                {
+                    Array.from({length:numOfPage},(_,index) => (
+                        <button onClick={() => handleChangePage(index)} className= {currentPage===index+1?"active-page":""} key={index}> {index + 1}</button>
+                    ))
+                }
             </div>
             {
                 <div className={` form-edit-product  container ${showEditForm ? "form-enter" : "form-exit"
