@@ -10,7 +10,7 @@ const UserProvider = ({ children }) => {
     // let user = null;
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-
+        
         try {
             // Nếu là null, "undefined", hoặc không phải JSON -> bỏ qua
             if (storedUser && storedUser !== "undefined") {

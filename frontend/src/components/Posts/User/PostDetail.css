@@ -1,0 +1,9 @@
+.desciption img {
+    /* width: 100% !important; */
+    max-width: 100% !important;
+    height: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block;
+    object-fit: contain;
+}

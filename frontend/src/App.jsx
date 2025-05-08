@@ -1,19 +1,6 @@
 import React, { useContext } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-<<<<<<< HEAD
-import ChatWidget from "./components/ChatWidget";
-import Footer from "./components/Footer";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import Navbar from "./components/Navbar";
-import PrivacyPolicy from "./components/PrivacyPolicy";
-import Profile from "./components/Profile";
-import RefundPolicy from "./components/RefundPolicy";
-import Register from "./components/Register";
-import Regulations from "./components/Regulations";
-import ShippingPolicy from "./components/ShippingPolicy";
-import Post from "./components/Post";
-=======
+
 import ChatWidget from "./components/ChatWidget/ChatWidget";
 import Footer from "./components/Footer/Footer";
 import Home from "./components/Home/Home";
@@ -31,8 +18,11 @@ import About from "./components/About/About";
 import FAQPage from "./components/FAQPage/FAQPage";
 import Detail from "./components/Detail/Detail";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
->>>>>>> 075097176eba93929c402c28f97df623d305704a
+import Post from "./components/Posts/User/Post";
+import PostDetail from "./components/Posts/User/PostDetail";
+import NewsList from "./components/Posts/Admin/NewsList";
 import { UserContext, UserProvider } from "./context/UserContext";
+import AdminCommentManager from "./components/Posts/Admin/AdminCommentManager";
 
 function AppContent() {
   const { user } = useContext(UserContext);
@@ -76,7 +66,20 @@ function AppContent() {
         <Route path="/regulations" element={<Regulations />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/return-refund" element={<RefundPolicy />} />
-        <Route path="/posts" element={<Post />} />
+        {/* <Route path="/posts" element={<Post />} /> */}
+        <Route path="/posts/:id" element={<PostDetail />} />
+        <Route path="/admin/comments" element={<AdminCommentManager />} />
+
+
+        <Route
+          path="/posts"
+          element={
+            user?.role === "manager"
+              ? <NewsList />
+              : <Post />
+          }
+        />
+
       </Routes>
       {user && <Footer />}
       {user && <ChatWidget />}
