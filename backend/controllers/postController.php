@@ -6,34 +6,99 @@ require_once __DIR__ . '/../config/db.php';
 class PostController
 {
 
-    // Lấy danh sách tất cả bài viết
+    public function incrementClick($postId)
+    {
+        global $pdo;
+        try {
+            $stmt = $pdo->prepare("UPDATE Posts SET click_number = click_number + 1 WHERE id = ?");
+            $stmt->execute([$postId]);
+            return ["message" => "Click recorded"];
+        } catch (PDOException $e) {
+            http_response_code(500);
+            return ["error" => "Error updating click count", "details" => $e->getMessage()];
+        }
+    }
+
+    public function getMostClickedPosts($limit = 5)
+    {
+        global $pdo;
+        $stmt = $pdo->prepare("
+        SELECT Posts.*, users.username AS author_name 
+        FROM Posts
+        LEFT JOIN users ON Posts.author_id = users.id
+        ORDER BY click_number DESC, created_at DESC
+        LIMIT :limit
+    ");
+        $stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return ["data" => $posts];
+    }
+
+
+
+
+    public function searchPublicPosts($keyword, $page = 1)
+    {
+        global $pdo;
+        $limit = 9;
+        $offset = ($page - 1) * $limit;
+
+        $stmt = $pdo->prepare("
+        SELECT Posts.*, users.username AS author_name
+        FROM Posts
+        LEFT JOIN users ON Posts.author_id = users.id
+        WHERE Posts.title LIKE :keyword
+        ORDER BY Posts.created_at DESC
+        LIMIT :limit OFFSET :offset
+    ");
+        $stmt->bindValue(":keyword", "%$keyword%", PDO::PARAM_STR);
+        $stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
+        $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $countStmt = $pdo->prepare("SELECT COUNT(*) FROM Posts WHERE title LIKE :keyword");
+        $countStmt->bindValue(":keyword", "%$keyword%", PDO::PARAM_STR);
+        $countStmt->execute();
+        $total = $countStmt->fetchColumn();
+
+        return ["data" => $posts, "total" => intval($total)];
+    }
+
     public function getAllPosts($page = 1, $limit = 9)
     {
         global $pdo;
         try {
-
             $offset = ($page - 1) * $limit;
 
-            // Thực hiện JOIN để lấy tên người dùng (author_name) từ bảng users
+            // Query chính lấy bài viết và author name
             $stmt = $pdo->prepare("
-                SELECT Posts.*, users.username AS author_name 
-                FROM Posts 
-                LEFT JOIN users ON Posts.author_id = users.id
-                ORDER BY Posts.created_at DESC
-                LIMIT :limit OFFSET :offset
-            ");
-
+            SELECT Posts.*, users.username AS author_name 
+            FROM Posts 
+            LEFT JOIN users ON Posts.author_id = users.id
+            ORDER BY Posts.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ");
             $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
-
             $stmt->execute();
             $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $posts;
+
+            $countStmt = $pdo->query("SELECT COUNT(*) FROM Posts");
+            $total = $countStmt->fetchColumn();
+
+            return [
+                "data" => $posts,
+                "total" => intval($total)
+            ];
         } catch (PDOException $e) {
             http_response_code(500);
             return ["error" => "Error fetching posts", "details" => $e->getMessage()];
         }
     }
+
 
 
     // Lấy bài viết theo ID
@@ -131,6 +196,7 @@ class PostController
         $author_id = $data['author_id'] ?? null;
 
         try {
+            // error_log("Admin update data: " . json_encode($data));
 
             $stmt = $pdo->prepare("UPDATE Posts SET title = ?, content = ?, image = ?, author_id = ? WHERE id = ?");
             $stmt->execute([$title, $content, $image, $author_id, $id]);

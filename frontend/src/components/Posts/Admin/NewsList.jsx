@@ -9,14 +9,18 @@ import {
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import { Editor } from "react-draft-wysiwyg";
+import Notification from "../../Notification/Notification";
 import { Modal, Button } from "react-bootstrap";
 import { UserContext } from "../../../context/UserContext";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./NewsList.css";
+import ConfirmModal from "../../Confirmation/ConfirmModal";
+
 
 const API_BASE = "http://localhost:8000";
 
 const NewsList = () => {
+    const [success, setSuccess] = useState("");
     const [posts, setPosts] = useState([]);
     const [keyword, setKeyword] = useState("");
     const [page, setPage] = useState(1);
@@ -32,14 +36,29 @@ const NewsList = () => {
     const [replyContent, setReplyContent] = useState("");
     const [editingReplyId, setEditingReplyId] = useState(null);
     const [editingReplyContent, setEditingReplyContent] = useState("");
-
-
+    const [confirmVisible, setConfirmVisible] = useState(false);
+    const [pendingDeletePostId, setPendingDeletePostId] = useState(null);
     const { user } = useContext(UserContext);
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const userId = user?.id || storedUser?.id || 0;
 
 
     const isMounted = useRef(true);
+
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(""), 3000); // 3s tự ẩn
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
+
+    const formatVietnamTime = (utcDateStr) => {
+        const utcDate = new Date(utcDateStr);
+        const vietnamOffset = 7 * 60; // GMT+7
+        const localTime = new Date(utcDate.getTime() + vietnamOffset * 60 * 1000);
+        return localTime.toLocaleString('vi-VN');
+    };
+
 
     useEffect(() => {
         isMounted.current = true;
@@ -93,19 +112,43 @@ const NewsList = () => {
             const res = await axios.put(`${API_BASE}/admin/posts/${selectedPost.id}`, data);
             const updated = res.data;
             setPosts(posts.map((p) => (p.id === updated.id ? updated : p)));
+            setSuccess("Cập nhật bài viết thành công!");
         } else {
             await axios.post(`${API_BASE}/admin/posts`, data);
+            setSuccess("Thêm bài viết thành công!");
             loadPosts();
         }
         setShowModal(false);
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Bạn có chắc muốn xoá bài viết này?")) {
-            await axios.delete(`${API_BASE}/post/${id}`);
+    // const handleDelete = async (id) => {
+    //     if (window.confirm("Bạn có chắc muốn xoá bài viết này?")) {
+    //         await axios.delete(`${API_BASE}/post/${id}`);
+    //         setSuccess("Đã xoá bài viết thành công!");
+    //         loadPosts();
+    //     }
+    // };
+
+    const handleDelete = (id) => {
+        setPendingDeletePostId(id);
+        setConfirmVisible(true);
+    };
+
+    const confirmDeletePost = async () => {
+        try {
+            await axios.delete(`${API_BASE}/post/${pendingDeletePostId}`);
+            setSuccess("Đã xoá bài viết thành công!");
+            setConfirmVisible(false);
+            setPendingDeletePostId(null);
             loadPosts();
+        } catch (err) {
+            console.error("❌ Lỗi khi xoá bài viết:", err);
+            setConfirmVisible(false);
+            setPendingDeletePostId(null);
         }
     };
+
+
 
     const handleEditComment = (reply) => {
         setEditingReplyId(reply.id);
@@ -117,12 +160,13 @@ const NewsList = () => {
             await axios.put(`${API_BASE}/comment/update/${editingReplyId}`, {
                 content: editingReplyContent
             });
+            setSuccess("Cập nhật bình luận thành công!");
             setEditingReplyId(null);
             setEditingReplyContent("");
             handleOpenCommentModal(selectedPostIdForComment); // Reload lại comment
         } catch (err) {
             console.error("❌ Lỗi khi cập nhật bình luận:", err);
-            alert("Cập nhật thất bại.");
+            setSuccess("Cập nhật thất bại.");
         }
     };
 
@@ -167,7 +211,7 @@ const NewsList = () => {
                 }
             } catch (err) {
                 console.error("❌ Upload thất bại", err);
-                alert("Không thể upload ảnh: " + file.name);
+                setSuccess("Không thể upload ảnh: " + file.name);
             }
         }
 
@@ -193,11 +237,11 @@ const NewsList = () => {
                 content: ` ${replyContent}`,
                 parent_id: commentId
             });
-            alert("Đã phản hồi bình luận.");
+            setSuccess("Đã phản hồi bình luận.");
             handleOpenCommentModal(selectedPostIdForComment); // reload
         } catch (err) {
             console.error("❌ Lỗi khi phản hồi:", err.response?.data || err.message);
-            alert("Phản hồi thất bại.");
+            setSuccess("Phản hồi thất bại.");
         }
     };
 
@@ -205,7 +249,7 @@ const NewsList = () => {
         if (window.confirm("Xoá bình luận này?")) {
             try {
                 await axios.delete(`${API_BASE}/comment/delete/${commentId}`);
-                alert("Đã xoá.");
+                setSuccess("Đã xoá.");
                 handleOpenCommentModal(selectedPostIdForComment);
             } catch (err) {
                 console.error("❌ Lỗi khi xoá bình luận:", err);
@@ -225,6 +269,15 @@ const NewsList = () => {
 
     return (
         <div className="container mt-4">
+            {success && (
+                <Notification
+                    message={success}
+                    type="success"
+                    onClose={() => setSuccess("")}
+                />
+            )}
+
+
             <div className="head row align-items-center mb-3">
                 <div className="col-7 col-sm-10">
                     <h3 className="mb-2 mb-sm-0">Quản lý tin tức</h3>
@@ -253,7 +306,8 @@ const NewsList = () => {
                         <tr key={post.id}>
                             <td className="id-row">{post.id}</td>
                             <td className="title-row">{post.title}</td>
-                            <td className="date-row">{new Date(post.created_at).toLocaleDateString()}</td>
+                            <td className="date-row">{formatVietnamTime(post.created_at)}</td>
+
                             <td className="action-row">
                                 <button className="btn btn-sm btn-primary" onClick={() => openEditModal(post)}>Sửa</button>
                                 <button className="btn btn-sm btn-warning mt-2" onClick={() => handleOpenCommentModal(post.id)}>Bình luận</button>
@@ -297,7 +351,7 @@ const NewsList = () => {
                                 )}
 
                                 <p><strong>{parent.username}:</strong> {parent.content}</p>
-                                <small>{new Date(parent.created_at).toLocaleString()}</small>
+                                <small>{formatVietnamTime(parent.created_at)}</small>
 
                                 {/* Nếu đã có phản hồi từ admin thì không hiện ô trả lời */}
                                 {comments.some(c => c.parent_id === parent.id && c.user_id === userId) ? (
@@ -386,7 +440,7 @@ const NewsList = () => {
                                         if (imageUrl && isMounted.current) {
                                             setEditForm((prev) => ({ ...prev, image: imageUrl }));
                                         } else {
-                                            alert("Upload ảnh thất bại khi kéo ảnh.");
+                                            setSuccess("Upload ảnh thất bại khi kéo ảnh.");
                                         }
                                     };
                                     upload();
@@ -415,7 +469,7 @@ const NewsList = () => {
                                         if (imageUrl) {
                                             setEditForm((prev) => ({ ...prev, image: imageUrl }));
                                         } else {
-                                            alert("Upload ảnh thất bại");
+                                            setSuccess("Upload ảnh thất bại");
                                         }
                                     }
                                 }}
@@ -434,7 +488,7 @@ const NewsList = () => {
                                                 if (imageUrl) {
                                                     setEditForm((prev) => ({ ...prev, image: imageUrl }));
                                                 } else {
-                                                    alert("Upload ảnh thất bại");
+                                                    setSuccess("Upload ảnh thất bại");
                                                 }
                                             }
                                         }}
@@ -478,6 +532,12 @@ const NewsList = () => {
                     <Button variant="primary" onClick={handleSubmitPost}>Lưu</Button>
                 </Modal.Footer>
             </Modal >
+            <ConfirmModal
+                show={confirmVisible}
+                onHide={() => setConfirmVisible(false)}
+                onConfirm={confirmDeletePost}
+                message="Bạn có chắc chắn muốn xoá bài viết này?"
+            />
         </div >
     );
 };

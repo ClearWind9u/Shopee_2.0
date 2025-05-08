@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { UserContext } from "../../../context/UserContext";
 import './PostDetail.css'
+import Notification from "../../Notification/Notification";
+import ConfirmModal from '../../Confirmation/ConfirmModal';
 
 const PostDetail = () => {
     const { id } = useParams();
@@ -14,6 +16,24 @@ const PostDetail = () => {
     const [newComment, setNewComment] = useState("");
     const [sortOrder, setSortOrder] = useState("newest");
     const { user } = useContext(UserContext);
+    const [confirmVisible, setConfirmVisible] = useState(false);
+    const [pendingDeleteId, setPendingDeleteId] = useState(null);
+    const [success, setSuccess] = useState("");
+
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(""), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
+
+
+    const formatVietnamTime = (utcDateStr) => {
+        const utcDate = new Date(utcDateStr);
+        const vietnamOffset = 7 * 60; // GMT+7
+        const localTime = new Date(utcDate.getTime() + vietnamOffset * 60 * 1000);
+        return `${localTime.toLocaleTimeString('vi-VN')} ${localTime.toLocaleDateString('vi-VN')}`;
+    };
 
     const groupCommentsByParent = (data) => {
         const parents = data.filter(c => c.parent_id === null);
@@ -43,6 +63,7 @@ const PostDetail = () => {
                     replies: repliesMap[parent.id] || []
                 }));
                 setComments(grouped);
+                // setSuccess("Đã thêm bình luận thành công");
                 setCommentCount(data.length);
             })
             .catch(err => console.error("Lỗi khi load comment", err));
@@ -83,6 +104,7 @@ const PostDetail = () => {
             .then(() => {
                 setNewComment("");
                 reloadComments(); // Luôn gọi lại đúng logic sau khi thêm
+                setSuccess("Đã thêm bình luận thành công");
             })
             .catch(err => console.error("Lỗi khi gửi bình luận", err));
     };
@@ -106,23 +128,47 @@ const PostDetail = () => {
             .then(() => {
                 setEditingId(null);
                 reloadComments();
+                setSuccess("Bình luận đã được cập nhật");
             })
             .catch((err) => console.error("Lỗi khi sửa bình luận", err));
     };
 
     // Xóa bình luận
+    // const handleDelete = (commentId) => {
+    //     setConfirmVisible(true);
+    //     fetch(`http://localhost:8000/comment/delete/${commentId}`, {
+    //         method: "DELETE"
+    //     })
+    //         .then((res) => res.json())
+    //         .then(() => {
+    //             reloadComments();
+    //             setSuccess("Bình luận đã bị xoá");
+    //         })
+    //         .catch((err) => console.error("Lỗi khi xóa bình luận", err));
+    // };
     const handleDelete = (commentId) => {
-        if (!window.confirm("Bạn có chắc muốn xóa bình luận này?")) return;
+        setPendingDeleteId(commentId);
+        setConfirmVisible(true);
+    };
 
-        fetch(`http://localhost:8000/comment/delete/${commentId}`, {
+    const confirmDelete = () => {
+        fetch(`http://localhost:8000/comment/delete/${pendingDeleteId}`, {
             method: "DELETE"
         })
             .then((res) => res.json())
             .then(() => {
                 reloadComments();
+                setSuccess("Bình luận đã bị xoá");
+                setConfirmVisible(false);
+                setPendingDeleteId(null);
             })
-            .catch((err) => console.error("Lỗi khi xóa bình luận", err));
+            .catch((err) => {
+                console.error("Lỗi khi xóa bình luận", err);
+                setConfirmVisible(false);
+            });
     };
+
+
 
     // Tải lại bình luận
     const reloadComments = () => {
@@ -147,9 +193,20 @@ const PostDetail = () => {
     if (!post || post.error) return <div className="container mt-4">Bài viết không tồn tại.</div>;
 
     return (
+
         <div className="container mt-4">
+            {success && (
+                <Notification
+                    message={success}
+                    type="success"
+                    onClose={() => setSuccess("")}
+                />
+            )}
+
+
+
             <div className="row-c">
-                <div className="main-content col-12 col-md-12">
+                <div className="main-content col-12 col-md-12 mb-3">
                     <h1 className="my-4">{post.title}</h1>
                     {/* <div className="article-info">
                         <span className="badge bg-primary">Thời trang</span>
@@ -217,6 +274,7 @@ const PostDetail = () => {
                                 onChange={(e) => {
                                     setSortOrder(e.target.value);
                                     reloadComments(); // gọi lại để sắp xếp
+                                    setSuccess("Đã thêm bình luận thành công");
                                 }}
                             >
                                 <option value="newest">Mới nhất</option>
@@ -264,9 +322,10 @@ const PostDetail = () => {
                                         <>
                                             <p><strong>{comment.username}:</strong> {comment.content}</p>
                                             <p className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>
-                                                {new Date(comment.created_at).toLocaleTimeString()} {new Date(comment.created_at).toLocaleDateString()}
+                                                {formatVietnamTime(comment.created_at)}
                                                 {comment.replies?.length > 0 && <em className="ms-2">Đã phản hồi</em>}
                                             </p>
+
                                         </>
                                     )}
                                 </div>
@@ -304,8 +363,9 @@ const PostDetail = () => {
                                         <strong>{reply.username} (admin):</strong> {reply.content}
                                     </p>
                                     <p className="text-muted mb-0" style={{ fontSize: '0.8rem' }}>
-                                        {new Date(reply.created_at).toLocaleTimeString()} {new Date(reply.created_at).toLocaleDateString()}
+                                        {formatVietnamTime(reply.created_at)}
                                     </p>
+
                                 </div>
                             ))}
                         </div>
@@ -357,7 +417,14 @@ const PostDetail = () => {
                     
                 </div> */}
             </div>
+            <ConfirmModal
+                show={confirmVisible}
+                onHide={() => setConfirmVisible(false)}
+                onConfirm={confirmDelete}
+                message="Bạn có chắc chắn muốn xoá bình luận này?"
+            />
         </div>
+
     );
 };
 
