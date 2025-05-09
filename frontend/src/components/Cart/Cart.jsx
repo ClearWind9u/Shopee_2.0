@@ -12,8 +12,9 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [qty, setQty] = useState({});
-  const [paymentMethod,setPaymentMethod] = useState("cod")
-  const [paymentMethodImg,setPaymentMethodImg] = useState("/cod_img.png")
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethodImg, setPaymentMethodImg] = useState("/cod_img.png");
+  const [balance, setBalance] = useState(0);
 
   const fetchCart = async () => {
     try {
@@ -41,8 +42,24 @@ const Cart = () => {
     }
   };
 
+  const fetchUserProfile = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setBalance(response.data.balance || 0);
+    } catch (err) {
+      setError(err.response?.data?.error || "Không thể tải thông tin tài khoản");
+    }
+  };
+
   useEffect(() => {
-    fetchCart();
+    if (token) {
+      fetchCart();
+      fetchUserProfile();
+    }
   }, [token]);
 
   const addToCart = async (productId) => {
@@ -122,7 +139,7 @@ const Cart = () => {
         return;
       }
 
-      const newBalance = user.balance - total;
+      const newBalance = balance - total;
       if (newBalance < 0) {
         setError("Số dư không đủ để thanh toán!");
         setSuccess(null);
@@ -191,6 +208,7 @@ const Cart = () => {
         }
       );
       await fetchCart();
+      await fetchUserProfile();
 
       const sellerIds = [...new Set(orderItemsWithSeller.map(item => item.seller_id))];
 
@@ -314,7 +332,7 @@ const Cart = () => {
             <div>Hình thức thanh toán</div>
             <div>
               <div className="form-check payment-check">
-                <input onClick={() => {setPaymentMethod("cod"); setPaymentMethodImg("/cod_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="cod" value="cod" checked = {paymentMethod == "cod" ? "checked": ""} />
+                <input onClick={() => {setPaymentMethod("cod"); setPaymentMethodImg("/cod_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="cod" value="cod" checked={paymentMethod == "cod" ? "checked" : ""} />
                 <label className="form-check-label" htmlFor="cod">
                   <div>
                     <img src="/cod_img.png" alt="cod-img" />
@@ -323,7 +341,7 @@ const Cart = () => {
                 </label>
               </div>
               <div className="form-check payment-check">
-                <input onClick={() => {setPaymentMethod("momo"); setPaymentMethodImg("/momo_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="momo" value="momo" checked = {paymentMethod == "momo" ? "checked": ""}/>
+                <input onClick={() => {setPaymentMethod("momo"); setPaymentMethodImg("/momo_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="momo" value="momo" checked={paymentMethod == "momo" ? "checked" : ""} />
                 <label className="form-check-label" htmlFor="momo">
                   <div>
                     <img src="/momo_img.png" alt="cod-img" />
@@ -332,7 +350,7 @@ const Cart = () => {
                 </label>
               </div>
               <div className="form-check payment-check">
-                <input onClick={() => {setPaymentMethod("vnpay"); setPaymentMethodImg("/vnpay_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="vnpay" value="vnpay" checked = {paymentMethod == "vnpay" ? "checked": ""}/>
+                <input onClick={() => {setPaymentMethod("vnpay"); setPaymentMethodImg("/vnpay_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="vnpay" value="vnpay" checked={paymentMethod == "vnpay" ? "checked" : ""} />
                 <label className="form-check-label" htmlFor="vnpay">
                   <div>
                     <img src="/vnpay_img.png" alt="vnpay-img" />
@@ -341,7 +359,7 @@ const Cart = () => {
                 </label>
               </div>
               <div className="form-check payment-check">
-                <input onClick={() => {setPaymentMethod("zalopay"); setPaymentMethodImg("/zalopay_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="zalopay" value="zalopay" checked = {paymentMethod == "zalopay" ? "checked": ""}/>
+                <input onClick={() => {setPaymentMethod("zalopay"); setPaymentMethodImg("/zalopay_img.png")}} type="radio" className="form-check-input" name="paymentMethod" id="zalopay" value="zalopay" checked={paymentMethod == "zalopay" ? "checked" : ""} />
                 <label className="form-check-label" htmlFor="zalopay">
                   <div>
                     <img src="/zalopay_img.png" alt="zalopay-img" />

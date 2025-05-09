@@ -79,6 +79,11 @@
     color: #047857;
 }
 
+.order-history-badge.cancelled {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
 .order-history-error {
     color: #dc3545;
     font-size: 0.9rem;

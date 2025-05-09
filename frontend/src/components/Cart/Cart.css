@@ -144,6 +144,10 @@
     margin-bottom: 20px;
 }
 
+.col-right hr {
+    margin-bottom: 30px;
+}
+
 .col-right .form-check-product .col2 {
     height: 100%;
 }

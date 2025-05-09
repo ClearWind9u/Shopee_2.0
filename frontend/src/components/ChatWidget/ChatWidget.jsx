@@ -62,21 +62,32 @@ const ChatWidget = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Fetch conversations response:", response.data);
-
       const conversations = Array.isArray(response.data.conversations)
         ? response.data.conversations
         : [];
-      const fetchedContacts = conversations.map((conv) => ({
-        id: conv.sender_id === currentUserId ? conv.receiver_id : conv.sender_id,
-        name: conv.sender_id === currentUserId ? conv.receiver_name : conv.sender_name,
-        avatar: conv.sender_id === currentUserId && conv.receiver_avatar
-          ? `${API_BASE_URL}${conv.receiver_avatar}`
-          : conv.sender_avatar
-            ? `${API_BASE_URL}${conv.sender_avatar}`
-            : "/default-avatar.jpg",
-        unread_count: conv.unread_count || 0,
-      }));
+      const contactIds = conversations.map((conv) =>
+        conv.sender_id === currentUserId ? conv.receiver_id : conv.sender_id
+      );
+      const uniqueContactIds = [...new Set(contactIds)];
+
+      const contactPromises = uniqueContactIds.map(async (contactId) => {
+        const profileResponse = await axios.get(`${API_BASE_URL}/user/profile-by-id`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { userId: contactId },
+        });
+        const contactProfile = profileResponse.data;
+        const conv = conversations.find(
+          (c) => (c.sender_id === currentUserId ? c.receiver_id : c.sender_id) === contactId
+        );
+        return {
+          id: contactId,
+          name: conv.sender_id === currentUserId ? conv.receiver_name : conv.sender_name,
+          avatar: contactProfile.avatar ? `${API_BASE_URL}${contactProfile.avatar}` : "/default-avatar.jpg",
+          unread_count: conv.unread_count || 0,
+        };
+      });
+
+      const fetchedContacts = await Promise.all(contactPromises);
       setContacts(fetchedContacts);
     } catch (err) {
       console.error("Error fetching conversations:", err.response || err);
@@ -98,8 +109,6 @@ const ChatWidget = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      console.log("Fetch messages response:", response.data);
 
       const fetchedMessages = Array.isArray(response.data.messages)
         ? response.data.messages.map((msg) => ({
@@ -138,8 +147,6 @@ const ChatWidget = () => {
         }
       );
 
-      console.log("Mark as read response:", response.data);
-
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.user === "other" && msg.status === "unread"
@@ -171,8 +178,6 @@ const ChatWidget = () => {
         }
       );
 
-      console.log("Send message response:", response.data);
-
       const messageId = response.data.messageId;
       if (!messageId) {
         throw new Error("Invalid response: Message ID not found");
@@ -186,11 +191,10 @@ const ChatWidget = () => {
             user: "user",
             text: inputMessage,
             status: "unread",
-            created_at: new Date().toISOString(), // Thời gian hiện tại
+            created_at: new Date().toISOString(),
             avatar: currentUserAvatar,
           },
         ];
-        console.log("Updated messages:", newMessages);
         return newMessages;
       });
       setInputMessage("");
@@ -216,11 +220,9 @@ const ChatWidget = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log("Delete message response:", response.data);
 
       setMessages((prevMessages) => {
         const newMessages = prevMessages.filter((msg) => msg.id !== messageId);
-        console.log("Messages after delete:", newMessages);
         return newMessages;
       });
       setSuccess("Tin nhắn đã được xóa!");
@@ -262,8 +264,6 @@ const ChatWidget = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      console.log("Delete conversation response:", response.data);
       setContacts((prevContacts) =>
         prevContacts.filter((contact) => contact.id !== otherUserId)
       );
@@ -413,7 +413,7 @@ const ChatWidget = () => {
                 >
                   {message.user === "other" && (
                     <img
-                      src={message.avatar || "/default-avatar.jpg"}
+                      src={message.avatar}
                       alt="Sender"
                       className="message-avatar rounded-circle"
                       style={{ width: "30px", height: "30px", marginRight: "8px" }}
@@ -435,7 +435,7 @@ const ChatWidget = () => {
                   </div>
                   {message.user === "user" && (
                     <img
-                      src={message.avatar || "/default-avatar.jpg"}
+                      src={message.avatar}
                       alt="User"
                       className="message-avatar rounded-circle"
                       style={{ width: "30px", height: "30px", marginLeft: "8px" }}

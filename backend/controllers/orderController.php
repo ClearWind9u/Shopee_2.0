@@ -244,10 +244,10 @@ class OrderController {
             $status = $data['status'] ?? null;
 
             // Danh sách trạng thái hợp lệ
-            $validStatuses = ['pending', 'shipped', 'delivered', 'canceled'];
+            $validStatuses = ['pending', 'shipped', 'delivered', 'cancelled'];
             if (empty($status) || !in_array($status, $validStatuses)) {
                 http_response_code(400);
-                echo json_encode(["error" => "Invalid status. Must be one of: pending, shipped, delivered, canceled"]);
+                echo json_encode(["error" => "Invalid status. Must be one of: pending, shipped, delivered, cancelled"]);
                 exit();
             }
 

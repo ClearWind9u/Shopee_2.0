@@ -62,9 +62,11 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-actions">
-          <Link to="/buyer/cart" className="navbar-cart">
-            <FaShoppingCart size={22} />
-          </Link>
+          {user?.role === "buyer" && (
+            <Link to="/buyer/cart" className="navbar-cart">
+              <FaShoppingCart size={22} />
+            </Link>
+          )}
           <div className="navbar-user dropdown">
             <button
               className="navbar-user-btn dropdown-toggle"
@@ -72,7 +74,6 @@ const Navbar = () => {
               id="userMenu"
               data-bs-toggle="dropdown"
               aria-expanded="false"
-
             >
               <img src={avatarSrc} alt="Avatar" className="navbar-avatar" />
               <span className="navbar-role">{user?.role}</span>
@@ -95,19 +96,13 @@ const Navbar = () => {
                   <FaUserCircle size={18} /> Hồ sơ
                 </Link>
               </li>
-              <li>
-              <button className="dropdown-item">
-                  <Link className="dropdown-item"
-                  to={
-                    user?.role === "buyer"
-                      ? "/buyer/balance"
-                      : "/"
-                  }>
-                  <FaWallet size={18} /> Số dư
+              {user?.role === "buyer" && (
+                <li>
+                  <Link className="dropdown-item" to="/buyer/balance">
+                    <FaWallet size={18} /> Số dư
                   </Link>
-                  
-                </button>
-              </li>
+                </li>
+              )}
               <li>
                 <button className="dropdown-item text-danger" onClick={handleLogout}>
                   <FaSignOutAlt size={18} /> Đăng xuất

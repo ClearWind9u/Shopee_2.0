@@ -75,6 +75,31 @@ function handleUserRoutes($route, $method)
 
         $data['token'] = $token;
         echo json_encode($controller->updateBalance($data));
+    } elseif ($method == 'GET' && preg_match('/^\/profile-by-id/', $route)) {
+        $headers = getallheaders();
+        $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
+
+        if (!$token) {
+            http_response_code(401);
+            echo json_encode(["error" => "Thiếu token xác thực"]);
+            exit();
+        }
+
+        // Lấy userId từ query parameter hoặc body
+        parse_str(file_get_contents("php://input"), $input);
+        $userId = isset($_GET['userId']) ? $_GET['userId'] : ($input['userId'] ?? null);
+
+        if (!$userId) {
+            http_response_code(400);
+            echo json_encode(["error" => "Thiếu userId"]);
+            exit();
+        }
+
+        $data = [
+            "token" => $token,
+            "userId" => $userId
+        ];
+        echo json_encode($controller->getProfileById($data));
     } elseif ($method == 'GET' && preg_match('/^\/uploads\/avatars\/(.*)$/', $route, $matches)) {
         $file = __DIR__ . '/../uploads/avatars/' . $matches[1];
 

@@ -50,6 +50,8 @@ const OrderHistory = () => {
         return <span className="order-history-badge shipped">Đã giao hàng</span>;
       case "delivered":
         return <span className="order-history-badge delivered">Đã giao</span>;
+        case "cancelled":
+          return <span className="order-history-badge cancelled">Đã hủy</span>;
       default:
         return <span className="order-history-badge">Không xác định</span>;
     }
