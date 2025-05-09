@@ -300,10 +300,12 @@ const Post = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                setCurrentPage(1); // reset về trang đầu
-                                fetchPosts(1, searchTerm); // tìm kiếm
+                                e.preventDefault(); // tránh reload form
+                                setCurrentPage(1);
+                                fetchPosts(1, e.target.value); // ✅ lấy đúng giá trị người dùng vừa nhập
                             }
                         }}
+
                     />
 
                 </form>
