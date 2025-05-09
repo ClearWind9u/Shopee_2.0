@@ -113,6 +113,18 @@ function handleUserRoutes($route, $method)
             http_response_code(404);
             echo json_encode(["error" => "File không tồn tại"]);
         }
+    } elseif ($method == 'GET' && $route == '/all') {
+        $headers = getallheaders();
+        $token = isset($headers["Authorization"]) ? str_replace("Bearer ", "", $headers["Authorization"]) : null;
+
+        if (!$token) {
+            http_response_code(401);
+            echo json_encode(["error" => "Thiếu token xác thực"]);
+            exit();
+        }
+
+        $data = ["token" => $token];
+        echo json_encode($controller->getAllUser($data));
     } else {
         http_response_code(404);
         echo json_encode(["error" => "Route không tồn tại"]);

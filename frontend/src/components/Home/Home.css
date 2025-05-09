@@ -1,4 +1,6 @@
-.home-container {
+/* Container chung */
+.home-container,
+.manager-dashboard {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
@@ -8,44 +10,57 @@
 .home-banner {
     width: 100%;
     margin-bottom: 40px;
+    overflow: hidden;
 }
 
 .home-banner-img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.home-banner-img:hover {
+    transform: scale(1.02);
 }
 
 /* Intro Section */
 .home-intro {
     text-align: center;
     margin: 50px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
 }
 
 .home-title {
-    font-weight: bold;
+    font-weight: 700;
     text-transform: uppercase;
     color: #EE4D2D;
     font-size: 2.5rem;
     margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .home-subtitle {
     color: #6c757d;
     font-size: 1.25rem;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 /* Cards Section */
 .home-cards {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 25px;
     justify-content: space-between;
+    margin-bottom: 40px;
 }
 
 .home-card-wrapper {
-    flex: 1 1 calc(33.333% - 20px);
+    flex: 1 1 calc(33.333% - 16px);
     min-width: 250px;
 }
 
@@ -53,33 +68,113 @@
     border: none;
     border-radius: 16px;
     height: 100%;
+    background: linear-gradient(135deg, #EE4D2D, #FF6F61);
+    padding: 25px;
+    color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.home-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(238, 77, 45, 0.3);
 }
 
 .home-card-content {
     text-align: center;
-    padding: 20px;
 }
 
 .home-card-icon {
     font-size: 3rem;
     margin-bottom: 15px;
+    color: #fff;
 }
 
 .home-card-title {
     font-weight: 600;
-    color: white;
     font-size: 1.25rem;
     margin-bottom: 10px;
 }
 
 .home-card-description {
-    color: white;
     font-size: 1rem;
+    color: #f0f0f0;
+}
+
+/* Manager Dashboard */
+.manager-dashboard {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.stats-section {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    flex: 1 1 calc(33.333% - 16px);
+    min-width: 250px;
+    padding: 20px;
+    background: linear-gradient(135deg, #ffffff, #f1f5f9);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-right: 15px;
+    color: #EE4D2D;
+}
+
+.stat-info h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.stat-info p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.chart-section {
+    margin-bottom: 40px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#orderChart,
+#productChart {
+    width: 100%;
+    height: 350px;
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .home-card-wrapper,
+    .stat-card {
+        flex: 1 1 calc(50% - 12px);
+    }
+}
+
 @media (max-width: 768px) {
-    .home-container {
+    .home-container,
+    .manager-dashboard {
         padding: 15px;
     }
 
@@ -91,8 +186,9 @@
         font-size: 1.1rem;
     }
 
-    .home-card-wrapper {
-        flex: 1 1 calc(50% - 20px);
+    .home-card-wrapper,
+    .stat-card {
+        flex: 1 1 100%;
     }
 
     .home-card-icon {
@@ -106,10 +202,20 @@
     .home-card-description {
         font-size: 0.9rem;
     }
+
+    .chart-section {
+        padding: 15px;
+    }
+
+    #orderChart,
+    #productChart {
+        height: 300px;
+    }
 }
 
 @media (max-width: 576px) {
-    .home-container {
+    .home-container,
+    .manager-dashboard {
         padding: 10px;
     }
 
@@ -119,10 +225,6 @@
 
     .home-subtitle {
         font-size: 1rem;
-    }
-
-    .home-card-wrapper {
-        flex: 1 1 100%;
     }
 
     .home-card-icon {
@@ -135,5 +237,30 @@
 
     .home-card-description {
         font-size: 0.85rem;
+    }
+
+    .stats-section {
+        gap: 15px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .stat-info h3 {
+        font-size: 1.5rem;
+    }
+
+    .chart-section {
+        padding: 10px;
+    }
+
+    #orderChart,
+    #productChart {
+        height: 250px;
     }
 }

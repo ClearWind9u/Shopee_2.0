@@ -313,7 +313,7 @@ class UserController
         }
     }
 
-    //Cập nhật balance
+    // Cập nhật balance
     public function updateBalance($req)
     {
         header("Content-Type: application/json");
@@ -369,6 +369,63 @@ class UserController
                     "balance" => $updatedUser['balance'],
                     "inputBalance" => $balance
                 ]
+            ]);
+            exit();
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
+            exit();
+        }
+    }
+
+    // Lấy tất cả người dùng (chỉ dành cho manager)
+    public function getAllUser($req)
+    {
+        header("Content-Type: application/json");
+
+        try {
+            $headers = getallheaders();
+            $authHeader = $headers['Authorization'] ?? "";
+            $token = str_replace("Bearer ", "", $authHeader);
+
+            if (!$token) {
+                http_response_code(401);
+                echo json_encode(["error" => "Thiếu token xác thực"]);
+                exit();
+            }
+
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
+            }
+
+            // Kiểm tra vai trò
+            if ($decoded['role'] !== "manager") {
+                http_response_code(403);
+                echo json_encode(["error" => "Chỉ quản lý mới có quyền truy cập"]);
+                exit();
+            }
+
+            // Lấy tất cả người dùng
+            $users = $this->userModel->findAllUsers();
+            if (empty($users)) {
+                http_response_code(200);
+                echo json_encode(["message" => "Không có người dùng nào", "users" => []]);
+                exit();
+            }
+
+            // Loại bỏ mật khẩu khỏi dữ liệu trả về
+            foreach ($users as &$user) {
+                unset($user['password']);
+            }
+            unset($user); // Hủy tham chiếu sau vòng lặp
+
+            http_response_code(200);
+            echo json_encode([
+                "message" => "Lấy danh sách người dùng thành công",
+                "users" => $users
             ]);
             exit();
         } catch (Exception $e) {
