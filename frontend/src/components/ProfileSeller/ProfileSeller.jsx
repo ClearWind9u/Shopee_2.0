@@ -116,6 +116,38 @@ const ProfileSeller = () => {
     setSuccess(null);
   };
 
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/upload-image.php`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return res.data?.path ? `${API_BASE_URL}${res.data.path}` : "";
+    } catch (err) {
+      console.error("Upload failed:", err);
+      setSuccess("Upload ảnh thất bại");
+      return "";
+    }
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const imageUrl = await uploadImage(file);
+      if (imageUrl) {
+        setFile(file);
+        setProfile({ ...profile, avatar: imageUrl });
+      }
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <div className="container mt-5 mb-5">
       <h2 className="mb-4 text-center">Hồ sơ cửa hàng</h2>
@@ -123,15 +155,31 @@ const ProfileSeller = () => {
       <div className="card shadow-lg p-4 rounded-4">
         <div className="row g-4 align-items-center">
           <div className="col-md-4 text-center">
-            <img
-              src={
-                profile.avatar?.startsWith("/uploads")
-                  ? API_BASE_URL + profile.avatar
-                  : profile.avatar || defaultAvatar
-              }
-              alt="Avatar"
-              className="rounded-img border border-2 shadow"
-            />
+            <div
+              className="drag-area"
+              style={{
+                border: editMode ? "2px dashed #ccc" : "none",
+                padding: editMode ? "20px" : "0",
+                borderRadius: "10px",
+                textAlign: "center",
+                cursor: editMode ? "pointer" : "default",
+                opacity: editMode ? 1 : 0.6,
+              }}
+              onDragOver={editMode ? handleDragOver : undefined}
+              onDrop={editMode ? handleDrop : undefined}
+            >
+              {editMode && <span>Kéo ảnh vào đây để thay đổi avatar</span>}
+              <img
+                src={
+                  profile.avatar?.startsWith("/uploads")
+                    ? API_BASE_URL + profile.avatar
+                    : profile.avatar || defaultAvatar
+                }
+                alt="Avatar"
+                className="rounded-img border border-2 shadow mt-2"
+                style={{ maxHeight: 200, maxWidth: "100%" }}
+              />
+            </div>
             {editMode && (
               <>
                 <input

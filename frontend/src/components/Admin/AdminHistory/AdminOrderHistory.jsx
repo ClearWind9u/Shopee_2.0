@@ -80,8 +80,8 @@ const AdminOrderHistory = () => {
         return <span className="admin-order-badge shipped">Đang vận chuyển</span>;
       case "delivered":
         return <span className="admin-order-badge delivered">Đã giao</span>;
-      case "canceled":
-        return <span className="admin-order-badge canceled">Đã hủy</span>;
+      case "cancelled":
+        return <span className="admin-order-badge cancelled">Đã hủy</span>;
       default:
         return <span className="admin-order-badge">Không xác định</span>;
     }
@@ -152,7 +152,7 @@ const AdminOrderHistory = () => {
                           <option value="pending">Đang xử lý</option>
                           <option value="shipped">Đang vận chuyển</option>
                           <option value="delivered">Đã giao</option>
-                          <option value="canceled">Đã hủy</option>
+                          <option value="cancelled">Đã hủy</option>
                         </select>
                       </td>
                     </tr>

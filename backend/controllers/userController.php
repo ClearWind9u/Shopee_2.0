@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../middlewares/authMiddleware.php';
 require_once __DIR__ . '/../models/User.php';
+
 class UserController
 {
     private $userModel;
@@ -147,6 +148,52 @@ class UserController
         }
     }
 
+    // Lấy hồ sơ người dùng theo userId
+    public function getProfileById($req)
+    {
+        try {
+            $headers = getallheaders();
+            $authHeader = $headers['Authorization'] ?? "";
+            $token = str_replace("Bearer ", "", $authHeader);
+
+            if (!$token) {
+                http_response_code(401);
+                echo json_encode(["error" => "Thiếu token xác thực"]);
+                exit();
+            }
+
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
+            }
+
+            $userId = $req['userId'] ?? null;
+            if (!$userId) {
+                http_response_code(400);
+                echo json_encode(["error" => "Thiếu userId"]);
+                exit();
+            }
+
+            $user = $this->userModel->findUserById($userId);
+            if (!$user) {
+                http_response_code(404);
+                echo json_encode(["error" => "Người dùng không tồn tại"]);
+                exit();
+            }
+
+            unset($user['password']);
+            http_response_code(200);
+            echo json_encode($user);
+            exit();
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
+            exit();
+        }
+    }
+
     // Cập nhật hồ sơ người dùng
     public function updateProfile($req)
     {
@@ -266,7 +313,7 @@ class UserController
         }
     }
 
-    //Cập nhật balance
+    // Cập nhật balance
     public function updateBalance($req)
     {
         header("Content-Type: application/json");
@@ -322,6 +369,63 @@ class UserController
                     "balance" => $updatedUser['balance'],
                     "inputBalance" => $balance
                 ]
+            ]);
+            exit();
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Lỗi server", "message" => $e->getMessage()]);
+            exit();
+        }
+    }
+
+    // Lấy tất cả người dùng (chỉ dành cho manager)
+    public function getAllUser($req)
+    {
+        header("Content-Type: application/json");
+
+        try {
+            $headers = getallheaders();
+            $authHeader = $headers['Authorization'] ?? "";
+            $token = str_replace("Bearer ", "", $authHeader);
+
+            if (!$token) {
+                http_response_code(401);
+                echo json_encode(["error" => "Thiếu token xác thực"]);
+                exit();
+            }
+
+            $decoded = $this->authMiddleware->verifyToken($token);
+            if (!$decoded || !isset($decoded['userId'])) {
+                http_response_code(401);
+                echo json_encode(["error" => "Token không hợp lệ"]);
+                exit();
+            }
+
+            // Kiểm tra vai trò
+            if ($decoded['role'] !== "manager") {
+                http_response_code(403);
+                echo json_encode(["error" => "Chỉ quản lý mới có quyền truy cập"]);
+                exit();
+            }
+
+            // Lấy tất cả người dùng
+            $users = $this->userModel->findAllUsers();
+            if (empty($users)) {
+                http_response_code(200);
+                echo json_encode(["message" => "Không có người dùng nào", "users" => []]);
+                exit();
+            }
+
+            // Loại bỏ mật khẩu khỏi dữ liệu trả về
+            foreach ($users as &$user) {
+                unset($user['password']);
+            }
+            unset($user); // Hủy tham chiếu sau vòng lặp
+
+            http_response_code(200);
+            echo json_encode([
+                "message" => "Lấy danh sách người dùng thành công",
+                "users" => $users
             ]);
             exit();
         } catch (Exception $e) {
