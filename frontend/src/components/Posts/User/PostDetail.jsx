@@ -4,6 +4,8 @@ import { UserContext } from "../../../context/UserContext";
 import './PostDetail.css'
 import Notification from "../../Notification/Notification";
 import ConfirmModal from '../../Confirmation/ConfirmModal';
+import BreadCrumb from './BreadCrumb';
+
 
 const PostDetail = () => {
     const { id } = useParams();
@@ -195,6 +197,12 @@ const PostDetail = () => {
     return (
 
         <div className="container mt-4">
+            <BreadCrumb
+                customNames={{
+                    posts: "Bài viết",
+                    [id]: post?.title || "Đang tải..."
+                }}
+            />
             {success && (
                 <Notification
                     message={success}

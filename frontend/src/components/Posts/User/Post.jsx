@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { UserContext } from "../../../context/UserContext";
 import PostDetail from './PostDetail';
+import BreadCrumb from "./BreadCrumb"
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import './Post.css'
+// import BreadCrumb from './BreadCrumb';
 
+33333
 const Post = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -211,6 +214,12 @@ const Post = () => {
 
 
         <div className="container mt-4">
+            <BreadCrumb
+                customNames={{
+                    posts: "Bài viết",
+                    // [id]: post?.title || "Đang tải..."
+                }}
+            />
             {highlightPosts.length > 0 && (
                 <div className="highlighted-post row mb-5">
                     {/* Bài viết nổi bật chính */}
@@ -298,13 +307,45 @@ const Post = () => {
                         className="form-control mb-4"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        // onKeyDown={(e) => {
+                        //     if (e.key === "Enter") {
+                        //         e.preventDefault(); // tránh reload form
+                        //         setCurrentPage(1);
+                        //         fetchPosts(1, e.target.value); // ✅ lấy đúng giá trị người dùng vừa nhập
+                        //     }
+                        // }}
+
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                e.preventDefault(); // tránh reload form
+                                e.preventDefault();
+
+                                const input = e.target.value.trim();
+
+                                // 1. Kiểm tra rỗng
+                                if (input.length === 0) {
+                                    alert("Vui lòng nhập từ khóa tìm kiếm.");
+                                    return;
+                                }
+
+                                // 2. Kiểm tra độ dài tối đa (ví dụ: 100 ký tự)
+                                if (input.length > 100) {
+                                    alert("Từ khóa quá dài (tối đa 100 ký tự).");
+                                    return;
+                                }
+
+                                // 3. Kiểm tra ký tự hợp lệ (chỉ chữ, số, tiếng Việt, khoảng trắng)
+                                // const isValid = /^[\p{L}\p{N}\s]+$/u.test(input);
+                                // if (!isValid) {
+                                //     alert("Từ khóa chỉ được chứa chữ cái, số và khoảng trắng.");
+                                //     return;
+                                // }
+
                                 setCurrentPage(1);
-                                fetchPosts(1, e.target.value); // ✅ lấy đúng giá trị người dùng vừa nhập
+                                fetchPosts(1, input);
                             }
                         }}
+
+
 
                     />
 
@@ -417,10 +458,10 @@ const Post = () => {
 
                                         </div>
                                         {/* <div className="date">
-                                            <p className="card-text d-flex align-items-center text-muted">
-                                                {new Date(post.created_at).toLocaleDateString()}
-                                            </p>
-                                        </div> */}
+                                                <p className="card-text d-flex align-items-center text-muted">
+                                                    {new Date(post.created_at).toLocaleDateString()}
+                                                </p>
+                                            </div> */}
                                     </div>
                                 </div>
 
@@ -476,24 +517,24 @@ const Post = () => {
 
                             </div>
                             {/* <div className="card-body">
-                                <div className="d-flex justify-content-between">
-                                    <div className="author d-flex justify-content-between">
-                                        <img
-                                            src="/default-avatar.jpg"
-                                            className="rounded-circle me-2"
-                                            alt="Author"
-                                            height="30px"
-                                            width="30px"
-                                        />
-                                        <p className="card-text d-flex align-items-center">{post.author_name || 'Unknown'}</p>
+                                    <div className="d-flex justify-content-between">
+                                        <div className="author d-flex justify-content-between">
+                                            <img
+                                                src="/default-avatar.jpg"
+                                                className="rounded-circle me-2"
+                                                alt="Author"
+                                                height="30px"
+                                                width="30px"
+                                            />
+                                            <p className="card-text d-flex align-items-center">{post.author_name || 'Unknown'}</p>
+                                        </div>
+                                        <div className="date">
+                                            <p className="card-text d-flex align-items-center text-muted">
+                                                {new Date(post.created_at).toLocaleDateString()}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="date">
-                                        <p className="card-text d-flex align-items-center text-muted">
-                                            {new Date(post.created_at).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div> */}
+                                </div> */}
                         </div>
                     </div>
                 ))}
@@ -508,12 +549,12 @@ const Post = () => {
                         </button>
                     </li>
                     {/* {[1, 2, 3].map(page => (
-                        <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
-                            <button className="page-link" onClick={() => setCurrentPage(page)}>
-                                {page}
-                            </button>
-                        </li>
-                    ))} */}
+                            <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
+                                <button className="page-link" onClick={() => setCurrentPage(page)}>
+                                    {page}
+                                </button>
+                            </li>
+                        ))} */}
 
                     {[...Array(totalPages).keys()].map((i) => (
                         <li key={i} className={`page-item ${i + 1 === currentPage ? "active" : ""}`}>

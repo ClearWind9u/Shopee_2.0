@@ -73,9 +73,9 @@ function AppContent() {
           path="/buyer/profile"
           element={<ProtectedRoute role="buyer" element={<ProfileBuyer />} />}
         />
-         <Route
+        <Route
           path="/buyer/balance"
-          element={<ProtectedRoute role="buyer" element={<Wallet/>} />}
+          element={<ProtectedRoute role="buyer" element={<Wallet />} />}
         />
         <Route
           path="/buyer/cart"
@@ -91,6 +91,7 @@ function AppContent() {
         <Route path="/return-refund" element={<RefundPolicy />} />
         {/* <Route path="/posts" element={<Post />} /> */}
         <Route path="/posts/:id" element={<PostDetail />} />
+
         <Route path="/admin/comments" element={<AdminCommentManager />} />
 
         <Route

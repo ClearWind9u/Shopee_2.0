@@ -404,12 +404,36 @@ const NewsList = () => {
                     <button className="btn btn-success w-100 " onClick={openCreateModal}>+ Thêm bài viết</button>
                 </div>
             </div>
-            <input
+            {/* <input
                 className="form-control mb-3"
                 placeholder="Tìm kiếm theo tiêu đề..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
+            /> */}
+            <input
+                className="form-control mb-3"
+                placeholder="Tìm kiếm theo tiêu đề..."
+                value={keyword}
+                onChange={(e) => {
+                    const value = e.target.value;
+
+                    // 1. Độ dài tối đa
+                    if (value.length > 100) {
+                        setSuccess("Từ khóa quá dài (tối đa 100 ký tự)");
+                        return;
+                    }
+
+                    // 2. Ký tự hợp lệ (chỉ chữ, số, khoảng trắng)
+                    // const isValid = /^[\p{L}\p{N}\s]*$/u.test(value);
+                    // if (!isValid) {
+                    //     setSuccess("Từ khóa chỉ được chứa chữ cái, số và khoảng trắng");
+                    //     return;
+                    // }
+
+                    setKeyword(value); // nếu hợp lệ mới cập nhật state
+                }}
             />
+
             <table className="table table-striped">
                 <thead>
                     <tr>
