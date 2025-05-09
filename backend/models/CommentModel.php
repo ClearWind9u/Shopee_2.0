@@ -17,7 +17,7 @@ class CommentModel
         $stmt->bindValue(':post_id', $post_id, PDO::PARAM_INT);
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->bindValue(':content', $content, PDO::PARAM_STR);
-        $stmt->bindValue(':parent_id', $parent_id, is_null($parent_id) ? PDO::PARAM_NULL : PDO::PARAM_INT);
+        $stmt->bindValue(':parent_id', $parent_id, $parent_id === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
         $stmt->execute();
         return $this->pdo->lastInsertId();
     }

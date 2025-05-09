@@ -250,8 +250,10 @@ const NewsList = () => {
             setEditingReplyContent("");
             handleOpenCommentModal(selectedPostIdForComment); // Reload lại comment
         } catch (err) {
-            console.error("❌ Lỗi khi cập nhật bình luận:", err);
-            setSuccess("Cập nhật thất bại.");
+            // console.error("❌ Lỗi khi cập nhật bình luận:", err);
+            // setSuccess("Cập nhật thất bại.");
+            const errorMessage = err.response?.data?.error || "Cập nhật thất bại.";
+            setSuccess(errorMessage);
         }
     };
 
@@ -315,6 +317,14 @@ const NewsList = () => {
     };
 
     const handleReplyComment = async (commentId) => {
+        if (!replyContent.trim()) {
+            setSuccess("Bình luận không được để trống");
+            return;
+        }
+        if (replyContent.length > 1000) {
+            setSuccess("Bình luận không được vượt quá 1000 ký tự");
+            return;
+        }
         try {
             await axios.post(`${API_BASE}/comment/create`, {
                 post_id: selectedPostIdForComment,
@@ -325,8 +335,10 @@ const NewsList = () => {
             setSuccess("Đã phản hồi bình luận.");
             handleOpenCommentModal(selectedPostIdForComment); // reload
         } catch (err) {
-            console.error("❌ Lỗi khi phản hồi:", err.response?.data || err.message);
-            setSuccess("Phản hồi thất bại.");
+            // console.error("❌ Lỗi khi phản hồi:", err.response?.data || err.message);
+            // setSuccess("Phản hồi thất bại.");
+            const errorMessage = err.response?.data?.error || "Phản hồi thất bại.";
+            setSuccess(errorMessage);
         }
     };
 
@@ -343,6 +355,14 @@ const NewsList = () => {
     };
 
     const uploadImage = async (file) => {
+        if (!file.type.match(/^image\/(jpg|jpeg|png|gif)$/)) {
+            setSuccess("Chỉ chấp nhận file .jpg, .png, .gif");
+            return "";
+        }
+        if (file.size > 5 * 1024 * 1024) { // Giới hạn 5MB
+            setSuccess("File ảnh quá lớn (tối đa 5MB)");
+            return "";
+        }
         const formData = new FormData();
         formData.append("image", file);
         const res = await axios.post(`${API_BASE}/upload-image.php`, formData, {
