@@ -458,9 +458,16 @@ const Post = () => {
                                             </>
                                         ) : (
                                             <li>
-                                                <button className="dropdown-item text-danger" onClick={() => handleReport(post.id)}>
+                                                <button
+                                                    className="dropdown-item text-danger"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // ⛔ chặn lan ra card
+                                                        handleReport(post.id);
+                                                    }}
+                                                >
                                                     🚩 Báo cáo bài viết
                                                 </button>
+
                                             </li>
                                         )}
                                     </ul>
